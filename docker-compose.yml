@@ -14,11 +14,9 @@ app:
     - APP_DEBUG=true
     - APP_KEY=invoicekeyinvoicekeyinvoicekey12
     - DB_USERNAME=user
-    - DB_PASSWORD=mdp
-    - DB_HOST=$MYSQL_PORT
+    - DB_PASSWORD=pass
     - DB_DATABASE=ninja
-  volumes:
-    - ./data/invoice:/var/www/html/logo
+    - DB_HOST=mysql
 
 web:
   image: nginx
