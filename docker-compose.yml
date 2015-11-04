@@ -7,7 +7,7 @@ db:
     MYSQL_ROOT_PASSWORD: mdp
 
 app:
-  build: .
+  image: invoice-ninja
   links:
     - db:mysql
   environment:
@@ -17,6 +17,9 @@ app:
     - DB_PASSWORD=pass
     - DB_DATABASE=ninja
     - DB_HOST=mysql
+  volumes:
+    - ./data/storage:/var/www/app/storage:rw
+    - ./data/logo:/var/www/app/public/logo:rw
 
 web:
   image: nginx
