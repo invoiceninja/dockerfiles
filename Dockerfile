@@ -5,7 +5,8 @@ FROM php:fpm
 #####
 RUN apt-get update \
     && apt-get install -y libmcrypt-dev zlib1g-dev git\
-    && docker-php-ext-install iconv mcrypt mbstring pdo pdo_mysql zip
+    && docker-php-ext-install iconv mcrypt mbstring pdo pdo_mysql zip \
+    && rm -rf /var/lib/apt/lists/*
 
 #####
 # INSTALL COMPOSER
