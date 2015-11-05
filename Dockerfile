@@ -46,9 +46,6 @@ ENV APP_DEBUG 0
 #use to be mounted into nginx for exemple
 VOLUME /var/www/html
 
-VOLUME /var/www/app/storage
-VOLUME /var/www/app/public/logo
-
 EXPOSE 80
 
 CMD ["php-fpm"]
