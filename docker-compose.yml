@@ -2,24 +2,12 @@ db:
   image: mysql
   environment:
     MYSQL_DATABASE: ninja
-    MYSQL_USER: user
-    MYSQL_PASSWORD: pass
     MYSQL_ROOT_PASSWORD: mdp
 
 app:
-  image: lalop/invoice-ninja
+  image: lalop/invoice-ninja:2.4.2
   links:
     - db:mysql
-  environment:
-    - APP_DEBUG=true
-    - APP_KEY=invoicekeyinvoicekeyinvoicekey12
-    - DB_USERNAME=user
-    - DB_PASSWORD=pass
-    - DB_DATABASE=ninja
-    - DB_HOST=mysql
-  volumes:
-    - ./data/storage:/var/www/app/storage:rw
-    - ./data/logo:/var/www/app/public/logo:rw
 
 web:
   image: nginx
