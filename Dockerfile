@@ -18,16 +18,16 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # DOWNLOAD AND INSTALL INVOICE NONJA
 #####
 
-ENV INVOICENINJA_VERSION 2.4.2
+ENV INVOICENINJA_VERSION 2.4.4
 #ENV INVOICENINJA_SHA1 3e9b63c1681b6923dc1a24399411c1abde6ef5ea
 
-RUN curl -o invoiceninja.tar.gz -SL https://github.com/hillelcoren/invoice-ninja/archive/v${INVOICENINJA_VERSION}.tar.gz
-# RUN echo "$INVOICENINJA_SHA1 *invoiceninja.tar.gz" | sha1sum -c -
-RUN tar -xzf invoiceninja.tar.gz -C /var/www/
-RUN rm invoiceninja.tar.gz
-RUN mv /var/www/invoiceninja-${INVOICENINJA_VERSION} /var/www/app
-RUN chown -R www-data:www-data /var/www/app
-RUN composer install --working-dir /var/www/app -o --no-dev --no-interaction
+RUN curl -o invoiceninja.tar.gz -SL https://github.com/hillelcoren/invoice-ninja/archive/v${INVOICENINJA_VERSION}.tar.gz \
+#    && echo "$INVOICENINJA_SHA1 *invoiceninja.tar.gz" | sha1sum -c - \
+    && tar -xzf invoiceninja.tar.gz -C /var/www/ \
+    && rm invoiceninja.tar.gz \
+    && mv /var/www/invoiceninja-${INVOICENINJA_VERSION} /var/www/app \
+    && chown -R www-data:www-data /var/www/app \
+    && composer install --working-dir /var/www/app -o --no-dev --no-interaction
 
 
 ######
