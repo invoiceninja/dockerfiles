@@ -5,7 +5,7 @@ db:
     MYSQL_ROOT_PASSWORD: mdp
 
 app:
-  image: lalop/invoice-ninja:2.4.4
+  image: lalop/invoice-ninja:2.4.6
   links:
     - db:mysql
 
