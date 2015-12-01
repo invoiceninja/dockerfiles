@@ -15,7 +15,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 
 #####
-# DOWNLOAD AND INSTALL INVOICE NONJA
+# DOWNLOAD AND INSTALL INVOICE NINJA
 #####
 
 ENV INVOICENINJA_VERSION 2.4.7
