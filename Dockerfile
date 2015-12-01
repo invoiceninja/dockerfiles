@@ -4,8 +4,11 @@ FROM php:fpm
 # SYSTEM REQUIREMENT
 #####
 RUN apt-get update \
-    && apt-get install -y libmcrypt-dev zlib1g-dev git\
-    && docker-php-ext-install iconv mcrypt mbstring pdo pdo_mysql zip \
+    && apt-get install -y \
+        libmcrypt-dev zlib1g-dev git \
+        libfreetype6-dev libjpeg62-turbo-dev libpng12-dev\
+    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-install iconv mcrypt mbstring pdo pdo_mysql zip gd \
     && rm -rf /var/lib/apt/lists/*
 
 #####
