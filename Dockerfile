@@ -1,6 +1,6 @@
 FROM php:fpm
 
-MAINTAINER Samuel Laulhau
+MAINTAINER Samuel Laulhau <sam@lalop.co>
 
 #####
 # SYSTEM REQUIREMENT
