@@ -33,6 +33,7 @@ RUN curl -o invoiceninja.tar.gz -SL https://github.com/hillelcoren/invoice-ninja
     && mv /var/www/invoiceninja-${INVOICENINJA_VERSION} /var/www/app \
     && chown -R www-data:www-data /var/www/app \
     && composer install --working-dir /var/www/app -o --no-dev --no-interaction  --prefer-source\
+    && chown -R www-data:www-data /var/www/app/bootstrap/cache \
     && mv /var/www/app/storage /var/www/app/docker-backup-storage \
     && mv /var/www/app/public/logo /var/www/app/docker-backup-public-logo
 
