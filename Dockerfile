@@ -45,7 +45,7 @@ ENV DB_HOST mysql
 ENV DB_DATABASE ninja
 ENV APP_KEY SomeRandomString
 ENV LOG errorlog
-ENV APP_DEBUG 1
+ENV APP_DEBUG 0
 
 
 #use to be mounted into nginx for exemple
