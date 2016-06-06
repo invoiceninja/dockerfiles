@@ -27,3 +27,5 @@ web:
   ports:
     - 80
 ```
+
+To make your data persistant, you have to mount `/var/www/app/public/logo` and `/var/www/app/storage`.
