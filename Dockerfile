@@ -46,6 +46,7 @@ ENV DB_DATABASE ninja
 ENV APP_KEY SomeRandomString
 ENV LOG errorlog
 ENV APP_DEBUG 0
+ENV APP_CIPHER rijndael-128
 
 
 #use to be mounted into nginx for exemple
