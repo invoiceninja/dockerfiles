@@ -1,0 +1,23 @@
+db:
+  image: mysql
+  environment:
+    MYSQL_DATABASE: ninja
+    MYSQL_ROOT_PASSWORD: mdp
+
+app:
+  image: invoiceninja/invoiceninja
+  links:
+    - db:mysql
+  environment:
+    APP_DEBUG: 1
+
+web:
+  image: nginx
+  volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  links:
+    - app
+  volumes_from:
+    - app
+  ports:
+    - 80
