@@ -25,7 +25,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # DOWNLOAD AND INSTALL INVOICE NINJA
 #####
 
-ENV INVOICENINJA_VERSION 2.6.10
+ENV INVOICENINJA_VERSION 2.6.11
 
 RUN curl -o invoiceninja.tar.gz -SL https://github.com/hillelcoren/invoice-ninja/archive/v${INVOICENINJA_VERSION}.tar.gz \
     && tar -xzf invoiceninja.tar.gz -C /var/www/ \
@@ -47,6 +47,7 @@ ENV APP_KEY SomeRandomString
 ENV LOG errorlog
 ENV APP_DEBUG 0
 ENV APP_CIPHER rijndael-128
+ENV SELF_UPDATER_SOURCE ''
 
 
 #use to be mounted into nginx for exemple
