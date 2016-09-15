@@ -34,6 +34,6 @@ else
 	done
 fi
 
-chown www-data .env
+chown www-data:www-data .env
 
 exec "$@"
