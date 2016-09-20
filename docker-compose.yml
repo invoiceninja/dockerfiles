@@ -21,3 +21,19 @@ web:
     - app
   ports:
     - 80
+
+cron:
+  image: invoiceninja/invoiceninja
+  links:
+    - db:mysql
+  user: www-data
+  entrypoint: |
+    bash -c 'bash -s <<EOF
+    trap "break;exit" SIGHUP SIGINT SIGTERM
+    sleep 30s
+    while /bin/true; do
+      DB_USERNAME=root DB_PASSWORD=mdp /usr/local/bin/php /var/www/app/artisan ninja:send-invoices
+      DB_USERNAME=root DB_PASSWORD=mdp /usr/local/bin/php /var/www/app/artisan ninja:send-reminders
+      sleep 1d
+    done
+    EOF'
