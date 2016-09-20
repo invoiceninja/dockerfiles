@@ -34,6 +34,7 @@ else
 	done
 fi
 
+chown www-data:www-data /var/www/app/.env
 # php artisan optimize --force
 # php artisan migrate --force
 # php artisan db:seed --class=UpdateSeeder
