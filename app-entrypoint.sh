@@ -34,6 +34,8 @@ else
 	done
 fi
 
-chown www-data:www-data .env
+# php artisan optimize --force
+# php artisan migrate --force
+# php artisan db:seed --class=UpdateSeeder
 
 exec "$@"
