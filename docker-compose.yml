@@ -30,7 +30,7 @@ cron:
   entrypoint: |
     bash -c 'bash -s <<EOF
     trap "break;exit" SIGHUP SIGINT SIGTERM
-    sleep 30s
+    sleep 300s
     while /bin/true; do
       DB_USERNAME=root DB_PASSWORD=mdp /usr/local/bin/php /var/www/app/artisan ninja:send-invoices
       DB_USERNAME=root DB_PASSWORD=mdp /usr/local/bin/php /var/www/app/artisan ninja:send-reminders
