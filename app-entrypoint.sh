@@ -57,12 +57,12 @@ do {
 } while (true);
 EOPHP
 
-php artisan optimize --force
-php artisan migrate --force
+#php artisan optimize --force
+#php artisan migrate --force
 
 if [ ! -e "/var/www/app/is-seeded" ]; then
-	php artisan db:seed --force
-	touch "/var/www/app/is-seeded"
+	#php artisan db:seed --force
+	#touch "/var/www/app/is-seeded"
 fi
 
 echo 'start'
