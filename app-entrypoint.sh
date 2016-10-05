@@ -60,10 +60,10 @@ EOPHP
 #php artisan optimize --force
 #php artisan migrate --force
 
-if [ ! -e "/var/www/app/is-seeded" ]; then
+#if [ ! -e "/var/www/app/is-seeded" ]; then
 	#php artisan db:seed --force
 	#touch "/var/www/app/is-seeded"
-fi
+#fi
 
 echo 'start'
 exec "$@"
