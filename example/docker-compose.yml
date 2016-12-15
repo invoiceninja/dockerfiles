@@ -25,7 +25,7 @@ services:
     volumes_from:
       - app
     ports:
-      - 80
+      - "80:80"
 
   cron:
     image: invoiceninja/invoiceninja
