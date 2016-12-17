@@ -9,9 +9,6 @@ if [ "$DB_USERNAME" = 'root' ]; then
 	: ${DB_PASSWORD:=$MYSQL_ENV_MYSQL_ROOT_PASSWORD}
 fi
 
-echo "DB_USERNAME=$DB_USERNAME" >> .env
-echo "DB_PASSWORD=$DB_PASSWORD" >> .env
-
 if [ ! -d /var/www/app/storage ]; then
 	cp -Rp /var/www/app/docker-backup-storage /var/www/app/storage
 else
@@ -33,8 +30,6 @@ else
 		fi
 	done
 fi
-
-chown www-data:www-data /var/www/app/.env
 
 # widely inspired from https://github.com/docker-library/wordpress/blob/c674e9ceedf582705e0ad8487c16b42b37a5e9da/fpm/docker-entrypoint.sh#L128
 TERM=dumb php -- "$DB_HOST" "$DB_USERNAME" "$DB_PASSWORD" "$DB_DATABASE" <<'EOPHP'
