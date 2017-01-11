@@ -12,13 +12,13 @@ fi
 echo "DB_USERNAME=$DB_USERNAME" >> .env
 echo "DB_PASSWORD=$DB_PASSWORD" >> .env
 echo "DB_HOST=$DB_HOST" >> .env
-echo "MAIL_DRIVER=$SMTP_DRIVER" >> .env
-echo "MAIL_PORT=$SMTP_PORT" >> .env
-echo "MAIL_HOST=$SMTP_RELAY" >> .env
-echo "MAIL_USERNAME=$SMTP_USER" >> .env
-echo "MAIL_PASSWORD=$SMTP_PASS" >> .env
-echo "MAIL_FROM_ADDRESS=$SMTP_FROM_ADDRESS" >> .env
-echo "MAIL_FROM_NAME=$SMTP_FROM_NAME" >> .env
+echo "MAIL_DRIVER=$MAIL_DRIVER" >> .env
+echo "MAIL_PORT=$MAIL_PORT" >> .env
+echo "MAIL_HOST=$MAIL_HOST" >> .env
+echo "MAIL_USERNAME=$MAIL_USERNAME" >> .env
+echo "MAIL_PASSWORD=$MAIL_PASSWORD" >> .env
+echo "MAIL_FROM_ADDRESS=$MAIL_FROM_ADDRESS" >> .env
+echo "MAIL_FROM_NAME=$MAIL_FROM_NAME" >> .env
 
 if [ ! -d /var/www/app/storage ]; then
 	cp -Rp /var/www/app/docker-backup-storage /var/www/app/storage
