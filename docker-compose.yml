@@ -29,6 +29,23 @@ services:
     ports:
       - "80:80"
 
+  cron:
+    image: invoiceninja/invoiceninja
+    user: www-data
+    env_file: .env
+    depends_on: 
+      - app
+    entrypoint: |
+      bash -c 'bash -s <<EOF
+      trap "break;exit" SIGHUP SIGINT SIGTERM
+      sleep 300s
+      while /bin/true; do
+        DB_USERNAME=root DB_PASSWORD=pwd /usr/local/bin/php /var/www/app/artisan ninja:send-invoices
+        DB_USERNAME=root DB_PASSWORD=pwd /usr/local/bin/php /var/www/app/artisan ninja:send-reminders
+        sleep 1d
+      done
+      EOF'
+
 volumes:
   dbstore:
   mediastore:
