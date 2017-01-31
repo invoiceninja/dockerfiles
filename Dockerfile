@@ -29,9 +29,8 @@ ENV INVOICENINJA_VERSION 3.0.3
 
 RUN curl -o invoiceninja.tar.gz -SL https://github.com/hillelcoren/invoice-ninja/archive/v${INVOICENINJA_VERSION}.tar.gz \
     && tar -xzf invoiceninja.tar.gz -C /var/www/ \
-    && rm invoiceninja.tar.gz 
-
-RUN cp -r /var/www/invoiceninja-${INVOICENINJA_VERSION} /var/www/app \
+    && rm invoiceninja.tar.gz \
+    && cp -r /var/www/invoiceninja-${INVOICENINJA_VERSION} /var/www/app \
     && cp -r /var/www/invoiceninja-${INVOICENINJA_VERSION}/storage /var/www/app/docker-new-storage \
     && cp -r /var/www/invoiceninja-${INVOICENINJA_VERSION}/public /var/www/app/docker-new-public \
     && rm -rf /var/www/invoiceninja-${INVOICENINJA_VERSION} \
