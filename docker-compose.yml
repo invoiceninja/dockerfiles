@@ -1,0 +1,46 @@
+version: "2"
+
+services:
+  db:
+    image: mysql
+    environment:
+      MYSQL_DATABASE: ninja
+      MYSQL_ROOT_PASSWORD: pwd
+
+  app:
+    image: invoiceninja/invoiceninja
+    links:
+      - db:mysql
+    environment:
+      APP_DEBUG: 1
+      DB_USERNAME: root
+      DB_PASSWORD: pwd
+
+  web:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    links:
+      - app
+    volumes_from:
+      - app
+    ports:
+      - 80
+
+  cron:
+    image: invoiceninja/invoiceninja
+    links:
+      - db:mysql
+    user: www-data
+    environment:
+      APP_DEBUG: 1
+    entrypoint: |
+      bash -c 'bash -s <<EOF
+      trap "break;exit" SIGHUP SIGINT SIGTERM
+      sleep 300s
+      while /bin/true; do
+        DB_USERNAME=root DB_PASSWORD=pwd /usr/local/bin/php /var/www/app/artisan ninja:send-invoices
+        DB_USERNAME=root DB_PASSWORD=pwd /usr/local/bin/php /var/www/app/artisan ninja:send-reminders
+        sleep 1d
+      done
+      EOF'
