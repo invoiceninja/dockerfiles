@@ -8,7 +8,7 @@ MAINTAINER Samuel Laulhau <sam@lalop.co>
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libmcrypt-dev zlib1g-dev git libgmp-dev \
-        libfreetype6-dev libjpeg62-turbo-dev libpng12-dev \
+        libfreetype6-dev libjpeg62-turbo-dev libpng12-dev rsync \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/ \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-configure gmp \
@@ -25,24 +25,25 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # DOWNLOAD AND INSTALL INVOICE NINJA
 #####
 
-ENV INVOICENINJA_VERSION 3.0.2
+ENV INVOICENINJA_VERSION 3.0.3
 
 RUN curl -o invoiceninja.tar.gz -SL https://github.com/hillelcoren/invoice-ninja/archive/v${INVOICENINJA_VERSION}.tar.gz \
     && tar -xzf invoiceninja.tar.gz -C /var/www/ \
     && rm invoiceninja.tar.gz \
-    && mv /var/www/invoiceninja-${INVOICENINJA_VERSION} /var/www/app \
+    && cp -r /var/www/invoiceninja-${INVOICENINJA_VERSION} /var/www/app \
+    && cp -r /var/www/invoiceninja-${INVOICENINJA_VERSION}/storage /var/www/app/docker-new-storage \
+    && cp -r /var/www/invoiceninja-${INVOICENINJA_VERSION}/public /var/www/app/docker-new-public \
+    && rm -rf /var/www/invoiceninja-${INVOICENINJA_VERSION} \
     && chown -R www-data:www-data /var/www/app \
     && composer install --working-dir /var/www/app -o --no-dev --no-interaction --no-progress \
-    && chown -R www-data:www-data /var/www/app/bootstrap/cache \
-    # && echo ${INVOICENINJA_VERSION} > /var/www/app/storage/version.txt \
-    && mv /var/www/app/storage /var/www/app/docker-backup-storage \
-    && mv /var/www/app/public/logo /var/www/app/docker-backup-public-logo
+    && chown -R www-data:www-data /var/www/app/bootstrap/cache #\
+    # && echo ${INVOICENINJA_VERSION} > /var/www/app/storage/version.txt
 
 
 ######
 # DEFAULT ENV
 ######
-ENV DB_HOST mysql
+ENV DB_HOST db
 ENV DB_DATABASE ninja
 ENV APP_KEY SomeRandomString
 ENV LOG errorlog
@@ -52,7 +53,7 @@ ENV SELF_UPDATER_SOURCE ''
 
 
 #use to be mounted into nginx for exemple
-VOLUME /var/www/app/public
+VOLUME ["/var/www/app/public","/var/www/app/storage"]
 
 WORKDIR /var/www/app
 
