@@ -20,29 +20,10 @@ echo "MAIL_PASSWORD=$MAIL_PASSWORD" >> .env
 echo "MAIL_FROM_ADDRESS=$MAIL_FROM_ADDRESS" >> .env
 echo "MAIL_FROM_NAME=$MAIL_FROM_NAME" >> .env
 
-if [ ! -d /var/www/app/storage ]; then
-	cp -Rp /var/www/app/docker-backup-storage /var/www/app/storage
-else
-	IN_STORAGE_BACKUP="$(ls /var/www/app/docker-backup-storage/)"
-	for path in $IN_STORAGE_BACKUP; do
-		if [ ! -e "/var/www/app/storage/$path" ]; then
-			cp -Rp "/var/www/app/docker-backup-storage/$path" "/var/www/app/storage/"
-		fi
-	done
-fi
-
-if [ ! -d /var/www/app/public/logo ]; then
-	cp -Rp /var/www/app/docker-backup-public-logo /var/www/app/public/logo
-else
-	IN_LOGO_BACKUP="$(ls /var/www/app/docker-backup-public-logo/)"
-	for path in $IN_LOGO_BACKUP; do
-		if [ ! -e "/var/www/app/public/logo/$path" ]; then
-			cp -Rp "/var/www/app/docker-backup-public-logo/$path" "/var/www/app/public/logo/"
-		fi
-	done
-fi
-
 chown www-data:www-data /var/www/app/.env
+
+rsync -a /var/www/app/docker-new-storage/ /var/www/app/storage/
+rsync -a /var/www/app/docker-new-public/ /var/www/app/public/
 
 # widely inspired from https://github.com/docker-library/wordpress/blob/c674e9ceedf582705e0ad8487c16b42b37a5e9da/fpm/docker-entrypoint.sh#L128
 TERM=dumb php -- "$DB_HOST" "$DB_USERNAME" "$DB_PASSWORD" "$DB_DATABASE" <<'EOPHP'
