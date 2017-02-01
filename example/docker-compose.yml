@@ -3,37 +3,38 @@ version: "2"
 services:
   db:
     image: mysql
-    environment:
-      MYSQL_DATABASE: ninja
-      MYSQL_ROOT_PASSWORD: pwd
+    env_file: .env
+    volumes:
+      - dbstore:/var/lib/mysql
 
   app:
     image: invoiceninja/invoiceninja
-    links:
-      - db:mysql
+    #build: .
+    depends_on: 
+      - db
+    env_file: .env
+    volumes:
+      - mediastore:/var/www/app/public/logo
     environment:
       APP_DEBUG: 1
-      DB_USERNAME: root
-      DB_PASSWORD: pwd
 
   web:
     image: nginx
+    depends_on: 
+      - app
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    links:
-      - app
     volumes_from:
       - app
     ports:
-      - 80
+      - "80:80"
 
   cron:
     image: invoiceninja/invoiceninja
     links:
       - db:mysql
     user: www-data
-    environment:
-      APP_DEBUG: 1
+    env_file: .env
     entrypoint: |
       bash -c 'bash -s <<EOF
       trap "break;exit" SIGHUP SIGINT SIGTERM
@@ -44,3 +45,7 @@ services:
         sleep 1d
       done
       EOF'
+
+volumes:
+  dbstore:
+  mediastore:
