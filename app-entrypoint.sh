@@ -1,27 +1,6 @@
 #!/bin/bash
 set -e
 
-
-# if we're linked to MySQL, and we're using the root user, and our linked
-# container has a default "root" password set up and passed through... :)
-: ${DB_USERNAME:=root}
-if [ "$DB_USERNAME" = 'root' ]; then
-	: ${DB_PASSWORD:=$MYSQL_ENV_MYSQL_ROOT_PASSWORD}
-fi
-
-echo "DB_USERNAME=$DB_USERNAME" >> .env
-echo "DB_PASSWORD=$DB_PASSWORD" >> .env
-echo "DB_HOST=$DB_HOST" >> .env
-echo "MAIL_DRIVER=$MAIL_DRIVER" >> .env
-echo "MAIL_PORT=$MAIL_PORT" >> .env
-echo "MAIL_HOST=$MAIL_HOST" >> .env
-echo "MAIL_USERNAME=$MAIL_USERNAME" >> .env
-echo "MAIL_PASSWORD=$MAIL_PASSWORD" >> .env
-echo "MAIL_FROM_ADDRESS=$MAIL_FROM_ADDRESS" >> .env
-echo "MAIL_FROM_NAME=$MAIL_FROM_NAME" >> .env
-
-chown www-data:www-data /var/www/app/.env
-
 rsync -a /var/www/app/docker-new-storage/ /var/www/app/storage/
 rsync -a /var/www/app/docker-new-public/ /var/www/app/public/
 
