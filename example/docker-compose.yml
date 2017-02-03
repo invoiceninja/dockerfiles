@@ -11,10 +11,7 @@ services:
     image: invoiceninja/invoiceninja
     links:
       - db:mysql
-    environment:
-      APP_DEBUG: 1
-      DB_USERNAME: root
-      DB_PASSWORD: pwd
+    env_file: .env
 
   web:
     image: nginx
@@ -25,15 +22,15 @@ services:
     volumes_from:
       - app
     ports:
-      - 80
+      - 8000:80
 
   cron:
     image: invoiceninja/invoiceninja
     links:
       - db:mysql
-    user: www-data
-    environment:
-      APP_DEBUG: 1
+    env_file: .env
+    volumes_from:
+      - app
     entrypoint: |
       bash -c 'bash -s <<EOF
       trap "break;exit" SIGHUP SIGINT SIGTERM
