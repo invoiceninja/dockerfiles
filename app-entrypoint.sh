@@ -9,6 +9,8 @@ if [ "$DB_USERNAME" = 'root' ]; then
 	: ${DB_PASSWORD:=$MYSQL_ENV_MYSQL_ROOT_PASSWORD}
 fi
 
+echo "" > .env
+
 echo "DB_USERNAME=$DB_USERNAME" >> .env
 echo "DB_PASSWORD=$DB_PASSWORD" >> .env
 echo "DB_HOST=$DB_HOST" >> .env
