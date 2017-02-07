@@ -10,7 +10,7 @@ To make your data persistent, you have to mount `/var/www/app/public/logo` and `
 All the supported environment variable can be found here https://github.com/invoiceninja/invoiceninja/blob/master/.env.example
 
 ### First run
-Initiating the database can be done as follows:
+Initializing the database can be done as follows:
 ```
 docker run -it --rm \
   -e APP_ENV='production' \
