@@ -8,3 +8,28 @@ The first launch could be slow because we create all tables and seed the databas
 To make your data persistent, you have to mount `/var/www/app/public/logo` and `/var/www/app/storage`.
 
 All the supported environment variable can be found here https://github.com/invoiceninja/invoiceninja/blob/master/.env.example
+
+
+### Usage
+
+To run it:
+
+```
+docker run -d
+  -e APP_ENV='production'
+  -e APP_DEBUG=0
+  -e APP_URL='http://ninja.dev'
+  -e APP_KEY='SomeRandomStringSomeRandomString'
+  -e APP_CIPHER='AES-256-CBC'
+  -e DB_TYPE='mysql'
+  -e DB_STRICT='false'
+  -e DB_HOST='localhost'
+  -e DB_DATABASE='ninja'
+  -e DB_USERNAME='ninja'
+  -e DB_PASSWORD='ninja'
+  -p '80:80'
+  invoiceninja/invoiceninja
+```
+A list of environment variables can be found [here](https://github.com/invoiceninja/invoiceninja/blob/master/.env.example)
+
+
