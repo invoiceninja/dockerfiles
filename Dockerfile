@@ -51,6 +51,8 @@ RUN curl -o invoiceninja.tar.gz -SL https://github.com/hillelcoren/invoice-ninja
 ######
 ENV DB_HOST mysql
 ENV DB_DATABASE ninja
+ENV DB_USERNAME ninja
+ENV DB_PASSWORD ninja
 ENV APP_KEY SomeRandomString
 ENV LOG errorlog
 ENV APP_DEBUG 0
