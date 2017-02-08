@@ -29,7 +29,9 @@ if [ "$@" == "initdb" ]; then
   php artisan optimize --force
   php artisan migrate --force
   php artisan db:seed --force
+else
+  echo 'start app'
+  exec "$@"
 fi
 
-echo 'start app'
-exec "$@"
+
