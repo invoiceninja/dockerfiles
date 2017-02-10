@@ -18,6 +18,7 @@ RUN apt-get update \
     && docker-php-ext-install iconv mcrypt mbstring pdo pdo_mysql zip gd gmp \
     && curl -o ${PHANTOMJS}.tar.bz2 -SL https://bitbucket.org/ariya/phantomjs/downloads/${PHANTOMJS}.tar.bz2 \
     && tar xvjf ${PHANTOMJS}.tar.bz2 \
+    && rm ${PHANTOMJS}.tar.bz2 \
     && mv ${PHANTOMJS} /usr/local/share \
     && ln -sf /usr/local/share/${PHANTOMJS}/bin/phantomjs /usr/local/bin \
     && rm -rf /var/lib/apt/lists/*
