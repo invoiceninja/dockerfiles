@@ -44,7 +44,7 @@ RUN curl -o invoiceninja.tar.gz -SL https://github.com/hillelcoren/invoice-ninja
     && chown -R www-data:www-data /var/www/app/bootstrap/cache \
     # && echo ${INVOICENINJA_VERSION} > /var/www/app/storage/version.txt \
     && mv /var/www/app/storage /var/www/app/docker-backup-storage \
-    && mv /var/www/app/public/logo /var/www/app/docker-backup-public-logo
+    && mv /var/www/app/public /var/www/app/docker-backup-public
 
 
 ######

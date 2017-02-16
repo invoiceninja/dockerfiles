@@ -13,16 +13,22 @@ else
 fi
 
 if [ ! -d /var/www/app/public/logo ]; then
-	cp -Rp /var/www/app/docker-backup-public-logo /var/www/app/public/logo
+	cp -Rp /var/www/app/docker-backup-public/logo /var/www/app/public/logo
 else
-	IN_LOGO_BACKUP="$(ls /var/www/app/docker-backup-public-logo/)"
+	IN_LOGO_BACKUP="$(ls /var/www/app/docker-backup-public/logo/)"
 	for path in $IN_LOGO_BACKUP; do
 		if [ ! -e "/var/www/app/public/logo/$path" ]; then
-			cp -Rp "/var/www/app/docker-backup-public-logo/$path" "/var/www/app/public/logo/"
+			cp -Rp "/var/www/app/docker-backup-public/logo/$path" "/var/www/app/public/logo/"
 		fi
 	done
 fi
 
+# compare public volume version with image version
+if [ ! -e /var/www/app/public/version ] || [ "$INVOICENINJA_VERSION" != "$(cat /var/www/app/public/version)" ]; then
+  echo 'clone public directory'
+  cp -Rp /var/www/app/docker-backup-public/* /var/www/app/public/
+  echo $INVOICENINJA_VERSION > /var/www/app/public/version
+fi
 
 #php artisan optimize --force
 #php artisan migrate --force
