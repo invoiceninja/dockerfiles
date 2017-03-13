@@ -24,20 +24,20 @@ services:
     ports:
       - 8000:80
 
-  cron:
-    image: invoiceninja/invoiceninja
-    links:
-      - db:mysql
-    env_file: .env
-    volumes_from:
-      - app
-    entrypoint: |
-      bash -c 'bash -s <<EOF
-      trap "break;exit" SIGHUP SIGINT SIGTERM
-      sleep 300s
-      while /bin/true; do
-        /usr/local/bin/php /var/www/app/artisan ninja:send-invoices
-        /usr/local/bin/php /var/www/app/artisan ninja:send-reminders
-        sleep 1d
-      done
-      EOF'
+  # cron:
+  #   image: invoiceninja/invoiceninja
+  #   links:
+  #     - db:mysql
+  #   env_file: .env
+  #   volumes_from:
+  #     - app
+  #   entrypoint: |
+  #     bash -c 'bash -s <<EOF
+  #     trap "break;exit" SIGHUP SIGINT SIGTERM
+  #     sleep 300s
+  #     while /bin/true; do
+  #       /usr/local/bin/php /var/www/app/artisan ninja:send-invoices
+  #       /usr/local/bin/php /var/www/app/artisan ninja:send-reminders
+  #       sleep 1d
+  #     done
+  #     EOF'

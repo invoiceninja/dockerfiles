@@ -74,8 +74,8 @@ VOLUME /var/www/app/public
 
 WORKDIR /var/www/app
 
-COPY entrypoint.sh /usr/local/bin/
-# RUN chmod +x /invoice-entrypoint
+COPY entrypoint.sh /usr/local/bin/invoice-entrypoint
+# RUN chmod +x /usr/local/bin/invoice-entrypoint
 
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT ["invoice-entrypoint"]
 CMD ["php-fpm"]
