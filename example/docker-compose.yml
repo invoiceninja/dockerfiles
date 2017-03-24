@@ -26,6 +26,8 @@ services:
 
   cron:
     image: invoiceninja/invoiceninja
+    volumes_from:
+      - app
     links:
       - db:mysql
     env_file: .env
