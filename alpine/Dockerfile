@@ -22,13 +22,24 @@ RUN apk add chrpath
 RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/ \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-configure gmp \
-    && docker-php-ext-install iconv mcrypt mbstring pdo pdo_mysql zip gd gmp \
+    && docker-php-ext-install iconv mcrypt mbstring pdo pdo_mysql zip gd gmp opcache \
     && curl -o ${PHANTOMJS}.tar.bz2 -SL https://bitbucket.org/ariya/phantomjs/downloads/${PHANTOMJS}.tar.bz2 \
     && tar xvjf ${PHANTOMJS}.tar.bz2 \
     && rm ${PHANTOMJS}.tar.bz2 \
     && mv ${PHANTOMJS} /usr/local/share \
     && ln -sf /usr/local/share/${PHANTOMJS}/bin/phantomjs /usr/local/bin \
     && rm -rf /var/lib/apt/lists/*
+
+# set recommended PHP.ini settings
+# see https://secure.php.net/manual/en/opcache.installation.php
+RUN { \
+		echo 'opcache.memory_consumption=128'; \
+		echo 'opcache.interned_strings_buffer=8'; \
+		echo 'opcache.max_accelerated_files=4000'; \
+		echo 'opcache.revalidate_freq=60'; \
+		echo 'opcache.fast_shutdown=1'; \
+		echo 'opcache.enable_cli=1'; \
+} > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 #####
 # INSTALL COMPOSER
