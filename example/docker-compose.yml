@@ -8,7 +8,7 @@ services:
       MYSQL_ROOT_PASSWORD: pwd
 
   app:
-    image: invoice:alpine
+    image: invoiceninja/invoiceninja
     links:
       - db:mysql
     env_file: .env
