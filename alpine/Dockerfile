@@ -28,7 +28,8 @@ RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/ \
     && rm ${PHANTOMJS}.tar.bz2 \
     && mv ${PHANTOMJS} /usr/local/share \
     && ln -sf /usr/local/share/${PHANTOMJS}/bin/phantomjs /usr/local/bin \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && "php_admin_value[error_reporting] = E_ALL & ~E_NOTICE & ~E_WARNING & ~E_STRICT & ~E_DEPRECATED">>/usr/local/etc/php-fpm.d/www.conf
 
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
