@@ -51,7 +51,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # DOWNLOAD AND INSTALL INVOICE NINJA
 #####
 
-ENV INVOICENINJA_VERSION 3.2.1
+ENV INVOICENINJA_VERSION 3.3.0
 
 RUN curl -o invoiceninja.tar.gz -SL https://github.com/hillelcoren/invoice-ninja/archive/v${INVOICENINJA_VERSION}.tar.gz \
     && tar -xzf invoiceninja.tar.gz -C /var/www/ \
@@ -62,6 +62,7 @@ RUN curl -o invoiceninja.tar.gz -SL https://github.com/hillelcoren/invoice-ninja
     && chown -R www-data:www-data /var/www/app/bootstrap/cache \
     && mv /var/www/app/storage /var/www/app/docker-backup-storage \
     && mv /var/www/app/public /var/www/app/docker-backup-public \
+    && chown -R www-data:www-data /var/www/app/storage \
     && rm -rf /var/www/app/docs /var/www/app/tests
 
 
