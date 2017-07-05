@@ -32,3 +32,6 @@ docker run -d
 A list of environment variables can be found [here](https://github.com/invoiceninja/invoiceninja/blob/master/.env.example)
 
 
+### Know issue
+
+Phantomjs doesn't work on linux alpine https://github.com/ariya/phantomjs/issues/14186
