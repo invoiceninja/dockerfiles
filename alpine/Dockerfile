@@ -1,4 +1,4 @@
-FROM php:7.1-fpm-alpine
+FROM php:7.0-fpm-alpine
 
 MAINTAINER Samuel Laulhau <sam@lalop.co>
 
@@ -7,13 +7,13 @@ MAINTAINER Samuel Laulhau <sam@lalop.co>
 #####
 ENV PHANTOMJS phantomjs-2.1.1-linux-x86_64
 RUN apk update \
- && apk add --no-cache git gmp-dev freetype-dev libjpeg-turbo-dev \
+ && apk add --no-cache libmcrypt-dev git gmp-dev freetype-dev libjpeg-turbo-dev \
             coreutils chrpath fontconfig libpng-dev
 
 RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/ \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-configure gmp \
-    && docker-php-ext-install iconv mbstring pdo pdo_mysql zip gd gmp opcache \
+    && docker-php-ext-install iconv mcrypt mbstring pdo pdo_mysql zip gd gmp opcache \
     && echo "php_admin_value[error_reporting] = E_ALL & ~E_NOTICE & ~E_WARNING & ~E_STRICT & ~E_DEPRECATED">>/usr/local/etc/php-fpm.d/www.conf
     
 RUN cd /usr/share \
@@ -66,6 +66,7 @@ ENV DB_PASSWORD ninja
 ENV APP_KEY SomeRandomString
 ENV LOG errorlog
 ENV APP_DEBUG 0
+ENV APP_CIPHER rijndael-128
 ENV SELF_UPDATER_SOURCE ''
 ENV PHANTOMJS_BIN_PATH /usr/local/bin/phantomjs
 
