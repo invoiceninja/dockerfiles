@@ -7,7 +7,7 @@ services:
       MYSQL_DATABASE: ninja
       MYSQL_ROOT_PASSWORD: pwd
     volumes:
-      - /srv/invoiceninja/mysql:/var/lib/mysql
+      - /srv/invoiceninja/data:/var/lib/mysql
 
   app:
     image: invoiceninja/invoiceninja
