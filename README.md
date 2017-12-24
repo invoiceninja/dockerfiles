@@ -6,6 +6,8 @@ The easiest way to test Invoice Ninja with docker is by copying the example dire
 
 To make your data persistent, you have to mount `/var/www/app/public/logo` and `/var/www/app/storage`.
 
+The MySQL volume is already mounted to `/srv/invoiceninja/data` so to persist data stored in MySQL (ex. invoices).
+
 All the supported environment variable can be found here https://github.com/invoiceninja/invoiceninja/blob/master/.env.example
 
 
