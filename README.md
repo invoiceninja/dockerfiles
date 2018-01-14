@@ -6,8 +6,6 @@ The easiest way to test Invoice Ninja with docker is by copying the example dire
 
 To make your data persistent, you have to mount `/var/www/app/public/logo` and `/var/www/app/storage`.
 
-All the supported environment variable can be found here https://github.com/invoiceninja/invoiceninja/blob/master/.env.example
-
 
 ### Usage
 
@@ -31,6 +29,12 @@ docker run -d
 ```
 A list of environment variables can be found [here](https://github.com/invoiceninja/invoiceninja/blob/master/.env.example)
 
+
+### With docker-compose
+
+A pretty ready to use docker-compose configuration can be found into [`./docker-compose`](https://github.com/invoiceninja/dockerfiles/tree/master/docker-compose).
+Rename `.env.example` into `.env` and change the environment's variable as needed.
+The file assume that all your persistent data is mounted from `/srv/invoiceninja/`.
 
 ### Know issue
 
