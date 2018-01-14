@@ -1,8 +1,6 @@
 DockerFile for invoice ninja (https://www.invoiceninja.com/)
 
-This image is based on `php:7` official version.
-
-The easiest way to test Invoice Ninja with docker is by copying the example directory, run `docker-compose up` and visit http://localhost:8000/ .
+This image is based on `php:7.0-fpm` official version.
 
 To make your data persistent, you have to mount `/var/www/app/public/logo` and `/var/www/app/storage`.
 
@@ -35,6 +33,7 @@ A list of environment variables can be found [here](https://github.com/invoiceni
 A pretty ready to use docker-compose configuration can be found into [`./docker-compose`](https://github.com/invoiceninja/dockerfiles/tree/master/docker-compose).
 Rename `.env.example` into `.env` and change the environment's variable as needed.
 The file assume that all your persistent data is mounted from `/srv/invoiceninja/`.
+Once started the application should be accessible at http://localhost:8000/
 
 ### Know issue
 
