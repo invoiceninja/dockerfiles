@@ -6,7 +6,7 @@ services:
     env_file: .env
     restart: always
     volumes:
-      - ./srv/invoiceninja/mysql:/var/lib/mysql
+      - data-volume:/var/lib/mysql
 
   app:
     image: invoiceninja/invoiceninja
@@ -46,4 +46,7 @@ services:
         sleep 1h
       done
       EOF'
+
+volumes:
+  data-volume:
       
