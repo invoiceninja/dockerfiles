@@ -54,7 +54,7 @@ RUN curl -o invoiceninja.tar.gz -SL https://github.com/hillelcoren/invoice-ninja
     && mv /var/www/app/storage /var/www/app/docker-backup-storage \
     && mv /var/www/app/public /var/www/app/docker-backup-public \
     && rm -rf /var/www/app/docs /var/www/app/tests \
-    && rm /usr/bin/local/composer
+    && rm /usr/local/bin/composer
 
 ######
 # DEFAULT ENV
