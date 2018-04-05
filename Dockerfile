@@ -1,4 +1,4 @@
-FROM php:7.0-fpm
+FROM php:7.2-fpm
 
 MAINTAINER Samuel Laulhau <sam@lalop.co>
 
@@ -8,14 +8,14 @@ MAINTAINER Samuel Laulhau <sam@lalop.co>
 ENV PHANTOMJS phantomjs-2.1.1-linux-x86_64
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        libmcrypt-dev zlib1g-dev git libgmp-dev \
-        libfreetype6-dev libjpeg62-turbo-dev libpng12-dev \
+        zlib1g-dev git libgmp-dev \
+        libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
         build-essential chrpath libssl-dev libxft-dev \
         libfreetype6 libfontconfig1 libfontconfig1-dev \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/ \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-configure gmp \
-    && docker-php-ext-install iconv mcrypt mbstring pdo pdo_mysql zip gd gmp opcache \
+    && docker-php-ext-install iconv mbstring pdo pdo_mysql zip gd gmp opcache \
     && curl -o ${PHANTOMJS}.tar.bz2 -SL https://bitbucket.org/ariya/phantomjs/downloads/${PHANTOMJS}.tar.bz2 \
     && tar xvjf ${PHANTOMJS}.tar.bz2 \
     && rm ${PHANTOMJS}.tar.bz2 \
