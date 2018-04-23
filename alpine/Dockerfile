@@ -35,8 +35,7 @@ RUN { \
 #####
 # INSTALL COMPOSER
 #####
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 #####
 # DOWNLOAD AND INSTALL INVOICE NINJA
@@ -44,16 +43,21 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 ENV INVOICENINJA_VERSION 4.3.1
 
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 RUN curl -o invoiceninja.tar.gz -SL https://github.com/hillelcoren/invoice-ninja/archive/v${INVOICENINJA_VERSION}.tar.gz \
     && tar -xzf invoiceninja.tar.gz -C /var/www/ \
     && rm invoiceninja.tar.gz \
     && mv /var/www/invoiceninja-${INVOICENINJA_VERSION} /var/www/app \
     && chown -R www-data:www-data /var/www/app \
-    && composer install --working-dir /var/www/app -o --no-dev --no-interaction --no-progress \
+    && composer install --working-dir /var/www/app --no-suggest \
+                  --optimize-autoloader --no-dev --no-interaction 
+                  --no-progress--prefer-dist --no-autoloader --no-progress \
     && chown -R www-data:www-data /var/www/app/bootstrap/cache \
     && mv /var/www/app/storage /var/www/app/docker-backup-storage \
     && mv /var/www/app/public /var/www/app/docker-backup-public \
     && rm -rf /var/www/app/docs /var/www/app/tests \
+    && composer clear-cache \
     && rm /usr/local/bin/composer
 
 ######
