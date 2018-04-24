@@ -51,14 +51,14 @@ RUN curl -o invoiceninja.tar.gz -SL https://github.com/hillelcoren/invoice-ninja
     && mv /var/www/invoiceninja-${INVOICENINJA_VERSION} /var/www/app \
     && chown -R www-data:www-data /var/www/app \
     && composer install --working-dir /var/www/app --no-suggest \
-                  --optimize-autoloader --no-dev --no-interaction 
-                  --no-progress--prefer-dist --no-autoloader --no-progress \
+                  --optimize-autoloader --no-interaction \
+                  --prefer-dist --no-progress --no-dev \
     && chown -R www-data:www-data /var/www/app/bootstrap/cache \
     && mv /var/www/app/storage /var/www/app/docker-backup-storage \
     && mv /var/www/app/public /var/www/app/docker-backup-public \
     && rm -rf /var/www/app/docs /var/www/app/tests \
     && composer clear-cache \
-    && rm /usr/local/bin/composer
+    && rm /usr/bin/composer
 
 ######
 # DEFAULT ENV
