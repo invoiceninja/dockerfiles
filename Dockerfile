@@ -8,7 +8,7 @@ MAINTAINER Samuel Laulhau <sam@lalop.co>
 ENV PHANTOMJS phantomjs-2.1.1-linux-x86_64
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        zlib1g-dev git libgmp-dev \
+        zlib1g-dev git libgmp-dev unzip \
         libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
         build-essential chrpath libssl-dev libxft-dev \
         libfreetype6 libfontconfig1 libfontconfig1-dev \
@@ -35,33 +35,22 @@ RUN { \
 } > /usr/local/etc/php/conf.d/opcache-recommended.ini
 
 #####
-# INSTALL COMPOSER
-#####
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-
-#####
 # DOWNLOAD AND INSTALL INVOICE NINJA
 #####
 
 ENV INVOICENINJA_VERSION 4.3.1
 
-ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN curl -o invoiceninja.tar.gz -SL https://github.com/hillelcoren/invoice-ninja/archive/v${INVOICENINJA_VERSION}.tar.gz \
-    && tar -xzf invoiceninja.tar.gz -C /var/www/ \
-    && rm invoiceninja.tar.gz \
-    && mv /var/www/invoiceninja-${INVOICENINJA_VERSION} /var/www/app \
-    && chown -R www-data:www-data /var/www/app \
-    && composer install --working-dir /var/www/app --no-suggest \
-                  --optimize-autoloader --no-interaction \
-                  --prefer-dist --no-progress --no-dev \
-    && chown -R www-data:www-data /var/www/app/bootstrap/cache \
-    && mv /var/www/app/storage /var/www/app/docker-backup-storage \
-    && mv /var/www/app/public /var/www/app/docker-backup-public \
-    && rm -rf /var/www/app/docs /var/www/app/tests \
-    && composer clear-cache \
-    && rm /usr/bin/composer
-
+RUN curl -o ninja.zip -SL https://download.invoiceninja.com/ninja-v${INVOICENINJA_VERSION}.zip \
+    && ls . \
+    && unzip ninja.zip -d /var/www/ \
+    && rm ninja.zip \
+    && mv /var/www/ninja /var/www/app  \
+    && mv /var/www/app/storage /var/www/app/docker-backup-storage  \
+    && mv /var/www/app/public /var/www/app/docker-backup-public  \
+    && mkdir -p /var/www/app/public/logo /var/www/app/storage \
+    && chmod -R 755 /var/www/app/storage  \
+    && chown -R www-data:www-data /var/www/app/storage /var/www/app/bootstrap /var/www/app/public/logo  \
+    && rm -rf /var/www/app/docs /var/www/app/tests /var/www/ninja
 
 ######
 # DEFAULT ENV
