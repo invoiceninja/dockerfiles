@@ -2,7 +2,7 @@ version: "2"
 
 services:
   db:
-    image: mysql
+    image: mysql:8
     env_file: .env
     restart: always
     volumes:
@@ -19,7 +19,7 @@ services:
       - ./srv/invoiceninja/logo:/var/www/app/public/logo:rw
 
   web:
-    image: nginx
+    image: nginx:1
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
     links:
