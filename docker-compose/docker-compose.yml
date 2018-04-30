@@ -2,7 +2,7 @@ version: "2"
 
 services:
   db:
-    image: mysql:8
+    image: mysql:5
     env_file: .env
     restart: always
     volumes:
