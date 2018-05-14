@@ -22,11 +22,26 @@ docker run -d
   -e DB_DATABASE='ninja'
   -e DB_USERNAME='ninja'
   -e DB_PASSWORD='ninja'
+  -e PHANTOMJS_SECRET=`gVBUWzLjRWQq0lLqiO5RnGHvugUn+OuszNvymIiGex4jtrqznQa278sxHNNZZuhls54FhXWs9wFqN2pYmy8zKHEsMJoi60CSMZ6hkMiOymCf1IbHr2SxmidXeYyW+ZO6QjW6T2SwiJQH2fUFN82/yxtKHaDMz+7ilNQjZ0RGCQI=`
   -p '80:80'
   invoiceninja/invoiceninja
 ```
 A list of environment variables can be found [here](https://github.com/invoiceninja/invoiceninja/blob/master/.env.example)
 
+
+### Generating random variables
+
+Following variables should be random for your invoice ninja instance to be safe:
+
+* `APP_KEY` --- to generate app key run following command::
+        
+      docker run -e APP_CIPHER='AES-256-CBC' -it --rm invoiceninja/invoiceninja php artisan key:generate
+   
+   Variable you need will be in the last line of output, in my case it was: `base64:WEMBumE5uARlC2PfrQ0WhcGN6lDTDwHubOGd3AyM7Ho=`
+   
+* `PHANTOMJS_SECRET` ---  Any random string with good entropy. For example to generate it run:: 
+
+      cat /dev/urandom | head -c 128 | base64 -w0        
 
 ### With docker-compose
 
