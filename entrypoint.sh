@@ -16,10 +16,10 @@ function wait_for_db() {
 function create_db() {
   echo "Creating database..."
   $mysqlcmd -e "CREATE DATABASE IF NOT EXISTS ${DB_DATABASE};"
-  [ $? -gt 0 ] && echo "Couldn't create database !!" && exit 23
+  [ $? -gt 0 ] && echo "Couldn't create database !!" && exit 1
 	echo "Creating database user and assigning permissions..."
   $mysqlcmd -e " GRANT ALL ON ${DB_DATABASE}.* to '${DB_USERNAME}'@'%' identified by '${DB_PASSWORD}'";
-  [ $? -gt 0 ] && echo "Couldn't create database user !!" && exit 2
+  [ $? -gt 0 ] && echo "Couldn't create database user !!" && exit 1
 	echo "Done."
 }
 
