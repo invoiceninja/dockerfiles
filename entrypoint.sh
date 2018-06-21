@@ -37,6 +37,7 @@ else
 		fi
 	done
 fi
+chown -R www-data:www-data /var/www/app/storage
 
 if [ ! -d /var/www/app/public/logo ]; then
 	cp -Rp /var/www/app/docker-backup-public/logo /var/www/app/public/logo
