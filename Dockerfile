@@ -11,7 +11,7 @@ RUN apt-get update \
         zlib1g-dev git libgmp-dev unzip \
         libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
         build-essential chrpath libssl-dev libxft-dev \
-        libfreetype6 libfontconfig1 libfontconfig1-dev \
+        libfreetype6 libfontconfig1 libfontconfig1-dev mysql-client \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/ \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-configure gmp \
