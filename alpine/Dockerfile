@@ -10,8 +10,7 @@ RUN apk update \
  && apk add --no-cache git gmp-dev freetype-dev libjpeg-turbo-dev \
             coreutils chrpath fontconfig libpng-dev
 
-RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/ \
-    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-configure gmp \
     && docker-php-ext-install iconv mbstring pdo pdo_mysql zip gd gmp opcache \
     && echo "php_admin_value[error_reporting] = E_ALL & ~E_NOTICE & ~E_WARNING & ~E_STRICT & ~E_DEPRECATED">>/usr/local/etc/php-fpm.d/www.conf
