@@ -41,7 +41,6 @@ RUN { \
 ENV INVOICENINJA_VERSION 4.5.1
 
 RUN curl -o ninja.zip -SL https://download.invoiceninja.com/ninja-v${INVOICENINJA_VERSION}.zip \
-    && ls . \
     && unzip ninja.zip -d /var/www/ \
     && rm ninja.zip \
     && mv /var/www/ninja /var/www/app  \
@@ -67,7 +66,6 @@ VOLUME /var/www/app/public
 WORKDIR /var/www/app
 
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["php-fpm"]
