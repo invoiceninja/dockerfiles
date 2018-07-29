@@ -51,14 +51,7 @@ RUN curl -o ninja.zip -SL https://download.invoiceninja.com/ninja-v${INVOICENINJ
 ######
 # DEFAULT ENV
 ######
-ENV DB_HOST mysql
-ENV DB_DATABASE ninja
-ENV DB_USERNAME ninja
-ENV DB_PASSWORD ninja
-ENV APP_KEY SomeRandomString
 ENV LOG errorlog
-ENV APP_DEBUG 0
-ENV APP_CIPHER rijndael-128
 ENV SELF_UPDATER_SOURCE ''
 ENV PHANTOMJS_BIN_PATH /usr/local/bin/phantomjs
 
