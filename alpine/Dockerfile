@@ -35,7 +35,7 @@ RUN { \
 # DOWNLOAD AND INSTALL INVOICE NINJA
 #####
 
-ENV INVOICENINJA_VERSION 4.5.1
+ENV INVOICENINJA_VERSION 4.5.2
 
 RUN curl -o ninja.zip -SL https://download.invoiceninja.com/ninja-v${INVOICENINJA_VERSION}.zip \
     && unzip ninja.zip -d /var/www/ \
