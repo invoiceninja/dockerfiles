@@ -1,22 +1,37 @@
-FROM php:7.2-fpm
+ARG PHP_IMAGE_TAG=7.2-fpm
+FROM php:${PHP_IMAGE_TAG}
 
-MAINTAINER Samuel Laulhau <sam@lalop.co>
+LABEL maintainer="Samuel Laulhau <sam@lalop.co>"
 
 #####
 # SYSTEM REQUIREMENT
 #####
-ENV PHANTOMJS phantomjs-2.1.1-linux-x86_64
+ENV BUILD_DEPS \
+        zlib1g-dev \
+        git \
+        libgmp-dev \
+        unzip \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libpng-dev \
+        build-essential \
+        chrpath \
+        libssl-dev \
+        libxft-dev \
+        libfreetype6 \
+        libfontconfig1 \
+        libfontconfig1-dev
+
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        zlib1g-dev git libgmp-dev unzip \
-        libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
-        build-essential chrpath libssl-dev libxft-dev \
-        libfreetype6 libfontconfig1 libfontconfig1-dev \
+    && apt-get install -y --no-install-recommends $BUILD_DEPS \
     && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/local/include/ \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-configure gmp \
-    && docker-php-ext-install iconv mbstring pdo pdo_mysql zip gd gmp opcache \
-    && curl -o ${PHANTOMJS}.tar.bz2 -SL https://bitbucket.org/ariya/phantomjs/downloads/${PHANTOMJS}.tar.bz2 \
+    && docker-php-ext-install iconv mbstring pdo pdo_mysql zip gd gmp opcache
+
+ENV PHANTOMJS phantomjs-2.1.1-linux-x86_64
+# Install PHANTOMJS
+RUN curl -o ${PHANTOMJS}.tar.bz2 -SL https://bitbucket.org/ariya/phantomjs/downloads/${PHANTOMJS}.tar.bz2 \
     && tar xvjf ${PHANTOMJS}.tar.bz2 \
     && rm ${PHANTOMJS}.tar.bz2 \
     && mv ${PHANTOMJS} /usr/local/share \

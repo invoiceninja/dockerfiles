@@ -1,6 +1,7 @@
-FROM php:7.2-fpm-alpine
+ARG PHP_IMAGE_TAG=7.2-fpm-alpine
+FROM php:${PHP_IMAGE_TAG}
 
-MAINTAINER Samuel Laulhau <sam@lalop.co>
+LABEL maintainer="Samuel Laulhau <sam@lalop.co>"
 
 #####
 # SYSTEM REQUIREMENT
