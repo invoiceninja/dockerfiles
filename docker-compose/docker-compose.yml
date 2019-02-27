@@ -1,4 +1,15 @@
-version: "2"
+version: '3.6'
+
+volumes:
+  db:
+  storage:
+  logo:
+  public:
+
+# uncomment if you want to use external network (example network: "web")
+#networks:
+#  web:
+#    external: true
 
 services:
   db:
@@ -6,36 +17,45 @@ services:
     env_file: .env
     restart: always
     volumes:
-      - data-volume:/var/lib/mysql
+      - db:/var/lib/mysql
+    networks:
+      - default
 
   app:
     image: invoiceninja/invoiceninja
-    links:
-      - db:mysql
     env_file: .env
     restart: always
+    depends_on:
+      - db
     volumes:
-      - ./srv/invoiceninja/storage:/var/www/app/storage:rw
-      - ./srv/invoiceninja/logo:/var/www/app/public/logo:rw
+      -  storage:/var/www/app/storage
+      -  logo:/var/www/app/public/logo
+      -  public:/var/www/app/public
+    networks: 
+      - default  
 
   web:
     image: nginx:1
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    links:
-      - app
-    volumes_from:
-      - app
-    ports:
+      -  storage:/var/www/app/storage
+      -  logo:/var/www/app/public/logo
+      -  public:/var/www/app/public
+    expose: # Expose ports without publishing them to the host machine - they’ll only be accessible to linked services.
+      - "80"
+    ports: # Delete if you want to use reverse proxy
       - 8000:80
+    networks:
+#      - web        # uncomment if you want to use  external network (reverse proxy for example)
+      - default
 
   cron:
     image: invoiceninja/invoiceninja
-    links:
-      - db:mysql
     env_file: .env
-    volumes_from:
-      - app
+    volumes:
+      -  storage:/var/www/app/storage
+      -  logo:/var/www/app/public/logo
+      -  public:/var/www/app/public
     entrypoint: |
       bash -c 'bash -s <<EOF
       trap "break;exit" SIGHUP SIGINT SIGTERM
@@ -46,7 +66,5 @@ services:
         sleep 1d
       done
       EOF'
-
-volumes:
-  data-volume:
-      
+    networks:
+      - default
