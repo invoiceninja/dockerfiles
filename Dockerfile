@@ -1,4 +1,4 @@
-ARG PHP_IMAGE_TAG=7.2-fpm
+ARG PHP_IMAGE_TAG=7.2-fpm-stretch
 FROM php:${PHP_IMAGE_TAG}
 
 LABEL maintainer="Samuel Laulhau <sam@lalop.co>"
