@@ -56,7 +56,7 @@ RUN { \
 ENV INVOICENINJA_VERSION 4.5.14
 
 RUN curl -o ninja.zip -SL https://download.invoiceninja.com/ninja-v${INVOICENINJA_VERSION}.zip \
-    && unzip ninja.zip -d /var/www/ \
+    && unzip -q ninja.zip -d /var/www/ \
     && rm ninja.zip \
     && mv /var/www/ninja /var/www/app  \
     && mv /var/www/app/storage /var/www/app/docker-backup-storage  \
