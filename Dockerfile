@@ -37,7 +37,7 @@ RUN curl -o ${PHANTOMJS}.tar.bz2 -SL https://bitbucket.org/ariya/phantomjs/downl
     && mv ${PHANTOMJS} /usr/local/share \
     && ln -sf /usr/local/share/${PHANTOMJS}/bin/phantomjs /usr/local/bin \
     && rm -rf /var/lib/apt/lists/*
-    
+
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
 RUN { \
@@ -75,7 +75,7 @@ ENV SELF_UPDATER_SOURCE ''
 ENV PHANTOMJS_BIN_PATH /usr/local/bin/phantomjs
 
 
-#use to be mounted into nginx for exemple
+# use to be mounted into nginx for example
 VOLUME /var/www/app/public
 
 WORKDIR /var/www/app
