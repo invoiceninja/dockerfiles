@@ -30,7 +30,7 @@ if [ ! -e /var/www/app/public/version ] || [ "$INVOICENINJA_VERSION" != "$(cat /
   echo $INVOICENINJA_VERSION > /var/www/app/public/version
 fi
 
-# fix permission for monted directories
+# fix permission for mounted directories
 chown www-data:www-data /var/www/app/storage
 chown	 www-data:www-data /var/www/app/public/logo
 
