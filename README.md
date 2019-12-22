@@ -22,7 +22,7 @@ docker run -d \
   -e DB_DATABASE='ninja' \
   -e DB_USERNAME='ninja' \
   -e DB_PASSWORD='ninja' \
-  -p '80:80' \
+  -p '9000:9000' \
   invoiceninja/invoiceninja
 ```
 A list of environment variables can be found [here](https://github.com/invoiceninja/invoiceninja/blob/master/.env.example)
