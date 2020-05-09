@@ -1,21 +1,59 @@
-DockerFile for invoice ninja (https://www.invoiceninja.com/)
+# Docker for [Invoice Ninja](https://www.invoiceninja.com/) 
 
 This image is based on `php:7.2-fpm` official version.
 
-To make your data persistent, you have to mount `/var/www/app/public/logo` and `/var/www/app/storage`.
+## Prerequisites
 
+### Generate an application key
 
-### Usage
+Before starting Invoice Ninja via Docker make sure you generate a valid application key. If you are not sure what an application key is, please visit [this blog post](https://tighten.co/blog/app-key-and-you/).  
+
+To generate an application just run
+
+```shell
+docker run --rm -it invoiceninja/invoiceninja php artisan key:generate --show
+```
+
+This will generate an application key for you which you need later.
+
+### Create folders for data persistence
+
+To make your data persistent, you have to mount `public` and `storage` from your host to your containers.
+
+1. Create two folder on your host, e. g. `/var/invoiceninja/public` and `/var/invoiceninja/storage`
+2. Mount these folders into your container - see [usage](#usage)
+
+You can create these folders wherever you want on your host system.
+
+### Generate a PhantomJS key
+
+If you use PhantomJS Cloud make sure you generated a secret key before starting Invoice Ninja. The following snippets will generate 10 char random keys.
+
+**On Mac**
+
+```shell
+openssl rand -base64 10 | md5 |head -c10;echo
+```
+
+**On Linux**
+```shell
+head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10 ; echo ''
+```
+
+## Usage
 
 To run it:
 
 ```
 docker run -d \
+  -v /var/invoiceninja/public:/var/app/public \
+  -v /var/invoiceninja/storage:/var/app/storage \
   -e APP_ENV='production' \
   -e APP_DEBUG=0 \
   -e APP_URL='http://ninja.dev' \
-  -e APP_KEY='SomeRandomStringSomeRandomString' \
+  -e APP_KEY='<INSERT THE GENERATED APPLICATION KEY HERE>' \
   -e APP_CIPHER='AES-256-CBC' \
+  -e PHANTOMJS_CLOUD_KEY='<INSERT YOUR PHANTOMJS KEY HERE>' \
   -e DB_TYPE='mysql' \
   -e DB_STRICT='false' \
   -e DB_HOST='localhost' \
