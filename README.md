@@ -40,6 +40,8 @@ openssl rand -base64 10 | md5 |head -c10;echo
 head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10 ; echo ''
 ```
 
+For further configuration and toubleshotting regarding PhantomJS and Invoice Ninja [see documentation here](https://docs.invoiceninja.com/configure.html?#phantomjs).
+
 ## Usage
 
 To run it:
