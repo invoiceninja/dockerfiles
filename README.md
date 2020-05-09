@@ -25,22 +25,14 @@ To make your data persistent, you have to mount `public` and `storage` from your
 
 You can create these folders wherever you want on your host system.
 
-### Generate a PhantomJS key
+### PhantomJS key
 
-If you use PhantomJS Cloud make sure you generated a secret key before starting Invoice Ninja. The following snippets will generate 10 char random keys.
+The PhantomJS key is set to `a-demo-key-with-low-quota-per-ip-address`. This demo key is limited to 100 requests per day.
 
-**On Mac**
-
-```shell
-openssl rand -base64 10 | md5 |head -c10;echo
-```
-
-**On Linux**
-```shell
-head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10 ; echo ''
-```
+To set a different key feel free to add `-e PHANTOMJS_CLOUD_KEY='<INSERT YOUR PHANTOMJS KEY HERE>'` to thee docker command below.
 
 For further configuration and toubleshotting regarding PhantomJS and Invoice Ninja [see documentation here](https://docs.invoiceninja.com/configure.html?#phantomjs).
+
 
 ## Usage
 
@@ -55,7 +47,6 @@ docker run -d \
   -e APP_URL='http://ninja.dev' \
   -e APP_KEY='<INSERT THE GENERATED APPLICATION KEY HERE>' \
   -e APP_CIPHER='AES-256-CBC' \
-  -e PHANTOMJS_CLOUD_KEY='<INSERT YOUR PHANTOMJS KEY HERE>' \
   -e DB_TYPE='mysql' \
   -e DB_STRICT='false' \
   -e DB_HOST='localhost' \
