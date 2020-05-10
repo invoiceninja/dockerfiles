@@ -1,4 +1,5 @@
 ARG PHP_VERSION=7.2
+ARG INVOICENINJA_VERSION
 
 FROM php:${PHP_VERSION}-fpm-alpine
 
@@ -12,7 +13,7 @@ WORKDIR /var/www/app
 COPY ./alpine/entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
-ENV PHANTOMJS phantomjs-2.1.1-linux-x86_64
+ENV PHANTOMJS="phantomjs-2.1.1-linux-x86_64"
 
 RUN set -eux; \
     apk add --no-cache \
@@ -60,7 +61,7 @@ RUN addgroup -S "$IN_USER" && \
 USER $IN_USER
 
 # Download and install IN
-ENV INVOICENINJA_VERSION 4.5.18
+ENV INVOICENINJA_VERSION="${INVOICENINJA_VERSION}"
 
 RUN curl -s -o /tmp/ninja.zip -SL https://download.invoiceninja.com/ninja-v${INVOICENINJA_VERSION}.zip \
     && bsdtar --strip-components=1 -C /var/www/app -xf /tmp/ninja.zip \
@@ -75,9 +76,9 @@ RUN curl -s -o /tmp/ninja.zip -SL https://download.invoiceninja.com/ninja-v${INV
 ######
 # DEFAULT ENV
 ######
-ENV LOG errorlog
-ENV SELF_UPDATER_SOURCE ''
-ENV PHANTOMJS_BIN_PATH /usr/local/bin/phantomjs
+ENV LOG=errorlog
+ENV SELF_UPDATER_SOURCE=""
+ENV PHANTOMJS_BIN_PATH="/usr/local/bin/phantomjs"
 
 
 # Use to be mounted into nginx

@@ -25,7 +25,6 @@ fi
 
 # compare public volume version with image version
 if [ ! -e /var/www/app/public/version ] || [ "$INVOICENINJA_VERSION" != "$(cat /var/www/app/public/version)" ]; then
-  echo 'clone public directory'
   cp -Rp /var/www/app/docker-backup-public/* /var/www/app/public/
   echo $INVOICENINJA_VERSION > /var/www/app/public/version
 fi
