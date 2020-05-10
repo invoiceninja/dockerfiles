@@ -1,0 +1,27 @@
+name: Build images and push to Docker registry
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+        - uses: actions/checkout@v1
+        
+        - name: Login to DockerHub
+          run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+        
+        - name: Get the latest tag
+          id: vars
+          run: echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
+
+        - name: Build the tagged Docker image
+          run: make build-alpine TAG="${{steps.vars.outputs.tag}}"
+
+        - name: Logout from DockerHub
+          run: docker logout
