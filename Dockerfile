@@ -62,7 +62,7 @@ RUN curl -o ninja.zip -SL https://download.invoiceninja.com/ninja-v${INVOICENINJ
     && mv /var/www/app/storage /var/www/app/docker-backup-storage  \
     && mv /var/www/app/public /var/www/app/docker-backup-public  \
     && mkdir -p /var/www/app/public/logo /var/www/app/storage \
-    && touch /var/www/app/.env \
+    && cp /var/www/app/.env.example /var/www/app/.env \
     && chmod -R 755 /var/www/app/storage  \
     && chown -R www-data:www-data /var/www/app/storage /var/www/app/bootstrap /var/www/app/public/logo /var/www/app/.env /var/www/app/docker-backup-storage /var/www/app/docker-backup-public\
     && rm -rf /var/www/app/docs /var/www/app/tests /var/www/ninja
