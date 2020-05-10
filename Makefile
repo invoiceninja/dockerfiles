@@ -3,7 +3,7 @@ $(error The TAG variable is missing.)
 endif
 
 # Docker Hub namespace
-HUB_NAMESPACE="codedge"
+HUB_NAMESPACE="invoiceninja"
 
 # Image name
 IMAGE="invoiceninja"
