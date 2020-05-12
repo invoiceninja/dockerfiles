@@ -4,7 +4,7 @@
 
 :lock: Automatic HTTPS (:heart: [Caddy](https://caddyserver.com/))
 :hammer: Fully production-ready through docker-compose
-:pencil: Adjustable to your needs via environment variable
+:pencil: Adjustable to your needs via environment variables
 
 
 ## Prerequisites
@@ -34,7 +34,7 @@ You can create these folders wherever you want on your host system.
 
 The PhantomJS key is set to `a-demo-key-with-low-quota-per-ip-address`. This demo key is limited to 100 requests per day.
 
-To set a different key feel free to add `-e PHANTOMJS_CLOUD_KEY='<INSERT YOUR PHANTOMJS KEY HERE>'` to thee docker command below.
+To set a different key feel free to add `-e PHANTOMJS_CLOUD_KEY='<INSERT YOUR PHANTOMJS KEY HERE>'` to the docker command below.
 
 For further configuration and toubleshotting regarding PhantomJS and Invoice Ninja [see documentation here](https://docs.invoiceninja.com/configure.html?#phantomjs).
 
@@ -44,7 +44,7 @@ For recurring invoices and reminder emails a proper setup of cronjobs is require
 
 Even when running Invoice Ninja with Docker we urge everybody to run crons on your host system.  
 
-To run run a cron inside the docker container, add these two lines to your crontab:
+To run run a cron inside the docker container, add these two lines to your crontab on your host system:
 
 ```shell
 0 8 * * * cd <INVOICENINJA_FOLDER>; docker exec -it app /usr/local/bin/php /var/www/app/artisan ninja:send-invoices
