@@ -1,0 +1,84 @@
+version: '3.6'
+
+services:
+  nginx:
+    image: nginx:alpine
+    restart: always
+    volumes:
+      # Vhost configuration
+      - ./config/nginx/default.conf:/etc/nginx/conf.d/default.conf
+
+      # Configure your mounted directories, make sure the folder 'public' and 'storage'
+      # exist, before mounting them
+      -  public:/var/www/app/public
+      -  storage:/var/www/app/storage
+      # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/app/public:/var/www/app/public:rw,delegated
+      # - ./docker/app/storage:/var/www/app/storage:rw,delegated
+    depends_on:
+      - app
+    # Run webserver nginx on port 80
+    # Feel free to modify depending what port is already occupied
+    ports: 
+      - "80:80"
+    networks:
+      - invoiceninja
+
+  app:
+    image: invoiceninja/invoiceninja:alpine
+    restart: always
+    environment: 
+
+    volumes:
+      # Configure your mounted directories, make sure the folder 'public' and 'storage'
+      # exist, before mounting them
+      -  public:/var/www/app/public
+      -  storage:/var/www/app/storage
+      # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/app/public:/var/www/app/public:rw,delegated
+      # - ./docker/app/storage:/var/www/app/storage:rw,delegated
+    depends_on:
+      - db
+    networks: 
+      - invoiceninja  
+
+  db:
+    image: mysql:5
+    restart: always
+    volumes:
+      - mysql-data:/var/lib/mysql:rw
+      # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/mysql/data:/var/lib/mysql:rw,delegated
+    networks:
+      - invoiceninja
+
+ 
+  cron:
+    image: invoiceninja/invoiceninja
+    env_file: .env
+    volumes:
+      -  storage:/var/www/app/storage
+      -  logo:/var/www/app/public/logo
+      -  public:/var/www/app/public
+    entrypoint: |
+      bash -c 'bash -s <<EOF
+      trap "break;exit" SIGHUP SIGINT SIGTERM
+      sleep 300s
+      while /bin/true; do
+        ./artisan ninja:send-invoices
+        ./artisan ninja:send-reminders
+        sleep 1d
+      done
+      EOF'
+    networks:
+      - invoiceninja
+
+
+
+volumes:
+  mysql-data:
+  public:
+  storage:
+
+networks:
+  invoiceninja:
