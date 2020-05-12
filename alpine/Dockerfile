@@ -52,6 +52,7 @@ RUN curl -o ninja.zip -SL https://download.invoiceninja.com/ninja-v${INVOICENINJ
 ######
 # DEFAULT ENV
 ######
+ENV LOG errorlog
 ENV SELF_UPDATER_SOURCE ''
 ENV PHANTOMJS_BIN_PATH /usr/local/bin/phantomjs
 

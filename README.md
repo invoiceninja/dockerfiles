@@ -22,7 +22,6 @@ docker run -d \
   -e DB_DATABASE='ninja' \
   -e DB_USERNAME='ninja' \
   -e DB_PASSWORD='ninja' \
-  -e LOG=errorlog \
   -p '9000:9000' \
   invoiceninja/invoiceninja
 ```
@@ -60,7 +59,19 @@ If you are running the `docker-compose` setup you can output all logs, from all 
 docker-compose logs -f
 ```
 
-If you better want a physical log file in in your `storage/logs` folder, just remove this line `-e LOG=errorlog` from the [usage](#usage) command or change it to `-e LOG=single`. Both works.
+If you better want a physical log file in in your `storage/logs` folder, just add `-e LOG=single` to the [usage](#usage) command. 
+Or add an environment variable 
+
+```yml
+...
+environment:
+  LOG: single
+...
+```
+
+to your `docker-compose.yml`.
+
+This generated log file will only hold Invoice Ninja information.
 
 
 ### Known issues
