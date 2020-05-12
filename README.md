@@ -38,6 +38,20 @@ To set a different key feel free to add `-e PHANTOMJS_CLOUD_KEY='<INSERT YOUR PH
 
 For further configuration and toubleshotting regarding PhantomJS and Invoice Ninja [see documentation here](https://docs.invoiceninja.com/configure.html?#phantomjs).
 
+### Setting up cronjobs
+
+For recurring invoices and reminder emails a proper setup of cronjobs is required - see the [Invoice Ninja docs](https://docs.invoiceninja.com/configure.html#recurring-invoices-and-reminder-emails) for details.  
+
+Even when running Invoice Ninja with Docker we urge everybody to run crons on your host system.  
+
+To run run a cron inside the docker container, add these two lines to your crontab:
+
+```shell
+0 8 * * * cd <INVOICENINJA_FOLDER>; docker exec -it app /usr/local/bin/php /var/www/app/artisan ninja:send-invoices
+0 8 * * * cd <INVOICENINJA_FOLDER>; docker exec -it app /usr/local/bin/php /var/www/app/artisan ninja:send-reminders
+```
+
+:warning: Make sure you `cd` into the correct folder where the `docker-compose.yml` exists.
 
 ## Usage
 
@@ -45,6 +59,7 @@ To run it:
 
 ```
 docker run -d \
+  --name invoiceninja \
   -v /var/invoiceninja/public:/var/app/public \
   -v /var/invoiceninja/storage:/var/app/storage \
   -e APP_ENV='production' \

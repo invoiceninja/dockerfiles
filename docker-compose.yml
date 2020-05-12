@@ -2,6 +2,7 @@ version: '3.6'
 
 services:
   server:
+    container_name: caddy
     image: caddy:alpine
     restart: always
     environment: 
@@ -28,6 +29,7 @@ services:
       - invoiceninja
 
   app:
+    container_name: invoiceninja
     image: invoiceninja/invoiceninja:alpine
     restart: always
     environment: 
@@ -48,6 +50,7 @@ services:
       - invoiceninja  
 
   db:
+    container_name: invoiceninja_db
     image: mysql:5
     restart: always
     environment: 
@@ -61,26 +64,6 @@ services:
       # - ./docker/mysql/data:/var/lib/mysql:rw,delegated
     networks:
       - invoiceninja
-
- 
-  # cron:
-  #   image: invoiceninja/invoiceninja
-  #   volumes:
-  #     -  storage:/var/www/app/storage
-  #     -  logo:/var/www/app/public/logo
-  #     -  public:/var/www/app/public
-  #   entrypoint: |
-  #     bash -c 'bash -s <<EOF
-  #     trap "break;exit" SIGHUP SIGINT SIGTERM
-  #     sleep 300s
-  #     while /bin/true; do
-  #       ./artisan ninja:send-invoices
-  #       ./artisan ninja:send-reminders
-  #       sleep 1d
-  #     done
-  #     EOF'
-  #   networks:
-  #     - invoiceninja
 
 volumes:
   mysql-data:
