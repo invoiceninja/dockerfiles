@@ -1,0 +1,7 @@
+{$APP_URL} {
+    root * /var/www/app/public
+    php_fastcgi app:9000
+    encode zstd gzip
+    templates
+    file_server browse
+}

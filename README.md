@@ -5,6 +5,13 @@ If you feel your question is directly related to a code change or you want to se
 
 This image is based on `php:7.2-fpm` official version.
 
+:crown: **Features**
+
+:lock: Automatic HTTPS (:heart: [Caddy](https://caddyserver.com/))
+:hammer: Fully production-ready through docker-compose
+:pencil: Adjustable to your needs via environment variable
+
+
 ## Prerequisites
 
 ### Generate an application key
@@ -64,11 +71,59 @@ A list of environment variables can be found [here](https://github.com/invoiceni
 
 ### With docker-compose
 
-A ready to use docker-compose configuration can be found at [`./docker-compose`](https://github.com/invoiceninja/dockerfiles/tree/master/docker-compose).
+Running Invoice Ninja with docker-compose gives you everything to quickly start. Before starting please make sure you configured your setup correctly. You can do so by opening the `docker-compose.yml` and may change the follwing items.
 
-Run `cp .env.example .env` and change the environment variables as needed.
-The file assumes that all your persistent data is mounted from `/srv/invoiceninja/`.
-Once started, the application should be accessible at http://localhost:8000.
+**Port**
+
+_default: 80_  
+
+This is the port where your Invoice Ninja is reachable, when you type in `http://<your-domain.com>`. If it should be different than `80` make sure to call your installation `http://<your-domain.com>:<YOUR-PORT>`, e. g. `http://<your-domain.com>:8080`.
+
+```yml
+ports: 
+  - "8080:80" # To run it on port 8080
+```
+
+:warning: Make sure the port set is available and not occupied by another service on your host system.
+
+**URL and application key**
+
+_default: https://localhost_
+
+For generating a proper application key see [generate an application key](#generate-an-application-key). Change the value where your Invoice Ninja installation should be reachable.
+
+```yml
+environment: 
+  - APP_URL=http://localhost
+````
+
+**MYSQL root password**
+
+_default: ninjaAdm1nPassword_
+
+The mysql database server comes with two users: one for accessing the Invoice Ninja database and the `root` user. Please change the default password for `root` to something more special :wink:
+
+**Volumes and directories**
+
+_default: volumes_
+
+This is the place where your uploaded files are stored. Normally this is a so called _volume_ which can be reused by different docker containers. One might prefer to store the files directly on the host system - for this the config section is prepared with what is called _bind-mounted host directory_. Just adjust the paths and Invoice Ninja stores the user files on the host system.
+
+```yml
+volumes:
+  ...
+  # Configure your mounted directories, make sure the folder 'public' and 'storage'
+  # exist, before mounting them
+  #-  public:/var/www/app/public
+  #-  storage:/var/www/app/storage
+  # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+  - ./docker/app/public:/var/www/app/public:rw,delegated
+  - ./docker/app/storage:/var/www/app/storage:rw,delegated
+```
+
+The sample above stores the files on the post at `./docker/app/public` and `./docker/app/storage`.
+
+:warning: If using bind-mounted host directories make sure they exists and have proper rights. See [here](#create-folders-for-data-persistence) for details.
 
 
 ## Debugging your Docker setup
@@ -77,7 +132,7 @@ Even when running your Invoice Ninja setup with Docker - errors can occur. Depen
 
 ### Show logs without `docker-compose`
 
-If you are not running the `docker-compose` you first need to find the container id for your php container with `docker ps`. Then you can run
+If you are not running `docker-compose` you first need to find the container id for your php container with `docker ps`. Then you can run
 
 ```shell
 docker logs -f <CONTAINER NAME>

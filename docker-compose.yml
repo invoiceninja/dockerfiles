@@ -1,12 +1,14 @@
 version: '3.6'
 
 services:
-  nginx:
-    image: nginx:alpine
+  server:
+    image: caddy:alpine
     restart: always
+    environment: 
+      - APP_URL=https://localhost
     volumes:
       # Vhost configuration
-      - ./config/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./config/caddy/Caddyfile:/etc/caddy/Caddyfile
 
       # Configure your mounted directories, make sure the folder 'public' and 'storage'
       # exist, before mounting them
@@ -21,6 +23,7 @@ services:
     # Feel free to modify depending what port is already occupied
     ports: 
       - "80:80"
+      - "443:443"
     networks:
       - invoiceninja
 
@@ -28,7 +31,9 @@ services:
     image: invoiceninja/invoiceninja:alpine
     restart: always
     environment: 
-
+      - APP_URL=https://localhost
+      - APP_KEY=<INSERT THE GENERATED APPLICATION KEY HERE>
+      - DB_HOST=db
     volumes:
       # Configure your mounted directories, make sure the folder 'public' and 'storage'
       # exist, before mounting them
@@ -45,6 +50,11 @@ services:
   db:
     image: mysql:5
     restart: always
+    environment: 
+      - MYSQL_ROOT_PASSWORD=ninjaAdm1nPassword
+      - MYSQL_USER=ninja
+      - MYSQL_PASSWORD=ninja
+      - MYSQL_DATABASE=ninja
     volumes:
       - mysql-data:/var/lib/mysql:rw
       # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
@@ -53,27 +63,24 @@ services:
       - invoiceninja
 
  
-  cron:
-    image: invoiceninja/invoiceninja
-    env_file: .env
-    volumes:
-      -  storage:/var/www/app/storage
-      -  logo:/var/www/app/public/logo
-      -  public:/var/www/app/public
-    entrypoint: |
-      bash -c 'bash -s <<EOF
-      trap "break;exit" SIGHUP SIGINT SIGTERM
-      sleep 300s
-      while /bin/true; do
-        ./artisan ninja:send-invoices
-        ./artisan ninja:send-reminders
-        sleep 1d
-      done
-      EOF'
-    networks:
-      - invoiceninja
-
-
+  # cron:
+  #   image: invoiceninja/invoiceninja
+  #   volumes:
+  #     -  storage:/var/www/app/storage
+  #     -  logo:/var/www/app/public/logo
+  #     -  public:/var/www/app/public
+  #   entrypoint: |
+  #     bash -c 'bash -s <<EOF
+  #     trap "break;exit" SIGHUP SIGINT SIGTERM
+  #     sleep 300s
+  #     while /bin/true; do
+  #       ./artisan ninja:send-invoices
+  #       ./artisan ninja:send-reminders
+  #       sleep 1d
+  #     done
+  #     EOF'
+  #   networks:
+  #     - invoiceninja
 
 volumes:
   mysql-data:
