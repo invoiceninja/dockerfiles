@@ -7,6 +7,11 @@
 :pencil: Adjustable to your needs via environment variables
 
 
+:bulb: Please consider posting your question on [StackOverflow](https://stackoverflow.com/) as this widens the audience that can help you. Just use the tag `invoice-ninja` and we are there to help. This is mostly related to the usage of Invoice Ninja and the docker setup.
+If you feel your question is directly related to a code change or you want to sent in a change + PR Github is the right place, of course.
+
+
+
 ## Prerequisites
 
 ### Generate an application key
