@@ -3,7 +3,7 @@ ARG INVOICENINJA_VERSION
 
 FROM php:${PHP_VERSION}-fpm-stretch
 
-LABEL maintainer="Samuel Laulhau <sam@lalop.co>"
+LABEL maintainer="Samuel Laulhau <sam@lalop.co>, Holger Lösken <holger.loesken@codedge.de>"
 
 #####
 # SYSTEM REQUIREMENT
