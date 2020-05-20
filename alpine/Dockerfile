@@ -3,7 +3,7 @@ ARG INVOICENINJA_VERSION
 
 FROM php:${PHP_VERSION}-fpm-alpine
 
-LABEL maintainer="Samuel Laulhau <sam@lalop.co>,  Holger Lösken <holger.loesken@codedge.de>"
+LABEL maintainer="Samuel Laulhau <sam@lalop.co>, Holger Lösken <holger.loesken@codedge.de>"
 
 #####
 # SYSTEM REQUIREMENT
@@ -34,10 +34,6 @@ RUN docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ --with-png-dir=/us
        pdo \
        pdo_mysql \
        zip
-    
-RUN cd /usr/share \
-    && curl -s -L https://github.com/Overbryd/docker-phantomjs-alpine/releases/download/2.11/phantomjs-alpine-x86_64.tar.bz2 | tar xj \
-    && ln -s /usr/share/phantomjs/phantomjs /usr/local/bin/phantomjs
 
 COPY ./config/php/php.ini /usr/local/etc/php/php.ini
 COPY ./config/php/php-cli.ini /usr/local/etc/php/php-cli.ini
@@ -74,7 +70,6 @@ RUN curl -s -o /tmp/ninja.zip -SL https://download.invoiceninja.com/ninja-v${INV
 # Override the environment settings from projects .env file
 ENV LOG errorlog
 ENV SELF_UPDATER_SOURCE ''
-ENV PHANTOMJS_BIN_PATH /usr/local/bin/phantomjs
 
 # Use to be mounted into nginx
 VOLUME /var/www/app/public
