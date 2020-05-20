@@ -3,13 +3,11 @@
 :bulb: Please consider posting your question on [StackOverflow](https://stackoverflow.com/) as this widens the audience that can help you. Just use the tag `invoice-ninja` and we are there to help. This is mostly related to the usage of Invoice Ninja and the docker setup.
 If you feel your question is directly related to a code change or you want to sent in a change + PR Github is the right place, of course.
 
-This image is based on `php:7.2-fpm` official version.
-
 :crown: **Features**
 
-:lock: Automatic HTTPS (:heart: [Caddy](https://caddyserver.com/))
-:hammer: Fully production-ready through docker-compose
-:pencil: Adjustable to your needs via environment variable
+:lock: Automatic HTTPS (:heart: [Caddy](https://caddyserver.com/))  
+:hammer: Fully production-ready through docker-compose  
+:pencil: Adjustable to your needs via environment variable  
 
 
 ## Prerequisites
@@ -48,17 +46,12 @@ For further configuration and toubleshotting regarding PhantomJS and Invoice Nin
 
 To run it:
 
-```
+```shell
 docker run -d \
   -v /var/invoiceninja/public:/var/app/public \
   -v /var/invoiceninja/storage:/var/app/storage \
-  -e APP_ENV='production' \
-  -e APP_DEBUG=0 \
   -e APP_URL='http://ninja.dev' \
   -e APP_KEY='<INSERT THE GENERATED APPLICATION KEY HERE>' \
-  -e APP_CIPHER='AES-256-CBC' \
-  -e DB_TYPE='mysql' \
-  -e DB_STRICT='false' \
   -e DB_HOST='localhost' \
   -e DB_DATABASE='ninja' \
   -e DB_USERNAME='ninja' \
