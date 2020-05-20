@@ -1,11 +1,16 @@
-ARG PHP_IMAGE_TAG=7.2-fpm-stretch
-FROM php:${PHP_IMAGE_TAG}
+ARG PHP_VERSION=7.2
+ARG INVOICENINJA_VERSION
+
+FROM php:${PHP_VERSION}-fpm-stretch
 
 LABEL maintainer="Samuel Laulhau <sam@lalop.co>"
 
 #####
 # SYSTEM REQUIREMENT
 #####
+COPY ./alpine/entrypoint.sh /usr/local/bin/docker-entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint
+
 ENV BUILD_DEPS \
         zlib1g-dev \
         git \
@@ -38,22 +43,11 @@ RUN curl -o ${PHANTOMJS}.tar.bz2 -SL https://bitbucket.org/ariya/phantomjs/downl
     && ln -sf /usr/local/share/${PHANTOMJS}/bin/phantomjs /usr/local/bin \
     && rm -rf /var/lib/apt/lists/*
 
-# set recommended PHP.ini settings
-# see https://secure.php.net/manual/en/opcache.installation.php
-RUN { \
-		echo 'opcache.memory_consumption=128'; \
-		echo 'opcache.interned_strings_buffer=8'; \
-		echo 'opcache.max_accelerated_files=4000'; \
-		echo 'opcache.revalidate_freq=60'; \
-		echo 'opcache.fast_shutdown=1'; \
-		echo 'opcache.enable_cli=1'; \
-} > /usr/local/etc/php/conf.d/opcache-recommended.ini
+COPY ./config/php/php.ini /usr/local/etc/php/php.ini
+COPY ./config/php/php-cli.ini /usr/local/etc/php/php-cli.ini
 
-#####
-# DOWNLOAD AND INSTALL INVOICE NINJA
-#####
-
-ENV INVOICENINJA_VERSION 4.5.18
+# Download and install IN
+ENV INVOICENINJA_VERSION="${INVOICENINJA_VERSION}"
 
 RUN curl -o ninja.zip -SL https://download.invoiceninja.com/ninja-v${INVOICENINJA_VERSION}.zip \
     && unzip -q ninja.zip -d /var/www/ \
@@ -67,9 +61,7 @@ RUN curl -o ninja.zip -SL https://download.invoiceninja.com/ninja-v${INVOICENINJ
     && chown -R www-data:www-data /var/www/app/storage /var/www/app/bootstrap /var/www/app/public/logo /var/www/app/.env /var/www/app/docker-backup-storage /var/www/app/docker-backup-public\
     && rm -rf /var/www/app/docs /var/www/app/tests /var/www/ninja
 
-######
-# DEFAULT ENV
-######
+# Override the environment settings from projects .env file
 ENV LOG errorlog
 ENV SELF_UPDATER_SOURCE ''
 ENV PHANTOMJS_BIN_PATH /usr/local/bin/phantomjs
@@ -80,7 +72,5 @@ VOLUME /var/www/app/public
 
 WORKDIR /var/www/app
 
-COPY entrypoint.sh /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]
