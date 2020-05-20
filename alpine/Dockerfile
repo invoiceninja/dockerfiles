@@ -1,69 +1,85 @@
-ARG PHP_IMAGE_TAG=7.2-fpm-alpine
-FROM php:${PHP_IMAGE_TAG}
+ARG PHP_VERSION=7.2
+ARG INVOICENINJA_VERSION
 
-LABEL maintainer="Samuel Laulhau <sam@lalop.co>"
+FROM php:${PHP_VERSION}-fpm-alpine
+
+LABEL maintainer="Samuel Laulhau <sam@lalop.co>,  Holger Lösken <holger.loesken@codedge.de>"
 
 #####
 # SYSTEM REQUIREMENT
 #####
-ENV PHANTOMJS phantomjs-2.1.1-linux-x86_64
-RUN apk update \
- && apk add --no-cache git gmp-dev freetype-dev libjpeg-turbo-dev \
-            coreutils chrpath fontconfig libpng-dev
+WORKDIR /var/www/app
 
-RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-    && docker-php-ext-configure gmp \
-    && docker-php-ext-install iconv mbstring pdo pdo_mysql zip gd gmp opcache \
-    && echo "php_admin_value[error_reporting] = E_ALL & ~E_NOTICE & ~E_WARNING & ~E_STRICT & ~E_DEPRECATED">>/usr/local/etc/php-fpm.d/www.conf
+COPY ./alpine/entrypoint.sh /usr/local/bin/docker-entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint
+
+ENV PHANTOMJS="phantomjs-2.1.1-linux-x86_64"
+
+RUN set -eux; \
+    apk add --no-cache \
+    gmp-dev \
+    freetype-dev \
+    libarchive-tools \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libwebp-dev\ 
+    libzip-dev
+
+RUN docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include --with-webp-dir=/usr/include --with-freetype-dir=/usr/include/; \
+	docker-php-ext-configure zip --with-libzip; \
+	docker-php-ext-install -j$(nproc) \
+       iconv \
+       gd \
+       gmp \
+       mbstring \
+       opcache \
+       pdo \
+       pdo_mysql \
+       zip
     
 RUN cd /usr/share \
-    && curl  -L https://github.com/Overbryd/docker-phantomjs-alpine/releases/download/2.11/phantomjs-alpine-x86_64.tar.bz2 | tar xj \
+    && curl -s -L https://github.com/Overbryd/docker-phantomjs-alpine/releases/download/2.11/phantomjs-alpine-x86_64.tar.bz2 | tar xj \
     && ln -s /usr/share/phantomjs/phantomjs /usr/local/bin/phantomjs
-    
 
-# set recommended PHP.ini settings
-# see https://secure.php.net/manual/en/opcache.installation.php
-RUN { \
-		echo 'opcache.memory_consumption=128'; \
-		echo 'opcache.interned_strings_buffer=8'; \
-		echo 'opcache.max_accelerated_files=4000'; \
-		echo 'opcache.revalidate_freq=60'; \
-		echo 'opcache.fast_shutdown=1'; \
-		echo 'opcache.enable_cli=1'; \
-} > /usr/local/etc/php/conf.d/opcache-recommended.ini
+COPY ./config/php/php.ini /usr/local/etc/php/php.ini
+COPY ./config/php/php-cli.ini /usr/local/etc/php/php-cli.ini
 
-#####
-# DOWNLOAD AND INSTALL INVOICE NINJA
-#####
+# Separate user
+ENV IN_USER=invoiceninja
 
-ENV INVOICENINJA_VERSION 4.5.18
+RUN addgroup -S "$IN_USER" && \
+    adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "$(pwd)" \
+    --ingroup "$IN_USER" \ 
+    --no-create-home \
+    "$IN_USER"; \
+    addgroup "$IN_USER" www-data; \
+    chown -R "$IN_USER":"$IN_USER" .
 
-RUN curl -o ninja.zip -SL https://download.invoiceninja.com/ninja-v${INVOICENINJA_VERSION}.zip \
-    && unzip ninja.zip -d /var/www/ \
-    && rm ninja.zip \
-    && mv /var/www/ninja /var/www/app  \
+USER $IN_USER
+
+# Download and install IN
+ENV INVOICENINJA_VERSION="${INVOICENINJA_VERSION}"
+
+RUN curl -s -o /tmp/ninja.zip -SL https://download.invoiceninja.com/ninja-v${INVOICENINJA_VERSION}.zip \
+    && bsdtar --strip-components=1 -C /var/www/app -xf /tmp/ninja.zip \
+    && rm /tmp/ninja.zip \
     && mv /var/www/app/storage /var/www/app/docker-backup-storage  \
     && mv /var/www/app/public /var/www/app/docker-backup-public  \
     && mkdir -p /var/www/app/public/logo /var/www/app/storage \
     && cp /var/www/app/.env.example /var/www/app/.env \
     && chmod -R 755 /var/www/app/storage  \
-    && rm -rf /var/www/app/docs /var/www/app/tests /var/www/ninja
+    && rm -rf /var/www/app/docs /var/www/app/tests
 
-######
-# DEFAULT ENV
-######
+# Override the environment settings from projects .env file
 ENV LOG errorlog
 ENV SELF_UPDATER_SOURCE ''
 ENV PHANTOMJS_BIN_PATH /usr/local/bin/phantomjs
 
-
-#use to be mounted into nginx for exemple
+# Use to be mounted into nginx
 VOLUME /var/www/app/public
 
-WORKDIR /var/www/app
-
-COPY entrypoint.sh /usr/local/bin/invoice-entrypoint
-# RUN chmod +x /usr/local/bin/invoice-entrypoint
-
-ENTRYPOINT ["invoice-entrypoint"]
+ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]
