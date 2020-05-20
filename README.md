@@ -154,8 +154,3 @@ environment:
 to your `docker-compose.yml`.
 
 This generated log file will only hold Invoice Ninja information.
-
-
-### Known issues
-
-Phantomjs doesn't work on linux alpine https://github.com/ariya/phantomjs/issues/14186.
