@@ -13,8 +13,6 @@ WORKDIR /var/www/app
 COPY ./alpine/entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
-ENV PHANTOMJS="phantomjs-2.1.1-linux-x86_64"
-
 RUN set -eux; \
     apk add --no-cache \
     gmp-dev \
