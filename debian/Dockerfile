@@ -8,7 +8,7 @@ LABEL maintainer="Samuel Laulhau <sam@lalop.co>"
 #####
 # SYSTEM REQUIREMENT
 #####
-COPY ./alpine/entrypoint.sh /usr/local/bin/docker-entrypoint
+COPY ./debian/entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
 ENV BUILD_DEPS \
