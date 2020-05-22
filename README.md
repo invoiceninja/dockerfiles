@@ -1,3 +1,7 @@
+[![](https://github.com/invoiceninja/invoiceninja/workflows/Docker%20images/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions)
+[![Docker image, latest](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja/latest?label=latest)](https://hub.docker.com/r/invoiceninja/invoiceninja)
+[![Docker image, alpine](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja/alpine?label=alpine)](https://hub.docker.com/r/invoiceninja/invoiceninja)
+
 # Docker for [Invoice Ninja](https://www.invoiceninja.com/) 
 
 :bulb: Please consider posting your question on [StackOverflow](https://stackoverflow.com/) as this widens the audience that can help you. Just use the tag `invoice-ninja` and we are there to help. This is mostly related to the usage of Invoice Ninja and the docker setup.
