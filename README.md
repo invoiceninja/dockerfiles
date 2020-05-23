@@ -37,6 +37,17 @@ To make your data persistent, you have to mount `public` and `storage` from your
 
 You can create these folders wherever you want on your host system.
 
+:warning: When using host mounted folder for persistence, make sure they are owned by the proper user and group. As we run Invoice Ninja without `root` , we use a separate user, the folders on the host system need to be owned by uid `1000` and a gid `1001`.  
+
+Run this on your host system
+
+```shell
+chown -R 1000:101 /var/invoiceninja/public /var/invoiceninja/storage
+```
+
+to apply the proper permission to the folders. This also applies to the `docker-compose` setup when using [bind-mounted host directories](https://github.com/invoiceninja/dockerfiles/blob/master/docker-compose.yml#L17).
+
+
 ### PhantomJS key
 
 The PhantomJS key is set to `a-demo-key-with-low-quota-per-ip-address`. This demo key is limited to 100 requests per day.
