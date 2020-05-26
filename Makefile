@@ -39,10 +39,9 @@ endif
 build-alpine-v5:
 ifneq ($(IS_V5),)
 	$(info Make: Building "$(TAG)" tagged images from alpine.)
-	@docker build -t ${HUB_NAMESPACE}/${IMAGE}:alpine-${TAG} --build-arg INVOICENINJA_VERSION=${TAG} --file ./alpine/Dockerfile_v5 .
-	@docker tag ${HUB_NAMESPACE}/${IMAGE}:alpine-${TAG} ${HUB_NAMESPACE}/${IMAGE}:alpine-5
-	@docker tag ${HUB_NAMESPACE}/${IMAGE}:alpine-${TAG} ${HUB_NAMESPACE}/${IMAGE}:alpine
-	@docker tag ${HUB_NAMESPACE}/${IMAGE}:alpine-${TAG} ${HUB_NAMESPACE}/${IMAGE}:latest
+	@docker build -t ${HUB_NAMESPACE}/${IMAGE}:${TAG} --build-arg INVOICENINJA_VERSION=${TAG} --file ./alpine/Dockerfile_v5 .
+	@docker tag ${HUB_NAMESPACE}/${IMAGE}:${TAG} ${HUB_NAMESPACE}/${IMAGE}:5
+	@docker tag ${HUB_NAMESPACE}/${IMAGE}:${TAG} ${HUB_NAMESPACE}/${IMAGE}:latest
 	$(info Make: Done.)
 endif
 
@@ -50,9 +49,8 @@ endif
 push-alpine-v5:
 ifneq ($(IS_V5),)
 	$(info Make: Pushing tagged images from alpine.)
-	@docker push ${HUB_NAMESPACE}/${IMAGE}:alpine-${TAG}
-	@docker push ${HUB_NAMESPACE}/${IMAGE}:alpine-5
-	@docker push ${HUB_NAMESPACE}/${IMAGE}:alpine
+	@docker push ${HUB_NAMESPACE}/${IMAGE}:${TAG}
+	@docker push ${HUB_NAMESPACE}/${IMAGE}:5
 	@docker push ${HUB_NAMESPACE}/${IMAGE}:latest
 endif
 
