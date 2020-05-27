@@ -12,7 +12,7 @@ BAK_LOGO_PATH=/var/www/app/docker-backup-public/logo/
 if [ ! -d /var/www/app/storage ]; then
     cp -Rp $BAK_STORAGE_PATH /var/www/app/storage
 else
-    if [ -d $BAK_STORAGE_PATH]; then
+    if [ -d $BAK_STORAGE_PATH ]; then
         IN_STORAGE_BACKUP="$(ls $BAK_STORAGE_PATH)"
         for path in $IN_STORAGE_BACKUP; do
             if [ ! -e "/var/www/app/storage/$path" ]; then
@@ -44,5 +44,11 @@ fi
 # Set permission for mounted directories
 chown invoiceninja:www-data /var/www/app/storage
 chown invoiceninja:www-data /var/www/app/public
+
+# Database migrations and seeding
+php artisan migrate --force
+php artisan db:seed --force
+
+php artisan optimize
 
 exec docker-php-entrypoint "$@"

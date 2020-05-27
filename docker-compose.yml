@@ -28,12 +28,15 @@ services:
       - invoiceninja
 
   app:
-    image: invoiceninja/invoiceninja:alpine
+    image: invoiceninja/invoiceninja:5
     restart: always
     environment: 
       - APP_URL=https://localhost
       - APP_KEY=<INSERT THE GENERATED APPLICATION KEY HERE>
       - DB_HOST=db
+      - MULTI_DB_ENABLED=false
+      - DB_HOST1=db
+      - DB_DATABASE1=ninja
     volumes:
       # Configure your mounted directories, make sure the folder 'public' and 'storage'
       # exist, before mounting them

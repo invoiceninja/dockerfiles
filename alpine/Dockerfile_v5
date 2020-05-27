@@ -1,68 +1,87 @@
 ARG PHP_VERSION=7.3
 
+# Get Invoice Ninja
+FROM alpine:latest as base
+ARG INVOICENINJA_VERSION
+
+RUN set -eux; \
+    apk add --no-cache \
+    curl \
+    libarchive-tools; \
+    mkdir -p /var/www/app
+
+RUN curl -o /tmp/ninja.tar.gz -LJ0 https://github.com/invoiceninja/invoiceninja/tarball/v$INVOICENINJA_VERSION \
+    && bsdtar --strip-components=1 -C /var/www/app -xf /tmp/ninja.tar.gz \
+    && rm /tmp/ninja.tar.gz \
+    && cp -R /var/www/app/storage /var/www/app/docker-backup-storage  \
+    && cp -R /var/www/app/public /var/www/app/docker-backup-public  \
+    && mkdir -p /var/www/app/public/logo /var/www/app/storage \
+    && cp /var/www/app/.env.example /var/www/app/.env \
+    && cp /var/www/app/.env.dusk.example /var/www/app/.env.dusk.local \
+    && rm -rf /var/www/app/docs /var/www/app/tests
+
+# Install nodejs packages
+FROM node:12-alpine as frontend
+
+COPY --from=base /var/www/app /var/www/app
+WORKDIR /var/www/app/
+
+RUN npm install
+
+# Prepare php image
 FROM php:${PHP_VERSION}-fpm-alpine
+ARG INVOICENINJA_VERSION
 
 LABEL maintainer="Samuel Laulhau <sam@lalop.co>, Holger Lösken <holger.loesken@codedge.de>"
 
-#####
-# SYSTEM REQUIREMENT
-#####
-ARG INVOICENINJA_VERSION
 WORKDIR /var/www/app
 
+COPY --from=frontend /var/www/app /var/www/app
 COPY ./alpine/entrypoint_v5.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
 RUN set -eux; \
     apk add --no-cache \
     gmp-dev \
-    libarchive-tools \
-    libzip-dev
-
-RUN docker-php-ext-configure zip --with-libzip; \
-	docker-php-ext-install -j$(nproc) \
-       bcmath \
-       gmp \
-       mbstring \
-       opcache \
-       pdo \
-       pdo_mysql \
-       zip
+    libzip-dev; \
+    docker-php-ext-configure zip --with-libzip; \
+    docker-php-ext-install -j$(nproc) \
+        bcmath \
+        exif \
+        gmp \
+        mbstring \
+        opcache \
+        pdo \
+        pdo_mysql \
+        zip
 
 COPY ./config/php/php.ini /usr/local/etc/php/php.ini
 COPY ./config/php/php-cli.ini /usr/local/etc/php/php-cli.ini
 
-# Separate user
-ENV IN_USER=invoiceninja
+## Separate user
+ENV INVOICENINJA_USER=invoiceninja
 
-RUN addgroup -S "$IN_USER" && \
+RUN addgroup -S "$INVOICENINJA_USER" && \
     adduser \
     --disabled-password \
     --gecos "" \
     --home "$(pwd)" \
-    --ingroup "$IN_USER" \ 
+    --ingroup "$INVOICENINJA_USER" \ 
     --no-create-home \
-    "$IN_USER"; \
-    addgroup "$IN_USER" www-data; \
-    chown -R "$IN_USER":"$IN_USER" .
+    "$INVOICENINJA_USER"; \
+    addgroup "$INVOICENINJA_USER" www-data; \
+    chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" /var/www/app
 
-USER $IN_USER
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer; \
+    composer global require hirak/prestissimo;
 
-# Download and install IN
-ENV INVOICENINJA_VERSION="${INVOICENINJA_VERSION}"
+USER $INVOICENINJA_USER
 
-RUN curl -o /tmp/ninja.zip -LJ0 https://github.com/invoiceninja/invoiceninja/tarball/v$INVOICENINJA_VERSION \
-    && bsdtar --strip-components=1 -C /var/www/app -xf /tmp/ninja.zip \
-    && rm /tmp/ninja.zip \
-    && mv /var/www/app/storage /var/www/app/docker-backup-storage  \
-    && mv /var/www/app/public /var/www/app/docker-backup-public  \
-    && mkdir -p /var/www/app/public/logo /var/www/app/storage \
-    && cp /var/www/app/.env.example /var/www/app/.env \
-    && cp .env.dusk.example .env.dusk.local \
-    && chmod -R 755 /var/www/app/storage  \
-    && rm -rf /var/www/app/docs /var/www/app/tests
+RUN composer install --no-dev --no-suggest --no-progress
 
 # Override the environment settings from projects .env file
+ENV APP_ENV production
 ENV LOG errorlog
 
 # Use to be mounted into nginx
