@@ -19,16 +19,22 @@ jobs:
           id: vars
           run: echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
 
-        - name: Build image from alpine
+        - name: Build image from alpine - v5
+          run: make build-alpine-v5 TAG="${{steps.vars.outputs.tag}}"
+
+        - name: Push alpine-based image - v5
+          run: make push-alpine-v5 TAG="${{steps.vars.outputs.tag}}"
+
+        - name: Build image from alpine - v4
           run: make build-alpine TAG="${{steps.vars.outputs.tag}}"
 
-        - name: Push alpine-based image
+        - name: Push alpine-based image - v4
           run: make push-alpine TAG="${{steps.vars.outputs.tag}}"
 
-        - name: Build image from debian
+        - name: Build image from debian - v4
           run: make build-debian TAG="${{steps.vars.outputs.tag}}"
 
-        - name: Push debian-based image
+        - name: Push debian-based image - v4
           run: make push-debian TAG="${{steps.vars.outputs.tag}}"
 
         - name: Logout from DockerHub
