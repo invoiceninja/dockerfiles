@@ -32,10 +32,9 @@ services:
     restart: always
     environment: 
       - APP_URL=https://localhost
-      - APP_KEY=<INSERT THE GENERATED APPLICATION KEY HERE>
+      - APP_KEY=base64:G+jZ7pXdRYf4RHGklA1rstbDzEoZKM2ybv4y7VUeyHE=
       - MULTI_DB_ENABLED=false
       - DB_HOST1=db
-      - DB_DATABASE1=ninja
     volumes:
       # Configure your mounted directories, make sure the folder 'public' and 'storage'
       # exist, before mounting them
@@ -56,7 +55,7 @@ services:
       - MYSQL_ROOT_PASSWORD=ninjaAdm1nPassword
       - MYSQL_USER=ninja
       - MYSQL_PASSWORD=ninja
-      - MYSQL_DATABASE=ninja
+      - MYSQL_DATABASE=db-ninja-01
     volumes:
       - mysql-data:/var/lib/mysql:rw
       # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
