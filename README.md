@@ -133,6 +133,15 @@ The sample above stores the files on the post at `./docker/app/public` and `./do
 
 :warning: If using bind-mounted host directories make sure they exists and have proper rights. See [here](#create-folders-for-data-persistence) for details.
 
+## Docker secrets
+
+:information_source: This feature is borrowed from [mariadb docker image](https://hub.docker.com/_/mariadb).
+
+As an alternative to passing sensitive information via environment variables, `_FILE` may be appended to the below listed environment variables, causing the initialization script to load the values for those variables from files present in the container. In particular, this can be used to load passwords from Docker secrets stored in _/run/secrets/<secret_name>_ files.
+
+Supported are these variables:  
+`APP_KEY`, `API_SECRET`, `CLOUDFLARE_API_KEY`, `DB_USERNAME`, `DB_PASSWORD`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAILGUN_SECRET`, `S3_KEY`, `S3_SECRET`
+
 
 ## Debugging your Docker setup
 
