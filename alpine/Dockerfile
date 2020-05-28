@@ -10,7 +10,7 @@ LABEL maintainer="Samuel Laulhau <sam@lalop.co>, Holger Lösken <holger.loesken@
 ARG INVOICENINJA_VERSION
 WORKDIR /var/www/app
 
-COPY ./alpine/entrypoint.sh /usr/local/bin/docker-entrypoint
+COPY entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
 RUN set -eux; \
