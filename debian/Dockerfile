@@ -1,5 +1,4 @@
 ARG PHP_VERSION=7.2
-ARG INVOICENINJA_VERSION
 
 FROM php:${PHP_VERSION}-fpm-stretch
 
@@ -8,6 +7,7 @@ LABEL maintainer="Samuel Laulhau <sam@lalop.co>, Holger Lösken <holger.loesken@
 #####
 # SYSTEM REQUIREMENT
 #####
+ARG INVOICENINJA_VERSION
 COPY ./debian/entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
