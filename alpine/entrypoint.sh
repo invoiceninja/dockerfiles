@@ -1,6 +1,27 @@
 #!/usr/bin/env sh
 set -e
 
+# usage: file_env VAR [DEFAULT]
+#    ie: file_env 'XYZ_DB_PASSWORD' 'example'
+# (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
+#  "$XYZ_DB_PASSWORD" from a file, especially for Docker's secrets feature)
+file_env() {
+	local var="$1"
+	local fileVar="${var}_FILE"
+	local def="${2:-}"
+	if [ "${!var:-}" ] && [ "${!fileVar:-}" ]; then
+		mysql_error "Both $var and $fileVar are set (but are exclusive)"
+	fi
+	local val="$def"
+	if [ "${!var:-}" ]; then
+		val="${!var}"
+	elif [ "${!fileVar:-}" ]; then
+		val="$(< "${!fileVar}")"
+	fi
+	export "$var"="$val"
+	unset "$fileVar"
+}
+
 # first arg is `-f` or `--some-option`
 if [ "${1#-}" != "$1" ]; then
 	set -- php-fpm "$@"
@@ -38,5 +59,18 @@ fi
 # Set permission for mounted directories
 chown invoiceninja:www-data /var/www/app/storage
 chown invoiceninja:www-data /var/www/app/public
+
+# Initialize values that might be stored in a file
+file_env 'APP_KEY'
+file_env 'API_SECRET'
+file_env 'CLOUDFLARE_API_KEY'
+file_env 'DB_USERNAME'
+file_env 'DB_PASSWORD'
+file_env 'MAIL_USERNAME'
+file_env 'MAIL_PASSWORD'
+file_env 'MAILGUN_SECRET'
+file_env 'S3_KEY'
+file_env 'S3_SECRET'
+
 
 exec docker-php-entrypoint "$@"
