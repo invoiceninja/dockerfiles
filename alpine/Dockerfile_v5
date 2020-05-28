@@ -31,13 +31,14 @@ RUN npm install
 # Prepare php image
 FROM php:${PHP_VERSION}-fpm-alpine
 ARG INVOICENINJA_VERSION
+ENV INVOICENINJA_VERSION=$INVOICENINJA_VERSION
 
 LABEL maintainer="Samuel Laulhau <sam@lalop.co>, Holger Lösken <holger.loesken@codedge.de>"
 
 WORKDIR /var/www/app
 
 COPY --from=frontend /var/www/app /var/www/app
-COPY ./alpine/entrypoint_v5.sh /usr/local/bin/docker-entrypoint
+COPY entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
 RUN set -eux; \
@@ -89,9 +90,6 @@ RUN composer install --no-dev --no-suggest --no-progress
 # Override the environment settings from projects .env file
 ENV APP_ENV production
 ENV LOG errorlog
-
-# Use to be mounted into nginx
-VOLUME /var/www/app/public
 
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]

@@ -1,4 +1,4 @@
-version: '3.6'
+version: '3.7'
 
 services:
   server:
@@ -32,7 +32,7 @@ services:
     restart: always
     environment: 
       - APP_URL=https://localhost
-      - APP_KEY=base64:G+jZ7pXdRYf4RHGklA1rstbDzEoZKM2ybv4y7VUeyHE=
+      - APP_KEY=<INSERT THE GENERATED APPLICATION KEY HERE>
       - MULTI_DB_ENABLED=false
       - DB_HOST1=db
     volumes:
