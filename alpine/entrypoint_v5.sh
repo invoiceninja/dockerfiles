@@ -45,10 +45,6 @@ fi
 chown invoiceninja:www-data /var/www/app/storage
 chown invoiceninja:www-data /var/www/app/public
 
-# Database migrations and seeding
-php artisan migrate --force
-php artisan db:seed --force
-
 php artisan optimize
 
 exec docker-php-entrypoint "$@"

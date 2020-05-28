@@ -42,14 +42,20 @@ RUN chmod +x /usr/local/bin/docker-entrypoint
 
 RUN set -eux; \
     apk add --no-cache \
+    freetype-dev \
     gmp-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
     libzip-dev; \
     docker-php-ext-configure zip --with-libzip; \
+    docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/; \
     docker-php-ext-install -j$(nproc) \
         bcmath \
         exif \
+        gd \
         gmp \
         mbstring \
+        mysqli \
         opcache \
         pdo \
         pdo_mysql \
