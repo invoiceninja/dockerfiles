@@ -31,7 +31,7 @@ push-alpine:
 ifeq ($(IS_V5),)
 	$(info Make: Pushing tagged images from alpine.)
 	@docker push ${HUB_NAMESPACE}/${IMAGE}:alpine-${TAG}
-	@docker push ${HUB_NAMESPACE}/${IMAGE}:alpine
+	@docker push ${HUB_NAMESPACE}/${IMAGE}:alpine-4
 	$(info Make: Done.)
 endif
 
