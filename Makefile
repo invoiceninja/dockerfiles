@@ -53,24 +53,3 @@ ifneq ($(IS_V5),)
 	@docker push ${HUB_NAMESPACE}/${IMAGE}:5
 	@docker push ${HUB_NAMESPACE}/${IMAGE}:latest
 endif
-
-# Building docker images based on debian.
-# Assigned tags:
-#   - :latest
-#   - :<RELEASE VERSION>
-.PHONY: build-debian
-build-debian:
-ifeq ($(IS_V5),)
-	$(info Make: Building "$(TAG)" tagged images from debian.)
-	@docker build -t ${HUB_NAMESPACE}/${IMAGE}:${TAG} --build-arg INVOICENINJA_VERSION=${TAG} --file ./debian/Dockerfile .
-	$(info Make: Done.)
-endif
-
-.PHONY: push-debian
-push-debian:
-ifeq ($(IS_V5),)
-	$(info Make: Pushing tagged images from debian.)
-	@docker push ${HUB_NAMESPACE}/${IMAGE}:${TAG}
-	@docker push ${HUB_NAMESPACE}/${IMAGE}:latest
-	$(info Make: Done.)
-endif
