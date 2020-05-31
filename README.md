@@ -37,7 +37,7 @@ To make your data persistent, you have to mount `public` and `storage` from your
 
 You can create these folders wherever you want on your host system.
 
-:warning: When using host mounted folder for persistence, make sure they are owned by the proper user and group. As we run Invoice Ninja without `root` , we use a separate user, the folders on the host system need to be owned by uid `1000` and a gid `1001`.  
+:warning: When using host mounted folder for persistence, make sure they are owned by the proper user and group. As we run Invoice Ninja without `root` , we use a separate user, the folders on the host system need to be owned by uid `1000` and a gid `101`.  
 
 Run this on your host system
 
@@ -59,6 +59,8 @@ For further configuration and toubleshotting regarding PhantomJS and Invoice Nin
 
 ## Usage
 
+:warning: The `latest` tag contains the new version 5 of Invoice Ninja which is still in alpha state. To stick to the version 4 please use `alpine-4` tag.
+
 To run it:
 
 ```shell
@@ -72,7 +74,7 @@ docker run -d \
   -e DB_USERNAME='ninja' \
   -e DB_PASSWORD='ninja' \
   -p '9000:9000' \
-  invoiceninja/invoiceninja
+  invoiceninja/invoiceninja:alpine-4
 ```
 A list of environment variables can be found [here](https://github.com/invoiceninja/invoiceninja/blob/master/.env.example).
 
@@ -80,6 +82,8 @@ A list of environment variables can be found [here](https://github.com/invoiceni
 ### With docker-compose
 
 Running Invoice Ninja with docker-compose gives you everything to quickly start. Before starting please make sure you configured your setup correctly. You can do so by opening the `docker-compose.yml` and may change the follwing items.
+
+:warning: The `docker-compose.yml` runs the new version 5 of Invoice Ninja which is still in alpha state. To stick to the version 4 please use `alpine-4` tag.
 
 **Port**
 
