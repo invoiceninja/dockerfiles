@@ -31,11 +31,5 @@ jobs:
         - name: Push alpine-based image - v4
           run: make push-alpine TAG="${{steps.vars.outputs.tag}}"
 
-        - name: Build image from debian - v4
-          run: make build-debian TAG="${{steps.vars.outputs.tag}}"
-
-        - name: Push debian-based image - v4
-          run: make push-debian TAG="${{steps.vars.outputs.tag}}"
-
         - name: Logout from DockerHub
           run: docker logout
