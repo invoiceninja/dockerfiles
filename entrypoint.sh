@@ -12,16 +12,9 @@ in_error() {
         exit 1
 }
 
-# Indirect expansion (ie) is not supported in bourne shell. That's why we are using this clunkiness here.
+# Indirect expansion (ie) is not supported in bourne shell. That's why we are using this "magic" here.
 ie_gv() {
-        local line name value
-        set | \
-        while read line; do
-                name=${line%=*} value=${line#*=\'}
-                if [ "$name" = "$1" ]; then
-                        echo ${value%\'}
-                fi
-        done
+        eval "echo \$$1"
 }
 
 # usage: file_env VAR [DEFAULT]
@@ -37,7 +30,7 @@ file_env() {
                 in_error "Both $var and $fileVar are set (but are exclusive)"
         fi
 
-         local val="$def"
+        local val="$def"
         if [ "$(ie_gv ${var})" != "" ]; then
                 val=$(ie_gv ${var})
         elif [ "$(ie_gv ${fileVar})" != "" ]; then
