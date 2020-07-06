@@ -20,7 +20,7 @@ If you feel your question is directly related to a code change or you want to se
 
 Before starting Invoice Ninja via Docker make sure you generate a valid application key. If you are not sure what an application key is, please visit [this blog post](https://tighten.co/blog/app-key-and-you/).  
 
-To generate an application just run
+To generate an application kay just run
 
 ```shell
 docker run --rm -it invoiceninja/invoiceninja php artisan key:generate --show
