@@ -43,6 +43,8 @@ RUN chmod +x /usr/local/bin/docker-entrypoint
 
 RUN set -eux; \
     apk add --no-cache \
+    nodejs \
+    npm \
     freetype-dev \
     gmp-dev \
     libjpeg-turbo-dev \
