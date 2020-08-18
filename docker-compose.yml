@@ -63,15 +63,15 @@ services:
     networks:
       - invoiceninja
 
- 
+  # THIS IS ONLY A VALID CONFIGURATION FOR IN 4. DO NOT USE FOR IN 5.
   # cron:
-  #   image: invoiceninja/invoiceninja
+  #   image: invoiceninja/invoiceninja:alpine-4
   #   volumes:
   #     -  storage:/var/www/app/storage
   #     -  logo:/var/www/app/public/logo
   #     -  public:/var/www/app/public
   #   entrypoint: |
-  #     bash -c 'bash -s <<EOF
+  #     /bin/sh -c 'sh -s <<EOF
   #     trap "break;exit" SIGHUP SIGINT SIGTERM
   #     sleep 300s
   #     while /bin/true; do
@@ -87,6 +87,8 @@ volumes:
   mysql-data:
   public:
   storage:
+  # This is needed for letting th cron run correctly
+  # logo:
 
 networks:
   invoiceninja:
