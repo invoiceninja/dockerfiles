@@ -67,6 +67,10 @@ RUN set -eux; \
 COPY ./config/php/php.ini /usr/local/etc/php/php.ini
 COPY ./config/php/php-cli.ini /usr/local/etc/php/php-cli.ini
 
+## Set up the cronjob
+RUN echo "* * * * * run-parts /etc/periodic/1min" >> /etc/crontabs/root
+COPY ./config/cron/cronjob_v5.sh /etc/periodic/1min/invoiceninja_cronjob
+
 ## Separate user
 ENV INVOICENINJA_USER=invoiceninja
 

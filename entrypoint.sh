@@ -41,6 +41,7 @@ file_env() {
         unset "$fileVar"
 }
 
+
 # first arg is `-f` or `--some-option`
 if [ "${1#-}" != "$1" ]; then
 	set -- php-fpm "$@"
@@ -99,5 +100,8 @@ file_env 'S3_SECRET'
 # Run Laravel stuff
 php artisan config:cache
 php artisan optimize
+
+# Start the cron daemon in background
+crond -l 2 -b
 
 exec docker-php-entrypoint "$@"
