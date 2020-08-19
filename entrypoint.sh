@@ -101,7 +101,4 @@ file_env 'S3_SECRET'
 php artisan config:cache
 php artisan optimize
 
-# Start the cron daemon in background
-crond -l 2 -b
-
 exec docker-php-entrypoint "$@"
