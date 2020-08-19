@@ -55,7 +55,7 @@ services:
       - MYSQL_ROOT_PASSWORD=ninjaAdm1nPassword
       - MYSQL_USER=ninja
       - MYSQL_PASSWORD=ninja
-      - MYSQL_DATABASE=db-ninja-01
+      - MYSQL_DATABASE=ninja
     volumes:
       - mysql-data:/var/lib/mysql:rw
       # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
