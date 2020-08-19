@@ -67,10 +67,6 @@ RUN set -eux; \
 COPY ./config/php/php.ini /usr/local/etc/php/php.ini
 COPY ./config/php/php-cli.ini /usr/local/etc/php/php-cli.ini
 
-## Set up the cronjob
-RUN echo "* * * * * run-parts /etc/periodic/1min" >> /etc/crontabs/root
-COPY ./config/cron/cronjob_v5.sh /etc/periodic/1min/invoiceninja_cronjob
-
 ## Separate user
 ENV INVOICENINJA_USER=invoiceninja
 
@@ -89,9 +85,15 @@ RUN addgroup -S "$INVOICENINJA_USER" && \
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer; \
     composer global require hirak/prestissimo;
 
+## Set up the cronjob and run cron daemon
+RUN echo "* * * * * run-parts /etc/periodic/1min" >> /etc/crontabs/root
+COPY ./config/cron/cronjob_v5.sh /etc/periodic/1min/invoiceninja_cronjob
+RUN chown $INVOICENINJA_USER /etc/periodic/1min/invoiceninja_cronjob && \
+    crond -l 2 -b
+
 USER $INVOICENINJA_USER
 
-RUN composer install --no-dev --no-suggest --no-progress
+RUN composer install --no-dev --no-suggest --no-progress --quiet
 
 # Override the environment settings from projects .env file
 ENV APP_ENV production
