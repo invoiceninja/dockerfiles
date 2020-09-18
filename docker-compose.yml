@@ -30,6 +30,8 @@ services:
   app:
     image: invoiceninja/invoiceninja:5
     restart: always
+    cap_add:
+      - SYS_ADMIN
     environment: 
       - APP_URL=https://localhost
       - APP_KEY=<INSERT THE GENERATED APPLICATION KEY HERE>
