@@ -37,6 +37,9 @@ services:
       - APP_KEY=<INSERT THE GENERATED APPLICATION KEY HERE>
       - MULTI_DB_ENABLED=false
       - DB_HOST1=db
+      - DB_USERNAME1=ninja
+      - DB_PASSWORD1=ninja
+      - DB_DATABASE1=ninja
     volumes:
       # Configure your mounted directories, make sure the folder 'public' and 'storage'
       # exist, before mounting them
