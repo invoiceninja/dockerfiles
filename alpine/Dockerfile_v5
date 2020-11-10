@@ -46,6 +46,7 @@ RUN set -eux; \
     apk add --no-cache \
     nodejs \
     npm \
+    mysql-client \
     freetype-dev \
     gmp-dev \
     libjpeg-turbo-dev \
