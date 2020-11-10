@@ -7,6 +7,7 @@ ARG INVOICENINJA_VERSION
 RUN set -eux; \
     apk add --no-cache \
     curl \
+    mysql-client \
     libarchive-tools; \
     mkdir -p /var/www/app
 
