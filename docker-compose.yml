@@ -40,6 +40,7 @@ services:
       - DB_USERNAME1=ninja
       - DB_PASSWORD1=ninja
       - DB_DATABASE1=ninja
+      - DOCKER_URL=http://server # If APP_URL is using HTTPS change this to: https://server
     volumes:
       # Configure your mounted directories, make sure the folder 'public' and 'storage'
       # exist, before mounting them
