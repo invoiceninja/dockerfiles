@@ -119,5 +119,7 @@ RUN composer install --no-dev --no-suggest --no-progress --quiet
 ENV APP_ENV production
 ENV LOG errorlog
 
+RUN php artisan storage:link
+
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["php-fpm"]
