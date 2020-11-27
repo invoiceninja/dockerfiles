@@ -8,6 +8,7 @@ RUN set -eux; \
     apk add --no-cache \
     curl \
     mysql-client \
+    git \
     libarchive-tools; \
     mkdir -p /var/www/app
 
