@@ -54,7 +54,7 @@ RUN set -eux; \
     libpng-dev \
     libzip-dev \
     zip; \
-    docker-php-ext-configure gd --with-freetype --with-jpeg \
+    docker-php-ext-configure gd --with-freetype --with-jpeg; \
     docker-php-ext-install -j$(nproc) \
         bcmath \
         exif \
