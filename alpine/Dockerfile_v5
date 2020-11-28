@@ -9,7 +9,6 @@ RUN set -eux; \
     curl \
     mysql-client \
     git \
-    libonig-dev \
     libarchive-tools; \
     mkdir -p /var/www/app
 
@@ -44,6 +43,8 @@ COPY --from=frontend /var/www/app /var/www/app
 COPY entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
+RUN apt-get update && apt-get install -y libonig-dev
+
 RUN set -eux; \
     apk add --no-cache \
     nodejs \
@@ -54,7 +55,6 @@ RUN set -eux; \
     libjpeg-turbo-dev \
     libpng-dev \
     libzip-dev \
- #   libonig-dev \
     zip; \
     docker-php-ext-configure gd --with-freetype --with-jpeg; \
     docker-php-ext-install -j$(nproc) \
