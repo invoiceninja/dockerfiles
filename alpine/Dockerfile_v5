@@ -9,6 +9,7 @@ RUN set -eux; \
     curl \
     mysql-client \
     git \
+    libonig-dev \
     libarchive-tools; \
     mkdir -p /var/www/app
 
