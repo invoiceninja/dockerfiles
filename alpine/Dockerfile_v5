@@ -61,7 +61,7 @@ RUN set -eux; \
         exif \
         gd \
         gmp \
-        mbstring \
+#        mbstring \
         mysqli \
         opcache \
         pdo \
