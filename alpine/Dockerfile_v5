@@ -113,7 +113,7 @@ RUN chown $INVOICENINJA_USER /etc/periodic/1min/invoiceninja_cronjob && \
 
 USER $INVOICENINJA_USER
 
-RUN /usr/local/bin/composer install --no-dev --no-suggest --no-progress --quiet
+RUN /usr/local/bin/composer install --no-dev
 
 # Override the environment settings from projects .env file
 ENV APP_ENV production
