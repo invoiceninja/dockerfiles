@@ -42,6 +42,7 @@ services:
       - DB_DATABASE1=ninja
       - PHANTOMJS_PDF_GENERATION=false
       - SNAPPDF_EXECUTABLE_PATH="/usr/bin/chromium-browser"
+      - SNAPPDF_SKIP_DOWNLOAD=true
     volumes:
       # Configure your mounted directories, make sure the folder 'public' and 'storage'
       # exist, before mounting them
