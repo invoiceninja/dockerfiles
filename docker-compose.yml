@@ -71,6 +71,24 @@ services:
     networks:
       - invoiceninja
 
+  # V5 crons only
+  cron:
+    image: invoiceninja/invoiceninja:5
+    volumes:
+      -  public:/var/www/app/public
+      -  storage:/var/www/app/storage
+    entrypoint: |
+      /bin/sh -c 'sh -s <<EOF
+      trap "break;exit" SIGHUP SIGINT SIGTERM
+      sleep 60s
+      while /bin/true; do
+        ./artisan schedule:run >> /dev/null 2>&1
+        sleep 60s
+      done
+      EOF'
+    networks:
+      - invoiceninja
+
   # THIS IS ONLY A VALID CONFIGURATION FOR IN 4. DO NOT USE FOR IN 5.
   # cron:
   #   image: invoiceninja/invoiceninja:alpine-4

@@ -96,14 +96,9 @@ RUN addgroup -S "$INVOICENINJA_USER" && \
     addgroup "$INVOICENINJA_USER" www-data; \
     chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" /var/www/app
 
+
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer; 
-
-## Set up the cronjob and run cron daemon
-RUN echo "* * * * * run-parts /etc/periodic/1min" >> /etc/crontabs/root
-COPY ./config/cron/cronjob_v5.sh /etc/periodic/1min/invoiceninja_cronjob
-RUN chown $INVOICENINJA_USER /etc/periodic/1min/invoiceninja_cronjob && \
-    crond -l 2 -b
 
 USER $INVOICENINJA_USER
 
