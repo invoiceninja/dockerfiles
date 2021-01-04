@@ -4,8 +4,7 @@ services:
   server:
     image: nginx
     restart: always
-    environment: 
-      - APP_URL=http://in.localhost:8003
+    env_file: env
     volumes:
       # Vhost configuration
       #- ./config/caddy/Caddyfile:/etc/caddy/Caddyfiledocker-com
@@ -24,6 +23,8 @@ services:
       #- "443:443"
     networks:
       - invoiceninja
+    extra_hosts:
+      - "in5.localhost:192.168.0.124 " #host and ip
 
   app:
     image: invoiceninja/invoiceninja:5
@@ -40,6 +41,8 @@ services:
       - db
     networks: 
       - invoiceninja  
+    extra_hosts:
+      - "in5.localhost:192.168.0.124 " #host and ip
 
   db:
     image: mysql:5
@@ -56,6 +59,8 @@ services:
       - ./docker/mysql/data:/var/lib/mysql:rw,delegated
     networks:
       - invoiceninja
+    extra_hosts:
+      - "in5.localhost:192.168.0.124 " #host and ip
 
   # THIS IS ONLY A VALID CONFIGURATION FOR IN 5. DO NOT USE FOR IN 4.
   cron:
@@ -75,7 +80,9 @@ services:
       EOF'
     networks:
       - invoiceninja
-
+    extra_hosts:
+      - "in5.localhost:192.168.0.124 " #host and ip
+      
   # THIS IS ONLY A VALID CONFIGURATION FOR IN 4. DO NOT USE FOR IN 5.
   # cron:
   #   image: invoiceninja/invoiceninja:alpine-4

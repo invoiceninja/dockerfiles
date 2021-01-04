@@ -104,5 +104,6 @@ file_env 'S3_SECRET'
 # Run Laravel stuff
 php artisan config:cache
 php artisan optimize
+php artisan migrate --force
 
 exec docker-php-entrypoint "$@"
