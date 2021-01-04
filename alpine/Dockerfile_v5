@@ -85,8 +85,8 @@ RUN apk add --no-cache \
 ## Separate user
 ENV INVOICENINJA_USER=invoiceninja
 
-RUN addgroup -S "$INVOICENINJA_USER" && \
-    adduser \
+RUN addgroup --gid=1500 -S "$INVOICENINJA_USER" && \
+    adduser --uid=1500 \
     --disabled-password \
     --gecos "" \
     --home "$(pwd)" \
