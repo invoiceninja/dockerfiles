@@ -7,3 +7,10 @@ DB_USERNAME1=ninja
 DB_PASSWORD1=ninja
 DB_DATABASE1=ninja
 PHANTOMJS_PDF_GENERATION=false
+
+#V4 env vars
+DB_STRICT='false'
+DB_HOST='db'
+DB_DATABASE='ninja'
+DB_USERNAME='ninja'
+DB_PASSWORD='ninja'
