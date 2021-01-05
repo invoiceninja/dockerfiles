@@ -65,6 +65,7 @@ services:
     image: invoiceninja/invoiceninja:5
     env_file: env
     volumes:
+      - ./config/cron.sh:/usr/local/bin/cron.sh
       - ./config/hosts:/etc/hosts:ro
       - ./docker/app/public:/var/www/app/public:rw,delegated
       - ./docker/app/storage:/var/www/app/storage:rw,delegated
