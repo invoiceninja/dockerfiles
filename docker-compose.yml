@@ -9,8 +9,6 @@ services:
       # Vhost configuration
       #- ./config/caddy/Caddyfile:/etc/caddy/Caddyfiledocker-com
       - ./config/nginx/in-vhost.conf:/etc/nginx/conf.d/in-vhost.conf:ro
-      # Configure your mounted directories, make sure the folder 'public' and 'storage'
-      # exist, before mounting them
       # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       - ./docker/app/public:/var/www/app/public:rw,delegated
       - ./docker/app/storage:/var/www/app/storage:rw,delegated
@@ -19,7 +17,7 @@ services:
     # Run webserver nginx on port 80
     # Feel free to modify depending what port is already occupied
     ports: 
-      - "8003:80"
+      - "80:80"
       #- "443:443"
     networks:
       - invoiceninja
@@ -70,19 +68,13 @@ services:
       - ./config/hosts:/etc/hosts:ro
       - ./docker/app/public:/var/www/app/public:rw,delegated
       - ./docker/app/storage:/var/www/app/storage:rw,delegated
-    entrypoint: |
-      /bin/sh -c 'sh -s <<EOF
-      trap "break;exit" SIGHUP SIGINT SIGTERM
-      while true; do
-        php artisan schedule:run;
-        sleep 60s
-      done
-      EOF'
+    command:
+    - cron.sh
     networks:
       - invoiceninja
     extra_hosts:
       - "in5.localhost:192.168.0.124 " #host and ip
-      
+
   # THIS IS ONLY A VALID CONFIGURATION FOR IN 4. DO NOT USE FOR IN 5.
   # cron:
   #   image: invoiceninja/invoiceninja:alpine-4
