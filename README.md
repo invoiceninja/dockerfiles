@@ -7,7 +7,7 @@
 :crown: **Features**
 
 :lock: Automatic HTTPS (:heart: [Caddy](https://caddyserver.com/))  
-:fire: NGINX webserver support [NGINX](https://nginx.org))
+:fire: NGINX webserver support [NGINX](https://nginx.org/)  
 :hammer: Fully production-ready through docker-compose  
 :pencil: Adjustable to your needs via environment variable  
 
@@ -63,6 +63,9 @@ All that is left to do now is bring up the container
 
 
 ``` docker-compose up -d```
+
+
+**Note: When performing the setup, the Database host is ```db```
 
 ## Support
 
