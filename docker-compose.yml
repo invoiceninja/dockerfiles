@@ -79,9 +79,9 @@ services:
   # cron:
   #   image: invoiceninja/invoiceninja:alpine-4
   #   volumes:
-  #     -  storage:/var/www/app/storage
-  #     -  logo:/var/www/app/public/logo
-  #     -  public:/var/www/app/public
+      # - ./docker/app/public:/var/www/app/public:rw,delegated
+      # - ./docker/app/storage:/var/www/app/storage:rw,delegated
+      # - ./docker/app/public/logo:/var/www/app/public/logo:rw,delegated
   #   entrypoint: |
   #     /bin/sh -c 'sh -s <<EOF
   #     trap "break;exit" SIGHUP SIGINT SIGTERM
