@@ -64,6 +64,9 @@ All that is left to do now is bring up the container
 
 ``` docker-compose up -d```
 
+
+**Note: When performing the setup, the Database host is ```db```
+
 ## Support
 
 If you discover a bug, please create and issue, if you query is general in nature please visit us on our [Forum ](https://forum.invoiceninja.com/)
