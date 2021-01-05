@@ -33,7 +33,7 @@ FROM php:${PHP_VERSION}-fpm-alpine
 ARG INVOICENINJA_VERSION
 ENV INVOICENINJA_VERSION=$INVOICENINJA_VERSION
 
-LABEL maintainer="Samuel Laulhau <sam@lalop.co>, Holger Lösken <holger.loesken@codedge.de>"
+LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
 WORKDIR /var/www/app
 
