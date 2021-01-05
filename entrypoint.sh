@@ -84,6 +84,7 @@ fi
 
 # Set permission for web server to create/update files
 chown -R invoiceninja:www-data /var/www/app/storage /var/www/app/public /var/www/app/bootstrap
+chmod +x /usr/local/bin/cron.sh
 
 # Initialize values that might be stored in a file
 file_env 'APP_KEY'
@@ -104,5 +105,6 @@ file_env 'S3_SECRET'
 # Run Laravel stuff
 php artisan config:cache
 php artisan optimize
+php artisan migrate --force
 
 exec docker-php-entrypoint "$@"
