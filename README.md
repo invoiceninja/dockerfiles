@@ -52,20 +52,21 @@ From the terminal run
 
 If you are running the container locally, then the container will need to resolve the host, to support this you will want to insert your LAN IP address and the host name in the hosts file located in ```config/hosts```
 
-For example, lets say your APP_URL is ```http://ninja.test:8000``` and your LAN IP is 192.168.0.124 the hosts file will have an entry looking like this:
+For example, lets say your APP_URL is ```http://in5.test:8000``` and your LAN IP is 192.168.0.124 the hosts file will have an entry looking like this:
 
 
-```192.168.0.124 in5.localhost```
+```192.168.0.124 in5.test```
 
+**Please note that PDF generation using local host your domain name MUST end in .test for your PDFs to generate correctly, this is a DNS resolver issue with chromium.
 
 All that is left to do now is bring up the container
 
 
 ``` docker-compose up -d```
 
+## Support
+
+If you discover a bug, please create and issue, if you query is general in nature please visit us on our [Forum ](https://forum.invoiceninja.com/)
 
 
-## Documentation
-
-Please see our [wiki](https://github.com/invoiceninja/dockerfiles/wiki) for further guidance.
 
