@@ -2,7 +2,7 @@ ARG PHP_VERSION=7.2
 
 FROM php:${PHP_VERSION}-fpm-alpine
 
-LABEL maintainer="Samuel Laulhau <sam@lalop.co>, Holger Lösken <holger.loesken@codedge.de>"
+LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
 #####
 # SYSTEM REQUIREMENT
@@ -24,8 +24,8 @@ RUN set -eux; \
     libzip-dev
 
 RUN docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include --with-webp-dir=/usr/include --with-freetype-dir=/usr/include/; \
-	docker-php-ext-configure zip --with-libzip; \
-	docker-php-ext-install -j$(nproc) \
+  docker-php-ext-configure zip --with-libzip; \
+  docker-php-ext-install -j$(nproc) \
        iconv \
        gd \
        gmp \
@@ -41,8 +41,8 @@ COPY ./config/php/php-cli.ini /usr/local/etc/php/php-cli.ini
 # Separate user
 ENV IN_USER=invoiceninja
 
-RUN addgroup -S "$IN_USER" && \
-    adduser \
+RUN addgroup --gid=1500 -S "$IN_USER" && \
+    adduser --uid=1500 \
     --disabled-password \
     --gecos "" \
     --home "$(pwd)" \
@@ -63,7 +63,6 @@ RUN curl -s -o /tmp/ninja.zip -SL https://download.invoiceninja.com/ninja-v${INV
     && mv /var/www/app/storage /var/www/app/docker-backup-storage  \
     && mv /var/www/app/public /var/www/app/docker-backup-public  \
     && mkdir -p /var/www/app/public/logo /var/www/app/storage \
-    && cp /var/www/app/.env.example /var/www/app/.env \
     && chmod -R 755 /var/www/app/storage  \
     && rm -rf /var/www/app/docs /var/www/app/tests
 
