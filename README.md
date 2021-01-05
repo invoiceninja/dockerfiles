@@ -7,7 +7,7 @@
 :crown: **Features**
 
 :lock: Automatic HTTPS (:heart: [Caddy](https://caddyserver.com/))  
-:fire: NGINX webserver support [NGINX](https://nginx.org)
+:fire: NGINX webserver support [NGINX](https://nginx.org/)
 :hammer: Fully production-ready through docker-compose  
 :pencil: Adjustable to your needs via environment variable  
 
