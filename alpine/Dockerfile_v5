@@ -6,13 +6,11 @@ ARG INVOICENINJA_VERSION
 
 RUN set -eux; \
     apk add --no-cache \
-    curl \
-    mysql-client \
-    libarchive-tools; \
-    mkdir -p /var/www/app
+    curl
 
 RUN curl -o /tmp/ninja.tar.gz -LJ0 https://github.com/invoiceninja/invoiceninja/tarball/v$INVOICENINJA_VERSION \
-    && bsdtar --strip-components=1 -C /var/www/app -xf /tmp/ninja.tar.gz \
+    && mkdir -p /var/www/app \
+    && tar --strip-components=1 -xf /tmp/ninja.tar.gz -C /var/www/app/ \
     && rm /tmp/ninja.tar.gz \
     && cp -R /var/www/app/storage /var/www/app/docker-backup-storage  \
     && cp -R /var/www/app/public /var/www/app/docker-backup-public  \
@@ -26,7 +24,9 @@ FROM node:12-alpine as frontend
 COPY --from=base /var/www/app /var/www/app
 WORKDIR /var/www/app/
 
-RUN npm install
+RUN npm install --production \
+    && npm run production \
+    && rm -rf node_modules
 
 # Prepare php image
 FROM php:${PHP_VERSION}-fpm-alpine
@@ -43,8 +43,6 @@ RUN chmod +x /usr/local/bin/docker-entrypoint
 
 RUN set -eux; \
     apk add --no-cache \
-    nodejs \
-    npm \
     mysql-client \
     freetype-dev \
     gmp-dev \
@@ -54,9 +52,10 @@ RUN set -eux; \
     oniguruma-dev \
     git \
     busybox-suid \
-    zip; \
-    docker-php-ext-configure gd --with-freetype --with-jpeg; \
-    docker-php-ext-install -j$(nproc) \
+    zip \
+    chromium \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
         bcmath \
         exif \
         gd \
@@ -71,30 +70,19 @@ RUN set -eux; \
 COPY ./config/php/php.ini /usr/local/etc/php/php.ini
 COPY ./config/php/php-cli.ini /usr/local/etc/php/php-cli.ini
 
-RUN apk add --no-cache \
-      chromium \
-      nss \
-      freetype \
-      freetype-dev \
-      harfbuzz \
-      ca-certificates \
-      ttf-freefont \
-      nodejs \
-      yarn
-
 ## Separate user
 ENV INVOICENINJA_USER=invoiceninja
 
-RUN addgroup --gid=1500 -S "$INVOICENINJA_USER" && \
-    adduser --uid=1500 \
+RUN addgroup --gid=1500 -S "$INVOICENINJA_USER" \
+    && adduser --uid=1500 \
     --disabled-password \
     --gecos "" \
     --home "$(pwd)" \
     --ingroup "$INVOICENINJA_USER" \ 
     --no-create-home \
-    "$INVOICENINJA_USER"; \
-    addgroup "$INVOICENINJA_USER" www-data; \
-    chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" /var/www/app
+    "$INVOICENINJA_USER" \
+    && addgroup "$INVOICENINJA_USER" www-data \
+    && chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" /var/www/app
 
 
 # Install Composer
