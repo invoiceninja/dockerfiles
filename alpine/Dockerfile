@@ -45,20 +45,20 @@ COPY ./config/php/php.ini /usr/local/etc/php/php.ini
 COPY ./config/php/php-cli.ini /usr/local/etc/php/php-cli.ini
 
 # Separate user
-ENV IN_USER=invoiceninja
+ENV INVOICENINJA_USER=invoiceninja
 
-RUN addgroup --gid=1500 -S "$IN_USER" && \
+RUN addgroup --gid=1500 -S "$INVOICENINJA_USER" && \
     adduser --uid=1500 \
     --disabled-password \
     --gecos "" \
     --home "$(pwd)" \
-    --ingroup "$IN_USER" \ 
+    --ingroup "$INVOICENINJA_USER" \ 
     --no-create-home \
-    "$IN_USER"; \
-    addgroup "$IN_USER" www-data; \
-    chown -R "$IN_USER":"$IN_USER" .
+    "$INVOICENINJA_USER"; \
+    addgroup "$INVOICENINJA_USER" www-data; \
+    chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" .
 
-USER $IN_USER
+USER $INVOICENINJA_USER
 
 # Download and install IN
 ENV INVOICENINJA_VERSION="${INVOICENINJA_VERSION}"
