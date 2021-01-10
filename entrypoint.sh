@@ -51,6 +51,7 @@ fi
 if [ ! -d /var/www/app/storage ] && [ -d "$BAK_STORAGE_PATH" ]; then
     mv "$BAK_STORAGE_PATH" /var/www/app/storage
 elif [ -d "$BAK_STORAGE_PATH" ]; then
+    # copy missing folders in storage
     IN_STORAGE_BACKUP="$(ls "$BAK_STORAGE_PATH")"
     for path in $IN_STORAGE_BACKUP; do
         if [ ! -e "/var/www/app/storage/$path" ]; then
@@ -61,7 +62,9 @@ fi
 rm -rf "$BAK_STORAGE_PATH"
 
 # create public volume
-if [ ! -e /var/www/app/public/version ] || [ "$INVOICENINJA_VERSION" != "$(cat /var/www/app/public/version)" ]; then
+if [ ! -d /var/www/app/public ] && [ -d "$BAK_PUBLIC_PATH" ]; then
+    mv "$BAK_PUBLIC_PATH" /var/www/app/public
+elif [ ! -e /var/www/app/public/version ] || [ "$INVOICENINJA_VERSION" != "$(cat /var/www/app/public/version)" ]; then
     # version mismatch, update all
     cp -au "$BAK_PUBLIC_PATH/"* /var/www/app/public
     echo "$INVOICENINJA_VERSION" > /var/www/app/public/version
@@ -69,7 +72,7 @@ elif [ ! -d /var/www/app/public/logo ] && [ -d "$BAK_PUBLIC_PATH/logo" ]; then
     # missing logo folder only, copy folder
     cp -a "$BAK_PUBLIC_PATH/logo" /var/www/app/public/logo
 elif [ -d "$BAK_PUBLIC_PATH/logo" ]; then
-    # update logo folder anyways
+    # copy missing folders in logo
     IN_LOGO_BACKUP="$(ls "$BAK_PUBLIC_PATH/logo")"
     for path in $IN_LOGO_BACKUP; do
         if [ ! -e "/var/www/app/public/logo/$path" ]; then
