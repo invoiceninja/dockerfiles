@@ -77,10 +77,11 @@ COPY ./config/php/php.ini /usr/local/etc/php/php.ini
 COPY ./config/php/php-cli.ini /usr/local/etc/php/php-cli.ini
 
 ## Separate user
+ARG UID=1500
 ENV INVOICENINJA_USER=invoiceninja
 
-RUN addgroup --gid=1500 -S "$INVOICENINJA_USER" \
-    && adduser --uid=1500 \
+RUN addgroup --gid=$UID -S "$INVOICENINJA_USER" \
+    && adduser --uid=$UID \
     --disabled-password \
     --gecos "" \
     --home "$(pwd)" \
@@ -94,7 +95,7 @@ RUN addgroup --gid=1500 -S "$INVOICENINJA_USER" \
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer; 
 
-USER $INVOICENINJA_USER
+USER $UID
 
 RUN /usr/local/bin/composer install --no-dev --quiet
 
