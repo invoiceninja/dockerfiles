@@ -1,4 +1,6 @@
 ARG PHP_VERSION=7.2
+ARG BAK_STORAGE_PATH=/var/www/app/docker-backup-storage/
+ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 
 FROM php:${PHP_VERSION}-fpm-alpine
 
@@ -8,6 +10,10 @@ LABEL maintainer="David Bomba <turbo124@gmail.com>"
 # SYSTEM REQUIREMENT
 #####
 ARG INVOICENINJA_VERSION
+ARG BAK_STORAGE_PATH
+ARG BAK_PUBLIC_PATH
+ENV BAK_STORAGE_PATH $BAK_STORAGE_PATH
+ENV BAK_PUBLIC_PATH $BAK_PUBLIC_PATH
 WORKDIR /var/www/app
 
 COPY entrypoint.sh /usr/local/bin/docker-entrypoint
@@ -60,8 +66,8 @@ ENV INVOICENINJA_VERSION="${INVOICENINJA_VERSION}"
 RUN curl -s -o /tmp/ninja.zip -SL https://download.invoiceninja.com/ninja-v${INVOICENINJA_VERSION}.zip \
     && bsdtar --strip-components=1 -C /var/www/app -xf /tmp/ninja.zip \
     && rm /tmp/ninja.zip \
-    && mv /var/www/app/storage /var/www/app/docker-backup-storage  \
-    && mv /var/www/app/public /var/www/app/docker-backup-public  \
+    && mv /var/www/app/storage $BAK_STORAGE_PATH  \
+    && mv /var/www/app/public $BAK_PUBLIC_PATH  \
     && mkdir -p /var/www/app/public/logo /var/www/app/storage \
     && chmod -R 755 /var/www/app/storage  \
     && rm -rf /var/www/app/docs /var/www/app/tests

@@ -1,8 +1,12 @@
 ARG PHP_VERSION=7.4
+ARG BAK_STORAGE_PATH=/var/www/app/docker-backup-storage/
+ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 
 # Get Invoice Ninja and install nodejs packages
 FROM node:lts-alpine as frontend
 ARG INVOICENINJA_VERSION
+ARG BAK_STORAGE_PATH
+ARG BAK_PUBLIC_PATH
 
 # Install dependencies
 RUN set -eux; \
@@ -23,13 +27,17 @@ WORKDIR /var/www/app/
 RUN npm install --production \
     && npm run production \
     && rm -rf node_modules \
-    && mv /var/www/app/storage /var/www/app/docker-backup-storage/ \
-    && mv /var/www/app/public /var/www/app/docker-backup-public/
+    && mv /var/www/app/storage $BAK_STORAGE_PATH \
+    && mv /var/www/app/public $BAK_PUBLIC_PATH
 
 # Prepare php image
 FROM php:${PHP_VERSION}-fpm-alpine
 ARG INVOICENINJA_VERSION
+ARG BAK_STORAGE_PATH
+ARG BAK_PUBLIC_PATH
 ENV INVOICENINJA_VERSION $INVOICENINJA_VERSION
+ENV BAK_STORAGE_PATH $BAK_STORAGE_PATH
+ENV BAK_PUBLIC_PATH $BAK_PUBLIC_PATH
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
