@@ -1,37 +1,35 @@
 ARG PHP_VERSION=7.4
 
-# Get Invoice Ninja
-FROM alpine:latest as base
+# Get Invoice Ninja and install nodejs packages
+FROM node:lts-alpine as frontend
 ARG INVOICENINJA_VERSION
 
+# Install dependencies
 RUN set -eux; \
     apk add --no-cache \
     curl
 
+# Download Invoice Ninja
 RUN curl -o /tmp/ninja.tar.gz -LJ0 https://github.com/invoiceninja/invoiceninja/tarball/v$INVOICENINJA_VERSION \
     && mkdir -p /var/www/app \
     && tar --strip-components=1 -xf /tmp/ninja.tar.gz -C /var/www/app/ \
-    && rm /tmp/ninja.tar.gz \
-    && cp -R /var/www/app/storage /var/www/app/docker-backup-storage  \
-    && cp -R /var/www/app/public /var/www/app/docker-backup-public  \
     && mkdir -p /var/www/app/public/logo /var/www/app/storage \
-    && cp /var/www/app/.env.example /var/www/app/.env \
+    && mv /var/www/app/.env.example /var/www/app/.env \
     && rm -rf /var/www/app/docs /var/www/app/tests
 
-# Install nodejs packages
-FROM node:12-alpine as frontend
-
-COPY --from=base /var/www/app /var/www/app
 WORKDIR /var/www/app/
 
+# Install node packages
 RUN npm install --production \
     && npm run production \
-    && rm -rf node_modules
+    && rm -rf node_modules \
+    && mv /var/www/app/storage /var/www/app/docker-backup-storage/ \
+    && mv /var/www/app/public /var/www/app/docker-backup-public/
 
 # Prepare php image
 FROM php:${PHP_VERSION}-fpm-alpine
 ARG INVOICENINJA_VERSION
-ENV INVOICENINJA_VERSION=$INVOICENINJA_VERSION
+ENV INVOICENINJA_VERSION $INVOICENINJA_VERSION
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
@@ -49,9 +47,9 @@ RUN set -eux; \
     libjpeg-turbo-dev \
     libpng-dev \
     libzip-dev \
-    oniguruma-dev \
-    git \
-    busybox-suid \
+    # oniguruma-dev \
+    # git \
+    # busybox-suid \
     zip \
     chromium \
     harfbuzz \
@@ -62,10 +60,8 @@ RUN set -eux; \
         exif \
         gd \
         gmp \
-#        mbstring \
         mysqli \
         opcache \
-        pdo \
         pdo_mysql \
         zip
 
@@ -92,7 +88,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 USER $INVOICENINJA_USER
 
-RUN /usr/local/bin/composer install --no-dev --no-suggest --no-progress --quiet
+RUN /usr/local/bin/composer install --no-dev --quiet
 
 # Override the environment settings from projects .env file
 ENV APP_ENV production
