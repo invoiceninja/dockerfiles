@@ -70,7 +70,9 @@ services:
       - ./docker/app/public:/var/www/app/public:rw,delegated
       - ./docker/app/storage:/var/www/app/storage:rw,delegated
     command:
-    - cron.sh
+      - cron.sh
+    depends_on:
+      - app
     networks:
       - invoiceninja
     extra_hosts:

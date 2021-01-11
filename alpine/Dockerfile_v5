@@ -1,37 +1,43 @@
 ARG PHP_VERSION=7.4
+ARG BAK_STORAGE_PATH=/var/www/app/docker-backup-storage/
+ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 
-# Get Invoice Ninja
-FROM alpine:latest as base
+# Get Invoice Ninja and install nodejs packages
+FROM node:lts-alpine as frontend
 ARG INVOICENINJA_VERSION
+ARG BAK_STORAGE_PATH
+ARG BAK_PUBLIC_PATH
 
+# Install dependencies
 RUN set -eux; \
     apk add --no-cache \
     curl
 
+# Download Invoice Ninja
 RUN curl -o /tmp/ninja.tar.gz -LJ0 https://github.com/invoiceninja/invoiceninja/tarball/v$INVOICENINJA_VERSION \
     && mkdir -p /var/www/app \
     && tar --strip-components=1 -xf /tmp/ninja.tar.gz -C /var/www/app/ \
-    && rm /tmp/ninja.tar.gz \
-    && cp -R /var/www/app/storage /var/www/app/docker-backup-storage  \
-    && cp -R /var/www/app/public /var/www/app/docker-backup-public  \
     && mkdir -p /var/www/app/public/logo /var/www/app/storage \
-    && cp /var/www/app/.env.example /var/www/app/.env \
+    && mv /var/www/app/.env.example /var/www/app/.env \
     && rm -rf /var/www/app/docs /var/www/app/tests
 
-# Install nodejs packages
-FROM node:12-alpine as frontend
-
-COPY --from=base /var/www/app /var/www/app
 WORKDIR /var/www/app/
 
+# Install node packages
 RUN npm install --production \
     && npm run production \
-    && rm -rf node_modules
+    && rm -rf node_modules \
+    && mv /var/www/app/storage $BAK_STORAGE_PATH \
+    && mv /var/www/app/public $BAK_PUBLIC_PATH
 
 # Prepare php image
 FROM php:${PHP_VERSION}-fpm-alpine
 ARG INVOICENINJA_VERSION
-ENV INVOICENINJA_VERSION=$INVOICENINJA_VERSION
+ARG BAK_STORAGE_PATH
+ARG BAK_PUBLIC_PATH
+ENV INVOICENINJA_VERSION $INVOICENINJA_VERSION
+ENV BAK_STORAGE_PATH $BAK_STORAGE_PATH
+ENV BAK_PUBLIC_PATH $BAK_PUBLIC_PATH
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
@@ -49,9 +55,9 @@ RUN set -eux; \
     libjpeg-turbo-dev \
     libpng-dev \
     libzip-dev \
-    oniguruma-dev \
+    # oniguruma-dev \
     git \
-    busybox-suid \
+    # busybox-suid \
     zip \
     chromium \
     harfbuzz \
@@ -62,10 +68,8 @@ RUN set -eux; \
         exif \
         gd \
         gmp \
-#        mbstring \
         mysqli \
         opcache \
-        pdo \
         pdo_mysql \
         zip
 
@@ -73,10 +77,11 @@ COPY ./config/php/php.ini /usr/local/etc/php/php.ini
 COPY ./config/php/php-cli.ini /usr/local/etc/php/php-cli.ini
 
 ## Separate user
+ARG UID=1500
 ENV INVOICENINJA_USER=invoiceninja
 
-RUN addgroup --gid=1500 -S "$INVOICENINJA_USER" \
-    && adduser --uid=1500 \
+RUN addgroup --gid=$UID -S "$INVOICENINJA_USER" \
+    && adduser --uid=$UID \
     --disabled-password \
     --gecos "" \
     --home "$(pwd)" \
@@ -90,9 +95,9 @@ RUN addgroup --gid=1500 -S "$INVOICENINJA_USER" \
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer; 
 
-USER $INVOICENINJA_USER
+USER $UID
 
-RUN /usr/local/bin/composer install --no-dev --no-suggest --no-progress --quiet
+RUN /usr/local/bin/composer install --no-dev --quiet
 
 # Override the environment settings from projects .env file
 ENV APP_ENV production

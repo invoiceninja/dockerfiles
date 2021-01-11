@@ -47,43 +47,43 @@ if [ "${1#-}" != "$1" ]; then
 	set -- php-fpm "$@"
 fi
 
-BAK_STORAGE_PATH=/var/www/app/docker-backup-storage/
-BAK_LOGO_PATH=/var/www/app/docker-backup-public/logo/
-
-if [ ! -d /var/www/app/storage ]; then
-    cp -Rp $BAK_STORAGE_PATH /var/www/app/storage
-else
-    if [ -d $BAK_STORAGE_PATH ]; then
-        IN_STORAGE_BACKUP="$(ls $BAK_STORAGE_PATH)"
-        for path in $IN_STORAGE_BACKUP; do
-            if [ ! -e "/var/www/app/storage/$path" ]; then
-                cp -Rp "$BAK_STORAGE_PATH/$path" "/var/www/app/storage/"
-            fi
-        done
-    fi
+# create storage volume
+if [ ! -d /var/www/app/storage ] && [ -d "$BAK_STORAGE_PATH" ]; then
+    mv "$BAK_STORAGE_PATH" /var/www/app/storage
+elif [ -d "$BAK_STORAGE_PATH" ]; then
+    # copy missing folders in storage
+    IN_STORAGE_BACKUP="$(ls "$BAK_STORAGE_PATH")"
+    for path in $IN_STORAGE_BACKUP; do
+        if [ ! -e "/var/www/app/storage/$path" ]; then
+            cp -Rp "$BAK_STORAGE_PATH/$path" "/var/www/app/storage/"
+        fi
+    done
 fi
+rm -rf "$BAK_STORAGE_PATH"
 
-if [ ! -d /var/www/app/public/logo ] && [ -d $BAK_LOGO_PATH ]; then
-    cp -Rp $BAK_LOGO_PATH /var/www/app/public/logo
-else
-    if [ -d $BAK_LOGO_PATH ]; then
-        IN_LOGO_BACKUP="$(ls $BAK_LOGO_PATH)"
-        for path in $IN_LOGO_BACKUP; do
-            if [ ! -e "/var/www/app/public/logo/$path" ]; then
-                cp -Rp "$BAK_LOGO_PATH/$path" "/var/www/app/public/logo/"
-            fi
-        done
-    fi
+# create public volume
+if [ ! -d /var/www/app/public ] && [ -d "$BAK_PUBLIC_PATH" ]; then
+    mv "$BAK_PUBLIC_PATH" /var/www/app/public
+elif [ ! -e /var/www/app/public/version ] || [ "$INVOICENINJA_VERSION" != "$(cat /var/www/app/public/version)" ]; then
+    # version mismatch, update all
+    cp -au "$BAK_PUBLIC_PATH/"* /var/www/app/public
+    echo "$INVOICENINJA_VERSION" > /var/www/app/public/version
+elif [ ! -d /var/www/app/public/logo ] && [ -d "$BAK_PUBLIC_PATH/logo" ]; then
+    # missing logo folder only, copy folder
+    cp -a "$BAK_PUBLIC_PATH/logo" /var/www/app/public/logo
+elif [ -d "$BAK_PUBLIC_PATH/logo" ]; then
+    # copy missing folders in logo
+    IN_LOGO_BACKUP="$(ls "$BAK_PUBLIC_PATH/logo")"
+    for path in $IN_LOGO_BACKUP; do
+        if [ ! -e "/var/www/app/public/logo/$path" ]; then
+            cp -a "$BAK_PUBLIC_PATH/logo/$path" "/var/www/app/public/logo/"
+        fi
+    done
 fi
-
-# compare public volume version with image version
-if [ ! -e /var/www/app/public/version ] || [ "$INVOICENINJA_VERSION" != "$(cat /var/www/app/public/version)" ]; then
-    cp -au /var/www/app/docker-backup-public/* /var/www/app/public/
-    echo $INVOICENINJA_VERSION > /var/www/app/public/version
-fi
+rm -rf "$BAK_PUBLIC_PATH"
 
 # Set permission for web server to create/update files
-chown -R invoiceninja:www-data /var/www/app/storage /var/www/app/public /var/www/app/bootstrap
+chown -R "$INVOICENINJA_USER":www-data /var/www/app/storage /var/www/app/public /var/www/app/bootstrap
 
 # Initialize values that might be stored in a file
 file_env 'APP_KEY'
