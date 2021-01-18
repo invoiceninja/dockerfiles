@@ -6,7 +6,9 @@ DB_HOST1=db
 DB_USERNAME1=ninja
 DB_PASSWORD1=ninja
 DB_DATABASE1=ninja
-PHANTOMJS_PDF_GENERATION=false
+
+#this is a system variable please do not remove
+IS_DOCKER=true
 
 #V4 env vars
 DB_STRICT=false
