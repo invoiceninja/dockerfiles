@@ -28,8 +28,6 @@ services:
     image: invoiceninja/invoiceninja:5
     env_file: env
     restart: always
-    cap_add:
-      - SYS_ADMIN
     volumes:
       # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       - ./config/hosts:/etc/hosts:ro
