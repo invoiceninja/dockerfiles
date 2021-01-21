@@ -17,32 +17,21 @@ ENV BAK_PUBLIC_PATH $BAK_PUBLIC_PATH
 WORKDIR /var/www/app
 
 COPY entrypoint.sh /usr/local/bin/docker-entrypoint
-RUN chmod +x /usr/local/bin/docker-entrypoint
+RUN chmod +x /usr/local/bin/docker-entrypoint \
+    && mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
-RUN set -eux; \
-    apk add --no-cache \
-    gmp-dev \
-    freetype-dev \
-    libarchive-tools \
-    libjpeg-turbo-dev \
-    libpng-dev \
-    libwebp-dev\ 
-    libzip-dev
+# Install PHP extensions
+# https://hub.docker.com/r/mlocati/php-extension-installer/tags
+COPY --from=mlocati/php-extension-installer:1.1.41 /usr/bin/install-php-extensions /usr/local/bin/
 
-RUN docker-php-ext-configure gd --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include --with-webp-dir=/usr/include --with-freetype-dir=/usr/include/; \
-  docker-php-ext-configure zip --with-libzip; \
-  docker-php-ext-install -j$(nproc) \
-       iconv \
-       gd \
-       gmp \
-       mbstring \
-       opcache \
-       pdo \
-       pdo_mysql \
-       zip
+RUN install-php-extensions \
+    gd \
+    gmp \
+    opcache \
+    pdo_mysql \
+    zip
 
-COPY ./config/php/php.ini /usr/local/etc/php/php.ini
-COPY ./config/php/php-cli.ini /usr/local/etc/php/php-cli.ini
+COPY ./config/php/php.ini /usr/local/etc/php/conf.d/in-php.ini
 
 # Separate user
 ENV INVOICENINJA_USER=invoiceninja
@@ -58,14 +47,15 @@ RUN addgroup --gid=1500 -S "$INVOICENINJA_USER" && \
     addgroup "$INVOICENINJA_USER" www-data; \
     chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" .
 
-USER $INVOICENINJA_USER
+USER 1500
 
 # Download and install IN
 ENV INVOICENINJA_VERSION="${INVOICENINJA_VERSION}"
 
-RUN curl -s -o /tmp/ninja.zip -SL https://download.invoiceninja.com/ninja-v${INVOICENINJA_VERSION}.zip \
-    && bsdtar --strip-components=1 -C /var/www/app -xf /tmp/ninja.zip \
-    && rm /tmp/ninja.zip \
+RUN curl -o /tmp/ninja.zip -L https://download.invoiceninja.com/ninja-v${INVOICENINJA_VERSION}.zip \
+    && unzip -q /tmp/ninja.zip -d /tmp/ \
+    && mv /tmp/ninja/* /var/www/app \
+    && rm -rf /tmp/ninja* \
     && mv /var/www/app/storage $BAK_STORAGE_PATH  \
     && mv /var/www/app/public $BAK_PUBLIC_PATH  \
     && mkdir -p /var/www/app/public/logo /var/www/app/storage \
