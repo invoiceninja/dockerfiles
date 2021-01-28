@@ -29,8 +29,7 @@ RUN npm install --production \
     && rm -rf node_modules \
     && mv /var/www/app/storage $BAK_STORAGE_PATH \
     && mv /var/www/app/public $BAK_PUBLIC_PATH \
-    && mkdir /var/log/supervisord /var/run/supervisord \
-    && chown $INVOICENINJA_USER:www-data /var/log/supervisord /var/run/supervisord
+    && mkdir /var/log/supervisord /var/run/supervisord 
 
 # Prepare php image
 FROM php:${PHP_VERSION}-fpm-alpine
@@ -90,7 +89,8 @@ RUN addgroup --gid=$UID -S "$INVOICENINJA_USER" \
     --no-create-home \
     "$INVOICENINJA_USER" \
     && addgroup "$INVOICENINJA_USER" www-data \
-    && chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" /var/www/app
+    && chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" /var/www/app \
+    && chown $INVOICENINJA_USER:www-data /var/log/supervisord /var/run/supervisord
 
 USER $UID
 
