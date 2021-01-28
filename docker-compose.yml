@@ -59,22 +59,22 @@ services:
       - "in5.localhost:192.168.0.124 " #host and ip
 
   # THIS IS ONLY A VALID CONFIGURATION FOR IN 5. DO NOT USE FOR IN 4.
-  cron:
-    image: invoiceninja/invoiceninja:5
-    env_file: env
-    volumes:
-      - ./config/cron.sh:/usr/local/bin/cron.sh
-      - ./config/hosts:/etc/hosts:ro
-      - ./docker/app/public:/var/www/app/public:rw,delegated
-      - ./docker/app/storage:/var/www/app/storage:rw,delegated
-    command:
-      - cron.sh
-    depends_on:
-      - app
-    networks:
-      - invoiceninja
-    extra_hosts:
-      - "in5.localhost:192.168.0.124 " #host and ip
+  # cron:
+  #   image: invoiceninja/invoiceninja:5
+  #   env_file: env
+  #   volumes:
+  #     - ./config/cron.sh:/usr/local/bin/cron.sh
+  #     - ./config/hosts:/etc/hosts:ro
+  #     - ./docker/app/public:/var/www/app/public:rw,delegated
+  #     - ./docker/app/storage:/var/www/app/storage:rw,delegated
+  #   command:
+  #     - cron.sh
+  #   depends_on:
+  #     - app
+  #   networks:
+  #     - invoiceninja
+  #   extra_hosts:
+  #     - "in5.localhost:192.168.0.124 " #host and ip
 
   # THIS IS ONLY A VALID CONFIGURATION FOR IN 4. DO NOT USE FOR IN 5.
   # cron:
