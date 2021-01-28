@@ -28,7 +28,9 @@ RUN npm install --production \
     && npm run production \
     && rm -rf node_modules \
     && mv /var/www/app/storage $BAK_STORAGE_PATH \
-    && mv /var/www/app/public $BAK_PUBLIC_PATH
+    && mv /var/www/app/public $BAK_PUBLIC_PATH \
+    && mkdir /var/log/supervisord /var/run/supervisord \
+    && chown $INVOICENINJA_USER:www-data /var/log/supervisord /var/run/supervisord
 
 # Prepare php image
 FROM php:${PHP_VERSION}-fpm-alpine
@@ -66,12 +68,14 @@ RUN install-php-extensions \
 # Install chromium
 RUN set -eux; \
     apk add --no-cache \
+    supervisor \
     mysql-client \
     git \
     chromium \
     ttf-freefont
 
 COPY ./config/php/php.ini /usr/local/etc/php/conf.d/in-php.ini
+COPY ./config/supervisor/supervisord.conf /
 
 ## Separate user
 ARG UID=1500
@@ -98,4 +102,4 @@ ENV LOG errorlog
 ENV SNAPPDF_EXECUTABLE_PATH /usr/bin/chromium-browser
 
 ENTRYPOINT ["docker-entrypoint"]
-CMD ["php-fpm"]
+CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
