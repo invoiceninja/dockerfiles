@@ -9,7 +9,6 @@ services:
       # Vhost configuration
       #- ./config/caddy/Caddyfile:/etc/caddy/Caddyfiledocker-com
       - ./config/nginx/in-vhost.conf:/etc/nginx/conf.d/in-vhost.conf:ro
-      # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       - ./docker/app/public:/var/www/app/public:rw,delegated
       - ./docker/app/storage:/var/www/app/storage:rw,delegated
     depends_on:
@@ -29,8 +28,8 @@ services:
     env_file: env
     restart: always
     volumes:
-      # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       - ./config/hosts:/etc/hosts:ro
+      - ./config/shutdown.sh:/usr/local/bin/shutdown.sh
       - ./docker/app/public:/var/www/app/public:rw,delegated
       - ./docker/app/storage:/var/www/app/storage:rw,delegated
     depends_on:
@@ -51,30 +50,11 @@ services:
       - MYSQL_PASSWORD=ninja
       - MYSQL_DATABASE=ninja
     volumes:
-      # you may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       - ./docker/mysql/data:/var/lib/mysql:rw,delegated
     networks:
       - invoiceninja
     extra_hosts:
       - "in5.localhost:192.168.0.124 " #host and ip
-
-  # THIS IS ONLY A VALID CONFIGURATION FOR IN 5. DO NOT USE FOR IN 4.
-  # cron:
-  #   image: invoiceninja/invoiceninja:5
-  #   env_file: env
-  #   volumes:
-  #     - ./config/cron.sh:/usr/local/bin/cron.sh
-  #     - ./config/hosts:/etc/hosts:ro
-  #     - ./docker/app/public:/var/www/app/public:rw,delegated
-  #     - ./docker/app/storage:/var/www/app/storage:rw,delegated
-  #   command:
-  #     - cron.sh
-  #   depends_on:
-  #     - app
-  #   networks:
-  #     - invoiceninja
-  #   extra_hosts:
-  #     - "in5.localhost:192.168.0.124 " #host and ip
 
   # THIS IS ONLY A VALID CONFIGURATION FOR IN 4. DO NOT USE FOR IN 5.
   # cron:
