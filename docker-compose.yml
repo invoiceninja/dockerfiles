@@ -1,10 +1,10 @@
-version: '3.7'
+version: "3.7"
 
 services:
   server:
     image: nginx
     restart: always
-    env_file: env
+    env_file: .env
     volumes:
       # Vhost configuration
       #- ./config/caddy/Caddyfile:/etc/caddy/Caddyfiledocker-com
@@ -15,17 +15,17 @@ services:
       - app
     # Run webserver nginx on port 80
     # Feel free to modify depending what port is already occupied
-    ports: 
-      - "80:80"
-      #- "443:443"
+    ports:
+      - ${PORT}:80
+    #- "443:443"
     networks:
       - invoiceninja
     extra_hosts:
-      - "in5.localhost:192.168.0.124 " #host and ip
+      - "${CNAME}:192.168.0.124 " #host and ip
 
   app:
     image: invoiceninja/invoiceninja:5
-    env_file: env
+    env_file: .env
     restart: always
     volumes:
       - ./config/hosts:/etc/hosts:ro
@@ -34,35 +34,40 @@ services:
       - ./docker/app/storage:/var/www/app/storage:rw,delegated
     depends_on:
       - db
-    networks: 
-      - invoiceninja  
+    networks:
+      - invoiceninja
     extra_hosts:
-      - "in5.localhost:192.168.0.124 " #host and ip
+      - "${CNAME}:192.168.0.124 " #host and ip
 
   db:
     image: mysql:5
+    env_file: .env
     ports:
       - "3305:3306"
     restart: always
-    environment: 
-      - MYSQL_ROOT_PASSWORD=ninjaAdm1nPassword
-      - MYSQL_USER=ninja
-      - MYSQL_PASSWORD=ninja
-      - MYSQL_DATABASE=ninja
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD1} # config for 5
+      - MYSQL_USER=${DB_USERNAME1}
+      - MYSQL_PASSWORD=${DB_PASSWORD1}
+      - MYSQL_DATABASE=${DB_DATABASE1}
+      # - MYSQL_ROOT_PASSWORD=${DB_PASSWORD} # config for 4
+      # - MYSQL_USER=${DB_USERNAME}
+      # - MYSQL_PASSWORD=${DB_PASSWORD}
+      # - MYSQL_DATABASE=${DB_DATABASE}
     volumes:
       - ./docker/mysql/data:/var/lib/mysql:rw,delegated
     networks:
       - invoiceninja
     extra_hosts:
-      - "in5.localhost:192.168.0.124 " #host and ip
+      - "${CNAME}:192.168.0.124 " #host and ip
 
   # THIS IS ONLY A VALID CONFIGURATION FOR IN 4. DO NOT USE FOR IN 5.
   # cron:
   #   image: invoiceninja/invoiceninja:alpine-4
   #   volumes:
-      # - ./docker/app/public:/var/www/app/public:rw,delegated
-      # - ./docker/app/storage:/var/www/app/storage:rw,delegated
-      # - ./docker/app/public/logo:/var/www/app/public/logo:rw,delegated
+  # - ./docker/app/public:/var/www/app/public:rw,delegated
+  # - ./docker/app/storage:/var/www/app/storage:rw,delegated
+  # - ./docker/app/public/logo:/var/www/app/public/logo:rw,delegated
   #   entrypoint: |
   #     /bin/sh -c 'sh -s <<EOF
   #     trap "break;exit" SIGHUP SIGINT SIGTERM
@@ -75,7 +80,7 @@ services:
   #     EOF'
   #   networks:
   #     - invoiceninja
-  #     
+  #
 
 networks:
   invoiceninja:
