@@ -1,7 +1,4 @@
-APP_URL=http://${CNAME}:${port}
-PORT=8003
-CNAME=in.localhost
-
+APP_URL=http://in.localhost:8003/
 APP_KEY=<insert your generated key in here>
 APP_DEBUG=true
 MULTI_DB_ENABLED=false
