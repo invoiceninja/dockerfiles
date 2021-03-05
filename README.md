@@ -11,6 +11,10 @@
 :hammer: Fully production-ready through docker-compose  
 :pencil: Adjustable to your needs via environment variable  
 
+## You want some Kubernetes + Helm with that?
+[Helm Chat](https://github.com/Saddamus/invoiceninja-helm) by @Saddamus  
+[Kubernetes](https://github.com/invoiceninja/dockerfiles/issues/94) by @spacepluk 
+
 ## Quickstart V5 Launch
 
 The dockerfile has been revamped to make is easier to get started, by default the base image selected in 5 which will pull in the latest v5 stable image.
