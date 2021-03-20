@@ -10,6 +10,8 @@ DB_DATABASE1=ninja
 #this is a system variable please do not remove
 IS_DOCKER=true
 
+PHANTOMJS_PDF_GENERATION=false
+
 #V4 env vars
 DB_STRICT=false
 DB_HOST=db
