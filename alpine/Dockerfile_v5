@@ -88,9 +88,7 @@ RUN addgroup --gid=$UID -S "$INVOICENINJA_USER" \
     --no-create-home \
     "$INVOICENINJA_USER" \
     && addgroup "$INVOICENINJA_USER" www-data \
-    && mkdir /var/log/supervisord /var/run/supervisord \
-    && chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" /var/www/app \
-    && chown $INVOICENINJA_USER:www-data /var/log/supervisord /var/run/supervisord
+    && chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" /var/www/app
 
 USER $UID
 
