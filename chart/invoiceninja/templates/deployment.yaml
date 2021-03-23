@@ -1,0 +1,138 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "common.names.fullname" . }}
+  labels:
+    {{- include "common.labels.standard" $ | nindent 4 }}
+    app.kubernetes.io/component: server
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if .Values.commonAnnotations }}
+  annotations:
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  {{- if .Values.updateStrategy }}
+  strategy: {{- toYaml .Values.updateStrategy | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "common.labels.matchLabels" $ | nindent 6 }}
+      app.kubernetes.io/component: server
+  template:
+    metadata:
+      {{- if .Values.podAnnotations }}
+      annotations:
+        {{- include "common.tplvalues.render" (dict "value" .Values.podAnnotations "context" $) | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "common.labels.standard" $ | nindent 8 }}
+        app.kubernetes.io/component: server
+        {{- if .Values.podLabels }}
+        {{- include "common.tplvalues.render" (dict "value" .Values.podLabels "context" $) | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- include "invoiceninja.imagePullSecrets" . | nindent 6 }}
+      serviceAccountName: {{ include "invoiceninja.serviceAccountName" . }}
+      {{- if .Values.affinity }}
+      affinity: {{- include "common.tplvalues.render" (dict "value" .Values.affinity "context" $) | nindent 8 }}
+      {{- else }}
+      affinity:
+        podAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAffinityPreset "context" $) | nindent 10 }}
+        podAntiAffinity: {{- include "common.affinities.pods" (dict "type" .Values.podAntiAffinityPreset "context" $) | nindent 10 }}
+        nodeAffinity: {{- include "common.affinities.nodes" (dict "type" .Values.nodeAffinityPreset.type "key" .Values.nodeAffinityPreset.key "values" .Values.nodeAffinityPreset.values) | nindent 10 }}
+      {{- end }}
+      {{- if .Values.nodeSelector }}
+      nodeSelector: {{- include "common.tplvalues.render" (dict "value" .Values.nodeSelector "context" $) | nindent 8 }}
+      {{- end }}
+      {{- if .Values.tolerations }}
+      tolerations: {{- include "common.tplvalues.render" (dict "value" .Values.tolerations "context" $) | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          image: {{ include "invoiceninja.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: fastcgi
+              containerPort: {{ .Values.containerPorts.fastcgi }}
+              protocol: TCP
+          {{- if .Values.livenessProbe.enabled }}
+          livenessProbe:
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ $.Values.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ $.Values.livenessProbe.successThreshold }}
+            failureThreshold: {{ $.Values.livenessProbe.failureThreshold }}
+            tcpSocket:
+              port: {{ .Values.livenessProbe.port }}
+          {{- end }}
+          {{- if .Values.readinessProbe.enabled }}
+          readinessProbe:
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ $.Values.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ $.Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ $.Values.readinessProbe.failureThreshold }}
+            tcpSocket:
+              port: {{ .Values.readinessProbe.port }}
+          {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.fullname" . }}
+            - secretRef:
+                name: {{ include "common.names.fullname" . }}
+            {{- if .Values.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          env:
+            - name: IS_DOCKER
+              value: "true"
+            - name: DB_PASSWORD1
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "invoiceninja.databaseSecretName" . }}
+                  key: mariadb-password
+            {{- if .Values.extraEnvVars }}
+              {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /var/www/app/public
+              name: public
+            - mountPath: /var/www/app/storage
+              name: storage
+            {{- if .Values.extraVolumeMounts }}
+              {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: public
+          {{- if .Values.persistence.public.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.public.existingClaim | default (include "invoiceninja.public.storageName" .) }}
+          {{- else }}
+          emptyDir: {}
+          {{ end }}
+        - name: storage
+          {{- if .Values.persistence.storage.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.storage.existingClaim | default (include "invoiceninja.storage.storageName" .) }}
+          {{- else }}
+          emptyDir: {}
+          {{ end }}
+        {{- if .Values.extraVolumes }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
+        {{- end }}
