@@ -30,8 +30,12 @@ image:
   # pullSecrets:
   #   - myRegistryKeySecretName
 
+## String to turn on debug mode in Invoiceninja
+##
 debug: false
 
+## A 32 character long Application Key
+##
 appKey: ""
 
 ## String to partially override fullname template (will maintain the release name)
@@ -182,27 +186,6 @@ extraVolumes: []
 ##
 extraVolumeMounts: []
 
-## Network Policy configuration
-## ref: https://kubernetes.io/docs/concepts/services-networking/network-policies/
-##
-networkPolicy:
-  ## Enable creation of NetworkPolicy resources
-  ##
-  enabled: true
-  ## The Policy model to apply. When set to false, only pods with the correct
-  ## client label will have network access to the ports Invoiceninja is listening
-  ## on. When true, Invoiceninja will accept connections from any source
-  ## (with the correct destination port).
-  ##
-  allowExternal: false
-  ## Additional NetworkPolicy Ingress "from" rules to set. Note that all rules are OR-ed.
-  ##
-  additionalRules: {}
-  #   http:
-  #   - podSelector:
-  #       matchLabels:
-  #         app.kubernetes.io/instance: ingress-nginx
-
 ## Kubernetes service type
 ## ref: https://kubernetes.io/docs/concepts/services-networking/service/
 ## Set this to NodePort, LoadBalancer or ClusterIP
@@ -336,12 +319,12 @@ mariadb:
   auth:
     ## MariaDB root password
     ##
-    rootPassword: changeit
+    # rootPassword: changeit
     ## MariaDB custom user and database
     ##
     username: invoiceninja
     database: invoiceninja
-    password: changeittoo
+    # password: changeit
 
 ## External Database Configuration
 ##
