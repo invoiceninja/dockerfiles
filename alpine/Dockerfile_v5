@@ -73,7 +73,7 @@ RUN set -eux; \
 
 COPY entrypoint.sh /usr/local/bin/docker-entrypoint
 COPY ./config/php/php.ini /usr/local/etc/php/conf.d/in-php.ini
-COPY ./config/supervisor/supervisord.conf /
+COPY ./config/supervisor/* /
 
 ## Separate user
 ARG UID=1500
@@ -88,8 +88,7 @@ RUN addgroup --gid=$UID -S "$INVOICENINJA_USER" \
     --no-create-home \
     "$INVOICENINJA_USER" \
     && chmod +x /usr/local/bin/docker-entrypoint \
-    && mkdir /app /var/log/supervisord \
-    && chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" /app \
+    && chmod +x /shutdown.sh \
     && chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" /var/www/app
 
 USER $UID
