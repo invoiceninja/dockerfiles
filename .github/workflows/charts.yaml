@@ -1,0 +1,95 @@
+name: Lint and Test Charts
+
+on: pull_request
+
+jobs:
+  lint-chart:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Fetch history
+        run: git fetch --prune --unshallow
+
+      - name: Set up Helm
+        uses: azure/setup-helm@v1
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.0.1
+
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          echo "::set-output name=changed::[\"$(ct list-changed --config .github/ct-lint.yaml)\"]"
+
+      - name: Parse list-changed
+        id: set-matrix
+        env:
+          CHANGED: ${{ steps.list-changed.outputs.changed }}
+        run: |
+          echo "::set-output name=matrix::$(echo "${CHANGED//\\n/\",\"}")"
+
+      - name: Run chart-testing (lint)
+        run: ct lint --config .github/ct-lint.yaml
+  kubeval-chart:
+    runs-on: ubuntu-latest
+    needs:
+      - lint-chart
+    strategy:
+      matrix:
+        chart: ${{ fromJson(needs.lint-chart.outputs.matrix) }}
+        k8s:
+          - v1.17.11
+          - v1.18.8
+          - v1.19.4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Update Helm depdendencies
+        env:
+          CHART_DIR: ${{ matrix.chart }}
+        run: |
+          helm dependency update "${CHART_DIR}"
+          mkdir kubeval
+          helm template "${CHART_DIR}" > kubeval/combined.yaml
+
+      - name: Run kubeval
+        uses: instrumenta/kubeval-action@master
+        with:
+          files: kubeval
+          version: ${{ matrix.k8s }}
+
+  install-chart:
+    name: install-chart
+    runs-on: ubuntu-latest
+    needs:
+      - lint-chart
+      - kubeval-chart
+    strategy:
+      matrix:
+        k8s:
+          - v1.17.11
+          - v1.18.8
+          - v1.19.4
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Create kind ${{ matrix.k8s }} cluster
+        uses: helm/kind-action@v1.1.0
+        with:
+          node_image: kindest/node:${{ matrix.k8s }}
+
+      - name: Run chart-testing (install)
+        uses: helm/chart-testing-action@v2.0.1
+        with:
+          command: install
+          config: .github/ct-install.yaml
