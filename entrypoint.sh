@@ -82,8 +82,10 @@ elif [ -d "$BAK_PUBLIC_PATH/logo" ]; then
 fi
 rm -rf "$BAK_PUBLIC_PATH"
 
-# Set permission for web server to create/update files
-chown -R "$INVOICENINJA_USER":www-data /var/www/app/storage /var/www/app/public /var/www/app/bootstrap
+# Set permission for web server to create/update files (only <v4)
+if [[ ${str::1} -le 4 ]]; then 
+    chown -R "$INVOICENINJA_USER":www-data /var/www/app/storage /var/www/app/public /var/www/app/bootstrap
+fi
 
 # Initialize values that might be stored in a file
 file_env 'APP_KEY'
@@ -104,6 +106,11 @@ file_env 'S3_SECRET'
 # Run Laravel stuff
 php artisan config:cache
 php artisan optimize
+
+while ! mysqladmin ping -h "$DB_HOST1" -P $DB_PORT1 --silent; do
+    echo "Waiting for DB ($DB_HOST1:$DB_PORT1)"
+    sleep 1
+done
 php artisan migrate --force
 
 exec docker-php-entrypoint "$@"

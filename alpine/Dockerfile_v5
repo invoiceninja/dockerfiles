@@ -44,9 +44,8 @@ LABEL maintainer="David Bomba <turbo124@gmail.com>"
 WORKDIR /var/www/app
 
 COPY --from=frontend /var/www/app /var/www/app
-COPY entrypoint.sh /usr/local/bin/docker-entrypoint
-RUN chmod +x /usr/local/bin/docker-entrypoint \
-    && mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+
+RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 # Install PHP extensions
 # https://hub.docker.com/r/mlocati/php-extension-installer/tags
@@ -72,8 +71,9 @@ RUN set -eux; \
     chromium \
     ttf-freefont
 
+COPY entrypoint.sh /usr/local/bin/docker-entrypoint
 COPY ./config/php/php.ini /usr/local/etc/php/conf.d/in-php.ini
-COPY ./config/supervisor/supervisord.conf /
+COPY ./config/supervisor/* /
 
 ## Separate user
 ARG UID=1500
@@ -87,7 +87,8 @@ RUN addgroup --gid=$UID -S "$INVOICENINJA_USER" \
     --ingroup "$INVOICENINJA_USER" \ 
     --no-create-home \
     "$INVOICENINJA_USER" \
-    && addgroup "$INVOICENINJA_USER" www-data \
+    && chmod +x /usr/local/bin/docker-entrypoint \
+    && chmod +x /shutdown.sh \
     && chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" /var/www/app
 
 USER $UID

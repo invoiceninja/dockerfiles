@@ -3,6 +3,7 @@ APP_KEY=<insert your generated key in here>
 APP_DEBUG=true
 MULTI_DB_ENABLED=false
 DB_HOST1=db
+DB_PORT1=3306
 DB_USERNAME1=ninja
 DB_PASSWORD1=ninja
 DB_DATABASE1=ninja
