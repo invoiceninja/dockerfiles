@@ -1,0 +1,12 @@
+dependencies:
+- name: common
+  repository: https://charts.bitnami.com/bitnami
+  version: 1.4.1
+- name: nginx
+  repository: https://charts.bitnami.com/bitnami
+  version: 8.8.0
+- name: mariadb
+  repository: https://charts.bitnami.com/bitnami
+  version: 9.3.5
+digest: sha256:d809702ee601a8a0019defb9ee3fc5a5b5332968e1038cca8b44d5332b14a275
+generated: "2021-03-23T00:33:02.690189+08:00"
