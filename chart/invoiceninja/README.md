@@ -19,7 +19,7 @@ Please read [Upgrading](#upgrading) section before upgrading MAJOR versions.
 To install the chart with the release name `invoiceninja`:
 
 ```bash
-helm repo add invoiceninja https://<add url>
+helm repo add invoiceninja https://invoiceninja.github.io/dockerfiles
 helm install invoiceninja invoiceninja/invoiceninja
 ```
 
