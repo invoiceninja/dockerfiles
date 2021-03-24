@@ -8,4 +8,4 @@ ehthumbs.db
 Thumbs.db
 
 # Helm
-chart/**/charts/
+charts/**/charts/

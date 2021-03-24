@@ -1,5 +1,5 @@
 chart-dirs:
-  - chart
+  - charts
 chart-repos:
   - bitnami=https://charts.bitnami.com/bitnami
 check-version-increment: true
