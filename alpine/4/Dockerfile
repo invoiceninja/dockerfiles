@@ -2,7 +2,7 @@ ARG PHP_VERSION=7.2
 ARG BAK_STORAGE_PATH=/var/www/app/docker-backup-storage/
 ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 
-FROM php:${PHP_VERSION}-fpm-alpine
+FROM php:${PHP_VERSION}-fpm-alpine as prod
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
@@ -63,6 +63,7 @@ RUN curl -o /tmp/ninja.zip -L https://download.invoiceninja.com/ninja-v${INVOICE
     && rm -rf /var/www/app/docs /var/www/app/tests
 
 # Override the environment settings from projects .env file
+ENV IS_DOCKER true
 ENV LOG errorlog
 ENV SELF_UPDATER_SOURCE ''
 
