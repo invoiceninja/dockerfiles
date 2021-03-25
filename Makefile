@@ -23,7 +23,7 @@ VERSION=$(shell echo ${TAG} | sed "s/-.*//")
 build-alpine:
 ifeq ($(IS_V5),)
 	$(info Make: Building "$(VERSION)" tagged images from alpine.)
-	@docker build -t ${HUB_NAMESPACE}/${IMAGE}:alpine-${VERSION} --build-arg INVOICENINJA_VERSION=${VERSION} --file ./alpine/Dockerfile .
+	@docker build -t ${HUB_NAMESPACE}/${IMAGE}:alpine-${VERSION} --build-arg INVOICENINJA_VERSION=${VERSION} --file ./alpine/4/Dockerfile .
 	# Tag as alpine-4
 	@docker tag ${HUB_NAMESPACE}/${IMAGE}:alpine-${VERSION} ${HUB_NAMESPACE}/${IMAGE}:alpine-4
 	$(info Make: Done.)
@@ -42,7 +42,7 @@ endif
 build-alpine-v5:
 ifneq ($(IS_V5),)
 	$(info Make: Building "$(VERSION)" tagged images from alpine.)
-	@docker build -t ${HUB_NAMESPACE}/${IMAGE}:${VERSION} --build-arg INVOICENINJA_VERSION=${VERSION} --file ./alpine/Dockerfile_v5 .
+	@docker build -t ${HUB_NAMESPACE}/${IMAGE}:${VERSION} --build-arg INVOICENINJA_VERSION=${VERSION} --file ./alpine/5/Dockerfile .
 	@docker tag ${HUB_NAMESPACE}/${IMAGE}:${VERSION} ${HUB_NAMESPACE}/${IMAGE}:5
 	@docker tag ${HUB_NAMESPACE}/${IMAGE}:${VERSION} ${HUB_NAMESPACE}/${IMAGE}:latest
 	$(info Make: Done.)
