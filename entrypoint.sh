@@ -83,7 +83,7 @@ fi
 rm -rf "$BAK_PUBLIC_PATH"
 
 # Set permission for web server to create/update files (only <v4)
-if [[ ${str::1} -le 4 ]]; then 
+if [[ ${INVOICENINJA_VERSION::1} -le 4 ]]; then 
     chown -R "$INVOICENINJA_USER":www-data /var/www/app/storage /var/www/app/public /var/www/app/bootstrap
 fi
 

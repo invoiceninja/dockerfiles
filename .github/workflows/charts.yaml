@@ -1,6 +1,9 @@
 name: Lint and Test Charts
 
-on: pull_request
+on:
+  pull_request:
+    paths:
+      - "charts/**"
 
 jobs:
   lint-chart:
