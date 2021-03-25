@@ -96,6 +96,8 @@ RUN chmod +x /usr/local/bin/docker-entrypoint \
 
 USER $UID
 
+# Do not remove this ENV
+ENV IS_DOCKER true
 RUN /usr/local/bin/composer install --no-dev --quiet
 
 # Override the environment settings from projects .env file
