@@ -31,7 +31,7 @@ RUN npm install --production \
     && mv /var/www/app/public $BAK_PUBLIC_PATH  
 
 # Prepare php image
-FROM php:${PHP_VERSION}-fpm-alpine
+FROM php:${PHP_VERSION}-fpm-alpine as prod
 ARG INVOICENINJA_VERSION
 ARG BAK_STORAGE_PATH
 ARG BAK_PUBLIC_PATH

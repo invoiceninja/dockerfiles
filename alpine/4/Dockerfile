@@ -2,7 +2,7 @@ ARG PHP_VERSION=7.2
 ARG BAK_STORAGE_PATH=/var/www/app/docker-backup-storage/
 ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 
-FROM php:${PHP_VERSION}-fpm-alpine
+FROM php:${PHP_VERSION}-fpm-alpine as prod
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
