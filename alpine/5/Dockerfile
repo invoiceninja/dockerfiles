@@ -3,7 +3,7 @@ ARG BAK_STORAGE_PATH=/var/www/app/docker-backup-storage/
 ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 
 # Get Invoice Ninja and install nodejs packages
-FROM node:lts-alpine as frontend
+FROM node:lts-alpine as build
 ARG INVOICENINJA_VERSION
 ARG BAK_STORAGE_PATH
 ARG BAK_PUBLIC_PATH
@@ -35,15 +35,23 @@ FROM php:${PHP_VERSION}-fpm-alpine
 ARG INVOICENINJA_VERSION
 ARG BAK_STORAGE_PATH
 ARG BAK_PUBLIC_PATH
-ENV INVOICENINJA_VERSION $INVOICENINJA_VERSION
-ENV BAK_STORAGE_PATH $BAK_STORAGE_PATH
-ENV BAK_PUBLIC_PATH $BAK_PUBLIC_PATH
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
 WORKDIR /var/www/app
 
-COPY --from=frontend /var/www/app /var/www/app
+## Create user
+ARG UID=1500
+ENV INVOICENINJA_USER=invoiceninja
+
+RUN addgroup --gid=$UID -S "$INVOICENINJA_USER" \
+    && adduser --uid=$UID \
+    --disabled-password \
+    --gecos "" \
+    --home "$(pwd)" \
+    --ingroup "$INVOICENINJA_USER" \ 
+    --no-create-home \
+    "$INVOICENINJA_USER"
 
 RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
@@ -71,23 +79,18 @@ RUN set -eux; \
     chromium \
     ttf-freefont
 
+# Copy files
 COPY entrypoint.sh /usr/local/bin/docker-entrypoint
 COPY ./config/php/php.ini /usr/local/etc/php/conf.d/in-php.ini
 COPY ./config/supervisor/* /
 
-## Separate user
-ARG UID=1500
-ENV INVOICENINJA_USER=invoiceninja
+# Set up app
+ENV INVOICENINJA_VERSION $INVOICENINJA_VERSION
+ENV BAK_STORAGE_PATH $BAK_STORAGE_PATH
+ENV BAK_PUBLIC_PATH $BAK_PUBLIC_PATH
+COPY --from=build /var/www/app /var/www/app
 
-RUN addgroup --gid=$UID -S "$INVOICENINJA_USER" \
-    && adduser --uid=$UID \
-    --disabled-password \
-    --gecos "" \
-    --home "$(pwd)" \
-    --ingroup "$INVOICENINJA_USER" \ 
-    --no-create-home \
-    "$INVOICENINJA_USER" \
-    && chmod +x /usr/local/bin/docker-entrypoint \
+RUN chmod +x /usr/local/bin/docker-entrypoint \
     && chmod +x /shutdown.sh \
     && chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" /var/www/app
 
