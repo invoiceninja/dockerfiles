@@ -68,7 +68,7 @@ jobs:
           file: ./alpine/${{ steps.prep.outputs.major }}/Dockerfile
           build-args: INVOICENINJA_VERSION=${{ steps.prep.outputs.version }}
           target: prod
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.prep.outputs.tags }}
           cache-from: type=local,src=/tmp/.buildx-cache
