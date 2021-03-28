@@ -65,9 +65,6 @@ RUN set -eux; \
 # Copy files
 COPY rootfs /
 
-RUN chmod +x /usr/local/bin/docker-entrypoint \
-    && chmod +x /usr/local/bin/shutdown.sh
-
 ## Create user
 ARG UID=1500
 ENV INVOICENINJA_USER invoiceninja
