@@ -12,13 +12,8 @@ LABEL maintainer="David Bomba <turbo124@gmail.com>"
 ARG INVOICENINJA_VERSION
 ARG BAK_STORAGE_PATH
 ARG BAK_PUBLIC_PATH
-ENV BAK_STORAGE_PATH $BAK_STORAGE_PATH
-ENV BAK_PUBLIC_PATH $BAK_PUBLIC_PATH
-WORKDIR /var/www/app
 
-COPY entrypoint.sh /usr/local/bin/docker-entrypoint
-RUN chmod +x /usr/local/bin/docker-entrypoint \
-    && mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 # Install PHP extensions
 # https://hub.docker.com/r/mlocati/php-extension-installer/tags
@@ -31,26 +26,30 @@ RUN install-php-extensions \
     pdo_mysql \
     zip
 
-COPY ./config/php/php.ini /usr/local/etc/php/conf.d/in-php.ini
-
 # Separate user
 ENV INVOICENINJA_USER=invoiceninja
 
-RUN addgroup --gid=1500 -S "$INVOICENINJA_USER" && \
-    adduser --uid=1500 \
+WORKDIR /var/www/app
+
+RUN addgroup --gid=1500 -S "$INVOICENINJA_USER" \
+    && adduser --uid=1500 \
     --disabled-password \
     --gecos "" \
     --home "$(pwd)" \
     --ingroup "$INVOICENINJA_USER" \ 
     --no-create-home \
-    "$INVOICENINJA_USER"; \
-    addgroup "$INVOICENINJA_USER" www-data; \
-    chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" .
+    "$INVOICENINJA_USER" \
+    && chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" .
+
+COPY rootfs /
+RUN chmod +x /usr/local/bin/docker-entrypoint
 
 USER 1500
 
 # Download and install IN
 ENV INVOICENINJA_VERSION="${INVOICENINJA_VERSION}"
+ENV BAK_STORAGE_PATH $BAK_STORAGE_PATH
+ENV BAK_PUBLIC_PATH $BAK_PUBLIC_PATH
 
 RUN curl -o /tmp/ninja.zip -L https://download.invoiceninja.com/ninja-v${INVOICENINJA_VERSION}.zip \
     && unzip -q /tmp/ninja.zip -d /tmp/ \

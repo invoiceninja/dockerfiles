@@ -8,14 +8,11 @@ ARG INVOICENINJA_VERSION
 ARG BAK_STORAGE_PATH
 ARG BAK_PUBLIC_PATH
 
-# Install dependencies
-RUN set -eux; \
-    apk add --no-cache \
-    curl
-
 # Download Invoice Ninja
-RUN curl -o /tmp/ninja.tar.gz -L https://github.com/invoiceninja/invoiceninja/tarball/v$INVOICENINJA_VERSION \
-    && mkdir -p /var/www/app \
+ADD https://github.com/invoiceninja/invoiceninja/tarball/v$INVOICENINJA_VERSION /tmp/ninja.tar.gz
+
+# Extract Invoice Ninja
+RUN mkdir -p /var/www/app \
     && tar --strip-components=1 -xf /tmp/ninja.tar.gz -C /var/www/app/ \
     && mkdir -p /var/www/app/public/logo /var/www/app/storage \
     && mv /var/www/app/.env.example /var/www/app/.env \
@@ -38,26 +35,11 @@ ARG BAK_PUBLIC_PATH
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
-WORKDIR /var/www/app
-
-## Create user
-ARG UID=1500
-ENV INVOICENINJA_USER=invoiceninja
-
-RUN addgroup --gid=$UID -S "$INVOICENINJA_USER" \
-    && adduser --uid=$UID \
-    --disabled-password \
-    --gecos "" \
-    --home "$(pwd)" \
-    --ingroup "$INVOICENINJA_USER" \ 
-    --no-create-home \
-    "$INVOICENINJA_USER"
-
 RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 # Install PHP extensions
 # https://hub.docker.com/r/mlocati/php-extension-installer/tags
-COPY --from=mlocati/php-extension-installer:1.1.41 /usr/bin/install-php-extensions /usr/local/bin/
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
 RUN install-php-extensions \
     bcmath \
@@ -68,7 +50,8 @@ RUN install-php-extensions \
     opcache \
     pdo_mysql \
     zip \
-    @composer
+    @composer \
+    && rm /usr/local/bin/install-php-extensions
 
 # Install chromium
 RUN set -eux; \
@@ -80,21 +63,31 @@ RUN set -eux; \
     ttf-freefont
 
 # Copy files
-COPY entrypoint.sh /usr/local/bin/docker-entrypoint
-COPY ./config/php/php.ini /usr/local/etc/php/conf.d/in-php.ini
-COPY ./config/supervisor/* /
+COPY rootfs /
+
+RUN chmod +x /usr/local/bin/docker-entrypoint \
+    && chmod +x /usr/local/bin/shutdown.sh
+
+## Create user
+ARG UID=1500
+ENV INVOICENINJA_USER invoiceninja
+
+RUN addgroup --gid=$UID -S "$INVOICENINJA_USER" \
+    && adduser --uid=$UID \
+    --disabled-password \
+    --gecos "" \
+    --home "/var/www/app" \
+    --ingroup "$INVOICENINJA_USER" \
+    "$INVOICENINJA_USER"
 
 # Set up app
 ENV INVOICENINJA_VERSION $INVOICENINJA_VERSION
 ENV BAK_STORAGE_PATH $BAK_STORAGE_PATH
 ENV BAK_PUBLIC_PATH $BAK_PUBLIC_PATH
-COPY --from=build /var/www/app /var/www/app
-
-RUN chmod +x /usr/local/bin/docker-entrypoint \
-    && chmod +x /shutdown.sh \
-    && chown -R "$INVOICENINJA_USER":"$INVOICENINJA_USER" /var/www/app
+COPY --from=build --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app /var/www/app
 
 USER $UID
+WORKDIR /var/www/app
 
 # Do not remove this ENV
 ENV IS_DOCKER true
@@ -106,4 +99,4 @@ ENV LOG errorlog
 ENV SNAPPDF_EXECUTABLE_PATH /usr/bin/chromium-browser
 
 ENTRYPOINT ["docker-entrypoint"]
-CMD ["/usr/bin/supervisord", "-c", "/supervisord.conf"]
+CMD ["supervisord"]
