@@ -9,8 +9,7 @@ services:
       # Vhost configuration
       #- ./config/caddy/Caddyfile:/etc/caddy/Caddyfiledocker-com
       - ./config/nginx/in-vhost.conf:/etc/nginx/conf.d/in-vhost.conf:ro
-      - ./docker/app/public:/var/www/app/public:rw,delegated
-      - ./docker/app/storage:/var/www/app/storage:rw,delegated
+      - ./docker/app/public:/var/www/app/public:ro
     depends_on:
       - app
     # Run webserver nginx on port 80
@@ -29,7 +28,6 @@ services:
     restart: always
     volumes:
       - ./config/hosts:/etc/hosts:ro
-      - ./config/shutdown.sh:/usr/local/bin/shutdown.sh
       - ./docker/app/public:/var/www/app/public:rw,delegated
       - ./docker/app/storage:/var/www/app/storage:rw,delegated
     depends_on:
