@@ -19,7 +19,7 @@
 
 The dockerfile has been revamped to make is easier to get started, by default the base image selected in 5 which will pull in the latest v5 stable image.
 
-```
+```bash
 git clone https://github.com/invoiceninja/dockerfiles.git
 cd dockerfiles
 ```
@@ -32,6 +32,7 @@ APP_KEY=<insert your generated key in here>
 APP_DEBUG=true
 MULTI_DB_ENABLED=false
 DB_HOST1=db
+DB_PORT1=3306
 DB_USERNAME1=ninja
 DB_PASSWORD1=ninja
 DB_DATABASE1=ninja
@@ -51,6 +52,18 @@ To ensure folder permissions are correct when the container comes up for the fir
 From the terminal run
 
 ```sudo chown -R 1500:1500 docker/app```
+
+## Updating the image when using `docker-compose`
+
+As `docker-compose` does not support any form of version control, this git provide updates to `docker-compose.yml` directly. 
+
+To upgrade to a newer release image, please make sure to update the `docker-compose.yml` first by running
+
+```bash
+git pull
+```
+
+You may need to manually merge any changes that cannot be merged automatically by git.
 
 ### Note for people running the container locally on their PC ###
 
@@ -74,6 +87,3 @@ All that is left to do now is bring up the container
 ## Support
 
 If you discover a bug, please create and issue, if you query is general in nature please visit us on our [Forum ](https://forum.invoiceninja.com/)
-
-
-
