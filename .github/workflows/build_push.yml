@@ -65,7 +65,6 @@ jobs:
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: ./alpine/${{ steps.prep.outputs.major }}/
-          file: ./alpine/${{ steps.prep.outputs.major }}/Dockerfile
           build-args: INVOICENINJA_VERSION=${{ steps.prep.outputs.version }}
           target: prod
           platforms: linux/amd64,linux/arm64
