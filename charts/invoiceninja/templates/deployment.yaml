@@ -54,6 +54,36 @@ spec:
       {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: wait-db
+          image: {{ include "invoiceninja.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -cx
+            - |
+              COUNTER=0;
+              while [  $COUNTER -lt 120 ]; do
+                if mysqladmin ping -h "$DB_HOST1" -P $DB_PORT1 --silent; then
+                  exit 0;
+                fi;
+                let COUNTER=COUNTER+1;
+                echo "Waiting for DB ($DB_HOST1:$DB_PORT1)"
+                sleep 2;
+              done;
+              echo "Did NOT see a database after 240 secs!";
+              exit 1;
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          {{- if .Values.resources }}
+          resources: {{- toYaml .Values.resources | nindent 12 }}
+          {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ include "common.names.fullname" . }}
+        {{- if .Values.initContainers }}
+          {{- include "common.tplvalues.render" (dict "value" .Values.initContainers "context" $) | nindent 8 }}
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -98,13 +128,18 @@ spec:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
             {{- end }}
           env:
-            - name: IS_DOCKER
-              value: "true"
             - name: DB_PASSWORD1
               valueFrom:
                 secretKeyRef:
                   name: {{ include "invoiceninja.databaseSecretName" . }}
                   key: mariadb-password
+            {{- if not (and .Values.redis.enabled (not .Values.redis.usePassword)) }}
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "invoiceninja.redisSecretName" . }}
+                  key: redis-password
+            {{- end }}
             {{- if .Values.extraEnvVars }}
               {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}

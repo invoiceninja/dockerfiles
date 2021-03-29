@@ -29,6 +29,15 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "invoiceninja.redis.fullname" -}}
+{{- printf "%s-%s" .Release.Name "redis" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "invoiceninja.serviceAccountName" -}}
@@ -123,5 +132,60 @@ Return the MariaDB Secret Name
     {{- printf "%s" .Values.externalDatabase.existingSecret -}}
 {{- else -}}
     {{- printf "%s" (include "invoiceninja.mariadb.fullname" .) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the Redis Hostname
+*/}}
+{{- define "invoiceninja.redisHost" -}}
+{{- if .Values.redis.enabled }}
+    {{- printf "%s-%s" (include "invoiceninja.redis.fullname" .) "master" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+    {{- printf "%s" .Values.externalRedis.host -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the Redis Port
+*/}}
+{{- define "invoiceninja.redisPort" -}}
+{{- if .Values.redis.enabled }}
+    {{- printf "6379" -}}
+{{- else -}}
+    {{- printf "%d" (.Values.externalRedis.port | int ) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the Redis Database
+*/}}
+{{- define "invoiceninja.redisDatabase" -}}
+{{- if .Values.redis.enabled }}
+    {{- printf "0" -}}
+{{- else -}}
+    {{- printf "%s" .Values.externalRedis.databases.default -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the Redis Database
+*/}}
+{{- define "invoiceninja.redisCacheDatabase" -}}
+{{- if .Values.redis.enabled }}
+    {{- printf "1" -}}
+{{- else -}}
+    {{- printf "%s" .Values.externalRedis.databases.cache -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the Redis Secret Name
+*/}}
+{{- define "invoiceninja.redisSecretName" -}}
+{{- if .Values.externalRedis.existingSecret -}}
+    {{- printf "%s" .Values.externalRedis.existingSecret -}}
+{{- else -}}
+    {{- printf "%s" (include "invoiceninja.redis.fullname" .) -}}
 {{- end -}}
 {{- end -}}

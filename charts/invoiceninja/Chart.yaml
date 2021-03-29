@@ -13,11 +13,11 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.0
+version: 0.2.0
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
-appVersion: 5.1.30
+appVersion: 5.1.32
 keywords:
   - invoiceninja
 home: https://github.com/lwj5/invoiceninja-chart
@@ -37,6 +37,10 @@ dependencies:
     name: mariadb
     repository: https://charts.bitnami.com/bitnami
     version: 9.3.x
+  - condition: redis.enabled
+    name: redis
+    repository: https://charts.bitnami.com/bitnami
+    version: 12.9.x
 maintainers:
   - email: lwj5@hotmail.com
     name: lwj5
