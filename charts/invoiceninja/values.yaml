@@ -361,7 +361,7 @@ externalRedis:
   ## Redis databases
   ##
   databases:
-    default: "0" 
+    default: "0"
     cache: "1"
 
 ## MariaDB chart configuration
