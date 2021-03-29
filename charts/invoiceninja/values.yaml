@@ -354,9 +354,11 @@ externalRedis:
   ## NOTE: When it's set, the `externalRedis.password` parameter is ignored
   ##
   # existingSecret:
-  ## Redis database
+  ## Redis databases
   ##
-  database: "0"
+  databases:
+    default: "0" 
+    cache: "1"
 
 ## MariaDB chart configuration
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/mariadb/values.yaml

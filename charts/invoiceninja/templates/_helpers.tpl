@@ -164,7 +164,18 @@ Return the Redis Database
 {{- if .Values.redis.enabled }}
     {{- printf "0" -}}
 {{- else -}}
-    {{- printf "%s" .Values.externalRedis.database -}}
+    {{- printf "%s" .Values.externalRedis.databases.default -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the Redis Database
+*/}}
+{{- define "invoiceninja.redisCacheDatabase" -}}
+{{- if .Values.redis.enabled }}
+    {{- printf "1" -}}
+{{- else -}}
+    {{- printf "%s" .Values.externalRedis.databases.cache -}}
 {{- end -}}
 {{- end -}}
 

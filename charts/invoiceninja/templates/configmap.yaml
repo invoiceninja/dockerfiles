@@ -14,7 +14,6 @@ metadata:
 data:
   APP_URL: "http://{{ include "common.names.fullname" . }}/"
   APP_DEBUG: {{ .Values.debug | quote }}
-  MULTI_DB_ENABLED: "false"
   DB_HOST1: {{ include "invoiceninja.databaseHost" . | quote }}
   DB_PORT1: {{ include "invoiceninja.databasePort" . | quote }}
   DB_USERNAME1: {{ include "invoiceninja.databaseUser" . | quote }}
@@ -44,4 +43,5 @@ data:
   {{- end }}
   REDIS_HOST: {{ include "invoiceninja.redisHost" . | quote }}
   REDIS_PORT: {{ include "invoiceninja.redisPort" . | quote }}
-  REDIS_DATABASE: {{ include "invoiceninja.redisDatabase" . | quote }}
+  REDIS_DB: {{ include "invoiceninja.redisDatabase" . | quote }}
+  REDIS_CACHE_DB: {{ include "invoiceninja.redisCacheDatabase" . | quote }}

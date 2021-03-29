@@ -128,8 +128,6 @@ spec:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
             {{- end }}
           env:
-            - name: IS_DOCKER
-              value: "true"
             - name: DB_PASSWORD1
               valueFrom:
                 secretKeyRef:
