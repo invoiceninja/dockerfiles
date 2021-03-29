@@ -83,6 +83,7 @@ The following table shows the configuration options for the Invoiceninja helm ch
 | `cacheDriver`        | Name of cache driver to use                                     | `nil`                                                   |
 | `sessionDriver`      | Name of session driver to use                                   | `nil`                                                   |
 | `queueConnection`    | Name of queue connection to use                                 | `nil`                                                   |
+| `snappdf`            | Use snappdf instead of Phantom JS PDF generation                | `true`                                                  |
 | `extraEnvVars`       | Extra environment variables to be set on Invoiceninja container | `{}`                                                    |
 | `extraEnvVarsCM`     | Name of existing ConfigMap containing extra env vars            | `nil`                                                   |
 | `extraEnvVarsSecret` | Name of existing Secret containing extra env vars               | `nil`                                                   |

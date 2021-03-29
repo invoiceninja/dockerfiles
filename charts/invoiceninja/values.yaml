@@ -58,6 +58,10 @@ sessionDriver: ""
 ##
 queueConnection: ""
 
+## Use local or Phantom JS PDF generation
+##
+snappdf: true
+
 ## String to partially override fullname template (will maintain the release name)
 ##
 # nameOverride:
