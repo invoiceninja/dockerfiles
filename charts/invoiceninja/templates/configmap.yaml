@@ -19,3 +19,29 @@ data:
   DB_PORT1: {{ include "invoiceninja.databasePort" . | quote }}
   DB_USERNAME1: {{ include "invoiceninja.databaseUser" . | quote }}
   DB_DATABASE1: {{ include "invoiceninja.databaseName" . | quote }}
+  {{- if not (empty .Values.logChannel) }}
+  LOG_CHANNEL: {{ .Values.logChannel | quote }}
+  {{- end }}
+  {{- if not (empty .Values.broadcastDriver) }}
+  BROADCAST_DRIVER: {{ .Values.broadcastDriver | quote }}
+  {{- else if or .Values.redis.enabled (not (empty .Values.externalRedis.host)) }}
+  BROADCAST_DRIVER: redis
+  {{- end }}
+  {{- if not (empty .Values.cacheDriver) }}
+  CACHE_DRIVER: {{ .Values.cacheDriver | quote }}
+  {{- else if or .Values.redis.enabled (not (empty .Values.externalRedis.host)) }}
+  CACHE_DRIVER: redis
+  {{- end }}
+  {{- if not (empty .Values.sessionDriver) }}
+  SESSION_DRIVER: {{ .Values.sessionDriver | quote }}
+  {{- else if or .Values.redis.enabled (not (empty .Values.externalRedis.host)) }}
+  SESSION_DRIVER: redis
+  {{- end }}
+  {{- if not (empty .Values.queueConnection) }}
+  QUEUE_CONNECTION: {{ .Values.queueConnection | quote }}
+  {{- else if or .Values.redis.enabled (not (empty .Values.externalRedis.host)) }}
+  QUEUE_CONNECTION: redis
+  {{- end }}
+  REDIS_HOST: {{ include "invoiceninja.redisHost" . | quote }}
+  REDIS_PORT: {{ include "invoiceninja.redisPort" . | quote }}
+  REDIS_DATABASE: {{ include "invoiceninja.redisDatabase" . | quote }}

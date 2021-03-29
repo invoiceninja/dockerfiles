@@ -78,6 +78,11 @@ The following table shows the configuration options for the Invoiceninja helm ch
 | `serviceAccountName` | Name of a service account for the Invoiceninja pods             | `default`                                               |
 | `debug`              | Turn on debug mode on Invoiceninja                              | `false`                                                 |
 | `appKey`             | Laravel Application Key                                         | _random 32 character alphanumeric string_               |
+| `logChannel`         | Name of log channel to use                                      | `nil`                                                   |
+| `broadcastDriver`    | Name of broadcast driver to use                                 | `nil`                                                   |
+| `cacheDriver`        | Name of cache driver to use                                     | `nil`                                                   |
+| `sessionDriver`      | Name of session driver to use                                   | `nil`                                                   |
+| `queueConnection`    | Name of queue connection to use                                 | `nil`                                                   |
 | `extraEnvVars`       | Extra environment variables to be set on Invoiceninja container | `{}`                                                    |
 | `extraEnvVarsCM`     | Name of existing ConfigMap containing extra env vars            | `nil`                                                   |
 | `extraEnvVarsSecret` | Name of existing Secret containing extra env vars               | `nil`                                                   |
@@ -150,15 +155,35 @@ The following table shows the configuration options for the Invoiceninja helm ch
 | `persistence.storage.size`          | PVC Storage Request                      | `5Gi`             |
 | `persistence.storage.dataSource`    | PVC data source                          | `{}`              |
 
+### Redis parameters
+
+| Parameter                | Description                                  | Default |
+| ------------------------ | -------------------------------------------- | ------- |
+| `redis.enabled`          | If external redis is used, set it to `false` | `true`  |
+| `redis.password`         | Redis password                               | `nil`   |
+| `redis.usePassword`      | Use redis password                           | `false` |
+| `externalRedis.host`     | Host of the external redis                   | `nil`   |
+| `externalRedis.port`     | Port of the external redis                   | `6379`  |
+| `externalRedis.password` | Password for the external redis              | `nil`   |
+| `externalRedis.database` | Index for redis database                     | `0`     |
+
+> See [Dependencies](#dependencies) for more.
+
 ### Database parameters 
 
-| Parameter                   | Description                          | Default                                   |
-| --------------------------- | ------------------------------------ | ----------------------------------------- |
-| `mariadb.enabled`           | Deploy MariaDB container(s)          | `true`                                    |
-| `mariadb.auth.rootPassword` | Password for the MariaDB `root` user | _random 10 character alphanumeric string_ |
-| `mariadb.auth.database`     | Database name to create              | `invoiceninja`                            |
-| `mariadb.auth.username`     | Database user to create              | `invoiceninja`                            |
-| `mariadb.auth.password`     | Password for the database            | _random 10 character alphanumeric string_ |
+| Parameter                         | Description                                 | Default                                   |
+| --------------------------------- | ------------------------------------------- | ----------------------------------------- |
+| `mariadb.enabled`                 | Deploy MariaDB container(s)                 | `true`                                    |
+| `mariadb.auth.rootPassword`       | Password for the MariaDB `root` user        | _random 10 character alphanumeric string_ |
+| `mariadb.auth.database`           | Database name to create                     | `invoiceninja`                            |
+| `mariadb.auth.username`           | Database user to create                     | `invoiceninja`                            |
+| `mariadb.auth.password`           | Password for the database                   | _random 10 character alphanumeric string_ |
+| `externalDatabase.host`           | Host of the external database               | `nil`                                     |
+| `externalDatabase.user`           | Existing username in the external db        | `invoiceninja`                            |
+| `externalDatabase.password`       | Password for the above username             | `nil`                                     |
+| `externalDatabase.database`       | Name of the existing database               | `invoiceninja`                            |
+| `externalDatabase.port`           | Database port number                        | `3306`                                    |
+| `externalDatabase.existingSecret` | Name of the database existing Secret Object | `nil`                                     |
 
 > See [Dependencies](#dependencies) for more.
 
