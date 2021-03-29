@@ -12,7 +12,11 @@ metadata:
     {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
   {{- end }}
 data:
+  {{- if .Values.nginx.ingress.enabled }}
+  APP_URL: "http://{{ .Values.nginx.ingress.hostname }}/"
+  {{- else }}
   APP_URL: "http://{{ include "common.names.fullname" . }}/"
+  {{- end }}
   APP_DEBUG: {{ .Values.debug | quote }}
   DB_HOST1: {{ include "invoiceninja.databaseHost" . | quote }}
   DB_PORT1: {{ include "invoiceninja.databasePort" . | quote }}
