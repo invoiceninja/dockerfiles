@@ -1,4 +1,6 @@
 FROM mysql:5
+# When running on ARM64 use MariaDB instead of MySQL
+#FROM mariadb:10.4
 ENV force_color_prompt yes
 
 RUN apt-get update;

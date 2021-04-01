@@ -14,7 +14,7 @@ services:
       - app
     # Run webserver nginx on port 80
     # Feel free to modify depending what port is already occupied
-    ports: 
+    ports:
       - "80:80"
       #- "443:443"
     networks:
@@ -32,20 +32,22 @@ services:
       - ./docker/app/storage:/var/www/app/storage:rw,delegated
     depends_on:
       - db
-    networks: 
-      - invoiceninja  
+    networks:
+      - invoiceninja
     extra_hosts:
       - "in5.localhost:192.168.0.124 " #host and ip
 
   db:
     image: mysql:5
+#    When running on ARM64 use MariaDB instead of MySQL
+#    image: mariadb:10.4
 #    For auto DB backups comment out image and use the build block below
 #    build:
 #      context: ./config/mysql
     ports:
       - "3305:3306"
     restart: always
-    environment: 
+    environment:
       - MYSQL_ROOT_PASSWORD=ninjaAdm1nPassword
       - MYSQL_USER=ninja
       - MYSQL_PASSWORD=ninja
@@ -82,7 +84,7 @@ services:
   #     EOF'
   #   networks:
   #     - invoiceninja
-  #     
+  #
 
 networks:
   invoiceninja:

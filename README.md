@@ -2,7 +2,7 @@
 [![Docker image, latest](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja/latest?label=latest)](https://hub.docker.com/r/invoiceninja/invoiceninja)
 [![Docker image, alpine](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja/alpine?label=alpine)](https://hub.docker.com/r/invoiceninja/invoiceninja)
 
-# Docker for [Invoice Ninja](https://www.invoiceninja.com/) 
+# Docker for [Invoice Ninja](https://www.invoiceninja.com/)
 
 :crown: **Features**
 
@@ -13,11 +13,11 @@
 
 ## You want some Kubernetes + Helm with that?
 [Helm Chat](https://github.com/Saddamus/invoiceninja-helm) by @Saddamus  
-[Kubernetes](https://github.com/invoiceninja/dockerfiles/issues/94) by @spacepluk 
+[Kubernetes](https://github.com/invoiceninja/dockerfiles/issues/94) by @spacepluk
 
 ## Quickstart V5 Launch
 
-The dockerfile has been revamped to make is easier to get started, by default the base image selected in 5 which will pull in the latest v5 stable image.
+The dockerfile has been revamped to make it easier to get started, by default the base image selected is 5 which will pull in the latest v5 stable image.
 
 ```bash
 git clone https://github.com/invoiceninja/dockerfiles.git
@@ -65,7 +65,7 @@ For example, lets say your APP_URL is ```http://in5.test:8000``` and your LAN IP
 
 ```192.168.0.124 in5.test```
 
-**Please note that PDF generation using local host your domain name MUST end in .test for your PDFs to generate correctly, this is a DNS resolver issue with chromium.
+**Please note that for PDF generation using local host, your domain name MUST end in .test for your PDFs to generate correctly, this is a DNS resolver issue with chromium.
 
 All that is left to do now is bring up the container
 
@@ -75,9 +75,13 @@ All that is left to do now is bring up the container
 
 **Note: When performing the setup, the Database host is ```db```
 
+### Running on ARM64 (Raspberry Pi 4)
+
+When deploying on an ARM64 system, you need to comment out the `image: mysql:5` line and uncomment `image: mariadb:10.4` in the `docker-compose.yml` file.
+
 ## Updating the Image when using `docker-compose`
 
-As `docker-compose` does not support any form of version control, this git provide updates to `docker-compose.yml` directly. 
+As `docker-compose` does not support any form of version control, this git provide updates to `docker-compose.yml` directly.
 
 To upgrade to a newer release image, please make sure to update the `docker-compose.yml` first by running
 
