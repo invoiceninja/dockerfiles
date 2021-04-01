@@ -47,11 +47,7 @@ services:
     ports:
       - "3305:3306"
     restart: always
-    environment:
-      - MYSQL_ROOT_PASSWORD=ninjaAdm1nPassword
-      - MYSQL_USER=ninja
-      - MYSQL_PASSWORD=ninja
-      - MYSQL_DATABASE=ninja
+    env_file: env
     volumes:
       - ./docker/mysql/data:/var/lib/mysql:rw,delegated
 
