@@ -9,3 +9,6 @@ Thumbs.db
 
 # Helm
 charts/**/charts/
+
+# Compose filesystem
+/docker
