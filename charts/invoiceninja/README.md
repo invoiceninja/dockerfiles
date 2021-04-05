@@ -163,9 +163,12 @@ The following table shows the configuration options for the Invoiceninja helm ch
 | `redis.enabled`                   | If external redis is used, set it to `false` | `true`  |
 | `redis.password`                  | Redis password                               | `nil`   |
 | `redis.usePassword`               | Use redis password                           | `false` |
+| `redis.sentinel.enabled`          | Enable sentinel containers                   | `true`  |
+| `redis.sentinel.usePassword`      | Use password for sentinel containers         | `false` |
 | `externalRedis.host`              | Host of the external redis                   | `nil`   |
 | `externalRedis.port`              | Port of the external redis                   | `6379`  |
 | `externalRedis.password`          | Password for the external redis              | `nil`   |
+| `externalRedis.sentinel`          | Using sentinels                              | `false` |
 | `externalRedis.databases.default` | Database to use by default                   | `0`     |
 | `externalRedis.databases.cache`   | Database to use by cache                     | `1`     |
 

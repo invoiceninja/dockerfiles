@@ -140,7 +140,11 @@ Return the Redis Hostname
 */}}
 {{- define "invoiceninja.redisHost" -}}
 {{- if .Values.redis.enabled }}
+    {{- if .Values.redis.sentinel.enabled }}
+    {{- printf "%s-%s" (include "invoiceninja.redis.fullname" .) "headless" | trunc 63 | trimSuffix "-" -}}
+    {{- else }}
     {{- printf "%s-%s" (include "invoiceninja.redis.fullname" .) "master" | trunc 63 | trimSuffix "-" -}}
+    {{- end -}}
 {{- else -}}
     {{- printf "%s" .Values.externalRedis.host -}}
 {{- end -}}
@@ -151,7 +155,11 @@ Return the Redis Port
 */}}
 {{- define "invoiceninja.redisPort" -}}
 {{- if .Values.redis.enabled }}
+    {{- if .Values.redis.sentinel.enabled }}
+    {{- printf "26379" -}}
+    {{- else }}
     {{- printf "6379" -}}
+    {{- end -}}
 {{- else -}}
     {{- printf "%d" (.Values.externalRedis.port | int ) -}}
 {{- end -}}
@@ -187,5 +195,38 @@ Return the Redis Secret Name
     {{- printf "%s" .Values.externalRedis.existingSecret -}}
 {{- else -}}
     {{- printf "%s" (include "invoiceninja.redis.fullname" .) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the Broadcast Connection Name
+*/}}
+{{- define "invoiceninja.redisBroadcastConnection" -}}
+{{- if or (and .Values.redis.enabled .Values.redis.sentinel.enabled) (and .Values.externalRedis.host .Values.externalRedis.sentinel) }}
+    {{- printf "sentinel-default" -}}
+{{- else -}}
+    {{- printf "default" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the Cache Connection Name
+*/}}
+{{- define "invoiceninja.redisCacheConnection" -}}
+{{- if or (and .Values.redis.enabled .Values.redis.sentinel.enabled) (and .Values.externalRedis.host .Values.externalRedis.sentinel) }}
+    {{- printf "sentinel-cache" -}}
+{{- else -}}
+    {{- printf "cache" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the Broadcast Driver Name
+*/}}
+{{- define "invoiceninja.redisQueueConnection" -}}
+{{- if or (and .Values.redis.enabled .Values.redis.sentinel.enabled) (and .Values.externalRedis.host .Values.externalRedis.sentinel) }}
+    {{- printf "sentinel-default" -}}
+{{- else -}}
+    {{- printf "default" -}}
 {{- end -}}
 {{- end -}}
