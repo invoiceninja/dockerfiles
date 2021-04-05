@@ -18,7 +18,7 @@
 image:
   registry: docker.io
   repository: invoiceninja/invoiceninja
-  tag: 5.1.32
+  tag: 5.1.35
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##
