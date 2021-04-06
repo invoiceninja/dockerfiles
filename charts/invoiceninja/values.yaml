@@ -338,7 +338,7 @@ redis:
   usePassword: false
   sentinel:
     enabled: true
-    usePassword: false 
+    usePassword: false
 
 ## External Redis Configuration
 ##
