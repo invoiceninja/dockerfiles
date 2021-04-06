@@ -22,27 +22,29 @@ data:
   DB_PORT1: {{ include "invoiceninja.databasePort" . | quote }}
   DB_USERNAME1: {{ include "invoiceninja.databaseUser" . | quote }}
   DB_DATABASE1: {{ include "invoiceninja.databaseName" . | quote }}
-  {{- if not (empty .Values.logChannel) }}
+  {{- if .Values.logChannel }}
   LOG_CHANNEL: {{ .Values.logChannel | quote }}
+  {{- else }}
+  LOG_CHANNEL: stderr
   {{- end }}
-  {{- if not (empty .Values.broadcastDriver) }}
+  {{- if .Values.broadcastDriver }}
   BROADCAST_DRIVER: {{ .Values.broadcastDriver | quote }}
-  {{- else if or .Values.redis.enabled (not (empty .Values.externalRedis.host)) }}
+  {{- else if or .Values.redis.enabled .Values.externalRedis.host }}
   BROADCAST_DRIVER: redis
   {{- end }}
-  {{- if not (empty .Values.cacheDriver) }}
+  {{- if .Values.cacheDriver }}
   CACHE_DRIVER: {{ .Values.cacheDriver | quote }}
-  {{- else if or .Values.redis.enabled (not (empty .Values.externalRedis.host)) }}
+  {{- else if or .Values.redis.enabled .Values.externalRedis.host }}
   CACHE_DRIVER: redis
   {{- end }}
-  {{- if not (empty .Values.sessionDriver) }}
+  {{- if .Values.sessionDriver }}
   SESSION_DRIVER: {{ .Values.sessionDriver | quote }}
-  {{- else if or .Values.redis.enabled (not (empty .Values.externalRedis.host)) }}
+  {{- else if or .Values.redis.enabled .Values.externalRedis.host }}
   SESSION_DRIVER: redis
   {{- end }}
-  {{- if not (empty .Values.queueConnection) }}
+  {{- if .Values.queueConnection }}
   QUEUE_CONNECTION: {{ .Values.queueConnection | quote }}
-  {{- else if or .Values.redis.enabled (not (empty .Values.externalRedis.host)) }}
+  {{- else if or .Values.redis.enabled .Values.externalRedis.host }}
   QUEUE_CONNECTION: redis
   {{- end }}
   PHANTOMJS_PDF_GENERATION: {{ not .Values.snappdf | quote}}
@@ -50,3 +52,6 @@ data:
   REDIS_PORT: {{ include "invoiceninja.redisPort" . | quote }}
   REDIS_DB: {{ include "invoiceninja.redisDatabase" . | quote }}
   REDIS_CACHE_DB: {{ include "invoiceninja.redisCacheDatabase" . | quote }}
+  REDIS_BROADCAST_CONNECTION: {{ include "invoiceninja.redisBroadcastConnection" . | quote }}
+  REDIS_CACHE_CONNECTION: {{ include "invoiceninja.redisCacheConnection" . | quote }}
+  REDIS_QUEUE_CONNECTION: {{ include "invoiceninja.redisQueueConnection" . | quote }}

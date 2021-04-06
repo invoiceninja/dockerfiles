@@ -18,7 +18,7 @@
 image:
   registry: docker.io
   repository: invoiceninja/invoiceninja
-  tag: 5.1.32
+  tag: 5.1.35
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##
@@ -336,18 +336,19 @@ autoscaling:
 redis:
   enabled: true
   usePassword: false
-  cluster:
-    enabled: false
+  sentinel:
+    enabled: true
+    usePassword: false
 
 ## External Redis Configuration
 ##
 ## All of these values are only used when redis.enabled is set to false
 ##
 externalRedis:
-  ## Redis host
+  ## Redis/Sentinel host
   ##
   host: ""
-  ## Redis port number
+  ## Redis/Sentinel port number
   ##
   port: 6379
   ## Redis password
@@ -358,6 +359,8 @@ externalRedis:
   ## NOTE: When it's set, the `externalRedis.password` parameter is ignored
   ##
   # existingSecret:
+  ## Whether Redis Sentinel are used
+  sentinel: false
   ## Redis databases
   ##
   databases:
