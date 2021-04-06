@@ -7,6 +7,10 @@ DB_PORT1=3306
 DB_USERNAME1=ninja
 DB_PASSWORD1=ninja
 DB_DATABASE1=ninja
+MYSQL_ROOT_PASSWORD=ninjaAdm1nPassword
+MYSQL_USER=ninja
+MYSQL_PASSWORD=ninja
+MYSQL_DATABASE=ninja
 
 #this is a system variable please do not remove
 IS_DOCKER=true
