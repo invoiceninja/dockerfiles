@@ -1,6 +1,8 @@
 ![Docker images](https://github.com/invoiceninja/dockerfiles/workflows/Docker%20images/badge.svg)
 [![Docker image, latest](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja/latest?label=latest)](https://hub.docker.com/r/invoiceninja/invoiceninja)
 [![Docker image, alpine](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja/alpine?label=alpine)](https://hub.docker.com/r/invoiceninja/invoiceninja)
+[![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/invoiceninja)](https://artifacthub.io/packages/search?repo=invoiceninja)
+
 
 # Docker for [Invoice Ninja](https://www.invoiceninja.com/)
 
@@ -8,14 +10,19 @@
 
 :lock: Automatic HTTPS (:heart: [Caddy](https://caddyserver.com/))  
 :fire: NGINX webserver support [NGINX](https://nginx.org/)  
-:hammer: Fully production-ready through docker-compose  
+:hammer: Fully production-ready through Helm Chart  
 :pencil: Adjustable to your needs via environment variable  
 
-## You want some Kubernetes + Helm with that?
-[Helm Chat](https://github.com/Saddamus/invoiceninja-helm) by @Saddamus  
-[Kubernetes](https://github.com/invoiceninja/dockerfiles/issues/94) by @spacepluk
+## Get some Kubernetes + Helm with that!
 
-## Quickstart V5 Launch
+Introducing our very own [Helm Chart](https://github.com/invoiceninja/dockerfiles/tree/master/charts/invoiceninja) that helps you launch a simple standalone app to a production-ready, highly available Invoice Ninja setup. All you need to do is initialise Kubernetes (available with Docker Desktop), install [Helm](https://helm.sh/docs/intro/install/), and spin up Invoice Ninja using the steps provided [here](https://github.com/invoiceninja/dockerfiles/tree/master/charts/invoiceninja#installing-the-chart).
+
+Other resources:
+
+[Helm Chart](https://github.com/Saddamus/invoiceninja-helm) by @Saddamus  
+[K8s Manifest](https://github.com/invoiceninja/dockerfiles/issues/94) by @spacepluk
+
+## Alternatively get started with Docker Compose
 
 The dockerfile has been revamped to make it easier to get started, by default the base image selected is 5 which will pull in the latest v5 stable image.
 
@@ -79,7 +86,7 @@ All that is left to do now is bring up the container
 
 When deploying on an ARM64 system, you need to comment out the `image: mysql:5` line and uncomment `image: mariadb:10.4` in the `docker-compose.yml` file.
 
-## Updating the Image when using `docker-compose`
+### Updating the Image when using `docker-compose`
 
 As `docker-compose` does not support any form of version control, this git provide updates to `docker-compose.yml` directly.
 

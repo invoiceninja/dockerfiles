@@ -12,6 +12,7 @@ Please read [Upgrading](#upgrading) section before upgrading MAJOR versions.
 - The Bitnami [common](https://github.com/bitnami/charts/tree/master/bitnami/common) helm chart
 - The Bitnami [mariadb](https://github.com/bitnami/charts/tree/master/bitnami/mariadb) helm chart
 - The Bitnami [nginx](https://github.com/bitnami/charts/tree/master/bitnami/nginx) helm chart
+- The Bitnami [redis](https://github.com/bitnami/charts/tree/master/bitnami/redis) helm chart
 - Tested on Kubernetes 1.17+
 
 ## Installing the Chart
@@ -40,6 +41,8 @@ The command removes all the Kubernetes components associated with the chart and 
 ## Parameters
 
 The following table lists the configurable parameters of the Invoiceninja chart and their default values.
+
+> NOTE: You MUST set any values that default to random or risk losing access after an upgrade. See how [here](https://github.com/lwj5/dockerfiles/tree/redis-pw/charts/invoiceninja#installing-with-arguments)
 
 ### Global Configuration
 
@@ -158,19 +161,18 @@ The following table shows the configuration options for the Invoiceninja helm ch
 
 ### Redis parameters
 
-| Parameter                         | Description                                  | Default |
-| --------------------------------- | -------------------------------------------- | ------- |
-| `redis.enabled`                   | If external redis is used, set it to `false` | `true`  |
-| `redis.password`                  | Redis password                               | `nil`   |
-| `redis.usePassword`               | Use redis password                           | `false` |
-| `redis.sentinel.enabled`          | Enable sentinel containers                   | `true`  |
-| `redis.sentinel.usePassword`      | Use password for sentinel containers         | `false` |
-| `externalRedis.host`              | Host of the external redis                   | `nil`   |
-| `externalRedis.port`              | Port of the external redis                   | `6379`  |
-| `externalRedis.password`          | Password for the external redis              | `nil`   |
-| `externalRedis.sentinel`          | Using sentinels                              | `false` |
-| `externalRedis.databases.default` | Database to use by default                   | `0`     |
-| `externalRedis.databases.cache`   | Database to use by cache                     | `1`     |
+| Parameter                         | Description                                  | Default                                   |
+| --------------------------------- | -------------------------------------------- | ----------------------------------------- |
+| `redis.enabled`                   | If external redis is used, set it to `false` | `true`                                    |
+| `redis.password`                  | Redis password                               | _random 10 character alphanumeric string_ |
+| `redis.sentinel.enabled`          | Enable sentinel containers                   | `true`                                    |
+| `redis.sentinel.usePassword`      | Use password for sentinel containers         | `false`                                   |
+| `externalRedis.host`              | Host of the external redis                   | `nil`                                     |
+| `externalRedis.port`              | Port of the external redis                   | `6379`                                    |
+| `externalRedis.password`          | Password for the external redis              | `nil`                                     |
+| `externalRedis.sentinel`          | Using sentinels                              | `false`                                   |
+| `externalRedis.databases.default` | Database to use by default                   | `0`                                       |
+| `externalRedis.databases.cache`   | Database to use by cache                     | `1`                                       |
 
 > See [Dependencies](#dependencies) for more.
 
@@ -208,11 +210,17 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 
 ```bash
 helm install invoiceninja \
---set replicaCount=3,livenessProbe.initialDelaySeconds=90 \
+  --set appKey=changeit \
+  --set replicaCount=3 \
+  --set nginx.replicaCount=3 \
+  --set redis.cluster.slaveCount=3 \
+  --set redis.password=changeit \
+  --set mariadb.auth.rootPassword=changeit \
+  --set mariadb.auth.password=changeit \
   invoiceninja/invoiceninja
 ```
 
-The above command sets the number of replicas to 4, and the liveness probe delay to 90 seconds.
+The above command sets the number of replicas to 3 for a highly available (HA) setup. Note that you would need to use an external DB such as MariaDB Galera for a full HA production setup.
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while [installing](https://helm.sh/docs/helm/helm_install/) the chart. For example,
 
