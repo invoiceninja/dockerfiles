@@ -335,7 +335,6 @@ autoscaling:
 ##
 redis:
   enabled: true
-  usePassword: false
   sentinel:
     enabled: true
     usePassword: false

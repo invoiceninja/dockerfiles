@@ -221,9 +221,20 @@ Return the Cache Connection Name
 {{- end -}}
 
 {{/*
-Return the Broadcast Driver Name
+Return the Queue Connection Name
 */}}
 {{- define "invoiceninja.redisQueueConnection" -}}
+{{- if or (and .Values.redis.enabled .Values.redis.sentinel.enabled) (and .Values.externalRedis.host .Values.externalRedis.sentinel) }}
+    {{- printf "sentinel-default" -}}
+{{- else -}}
+    {{- printf "default" -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the Session Connection Name
+*/}}
+{{- define "invoiceninja.redisSessionConnection" -}}
 {{- if or (and .Values.redis.enabled .Values.redis.sentinel.enabled) (and .Values.externalRedis.host .Values.externalRedis.sentinel) }}
     {{- printf "sentinel-default" -}}
 {{- else -}}
