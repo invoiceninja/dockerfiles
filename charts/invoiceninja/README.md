@@ -42,7 +42,7 @@ The command removes all the Kubernetes components associated with the chart and 
 
 The following table lists the configurable parameters of the Invoiceninja chart and their default values.
 
-**NOTE: You MUST set any values that default to random or risk losing access after an upgrade**
+> NOTE: You MUST set any values that default to random or risk losing access after an upgrade. See how [here](https://github.com/lwj5/dockerfiles/tree/redis-pw/charts/invoiceninja#installing-with-arguments)
 
 ### Global Configuration
 
