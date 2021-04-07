@@ -12,6 +12,7 @@ Please read [Upgrading](#upgrading) section before upgrading MAJOR versions.
 - The Bitnami [common](https://github.com/bitnami/charts/tree/master/bitnami/common) helm chart
 - The Bitnami [mariadb](https://github.com/bitnami/charts/tree/master/bitnami/mariadb) helm chart
 - The Bitnami [nginx](https://github.com/bitnami/charts/tree/master/bitnami/nginx) helm chart
+- The Bitnami [redis](https://github.com/bitnami/charts/tree/master/bitnami/redis) helm chart
 - Tested on Kubernetes 1.17+
 
 ## Installing the Chart
@@ -40,6 +41,8 @@ The command removes all the Kubernetes components associated with the chart and 
 ## Parameters
 
 The following table lists the configurable parameters of the Invoiceninja chart and their default values.
+
+**NOTE: You MUST set any values that default to random or risk losing access after an upgrade**
 
 ### Global Configuration
 
@@ -207,11 +210,17 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 
 ```bash
 helm install invoiceninja \
---set replicaCount=3,livenessProbe.initialDelaySeconds=90 \
+  --set appKey=changeit \
+  --set replicaCount=3 \
+  --set nginx.replicaCount=3 \
+  --set redis.cluster.slaveCount=3 \
+  --set redis.password=changeit \
+  --set mariadb.auth.rootPassword=changeit \
+  --set mariadb.auth.password=changeit \
   invoiceninja/invoiceninja
 ```
 
-The above command sets the number of replicas to 4, and the liveness probe delay to 90 seconds.
+The above command sets the number of replicas to 3 for a highly available (HA) setup. Note that you would need to use an external DB such as MariaDB Galera for a full HA production setup.
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while [installing](https://helm.sh/docs/helm/helm_install/) the chart. For example,
 
