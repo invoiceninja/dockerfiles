@@ -1,6 +1,6 @@
 apiVersion: v2
 name: invoiceninja
-description: A Helm chart to install Invoiceninja
+description: A Helm chart to install Invoice Ninja
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
@@ -13,14 +13,14 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.3.1
+version: 0.3.2
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
-appVersion: 5.1.35
+appVersion: 5.1.41
 keywords:
   - invoiceninja
-home: https://github.com/lwj5/invoiceninja-chart
+home: https://invoiceninja.github.io/dockerfiles
 sources:
   - https://github.com/invoiceninja/invoiceninja
   - https://github.com/invoiceninja/dockerfiles

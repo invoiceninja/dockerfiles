@@ -12,13 +12,13 @@
 #     - myRegistryKeySecretName
 #   storageClass: myStorageClass
 
-## Invoiceninja image version
+## Invoice Ninja image version
 ## ref: https://github.com/invoiceninja/dockerfiles
 ##
 image:
   registry: docker.io
   repository: invoiceninja/invoiceninja
-  tag: 5.1.35
+  tag: 5.1.42
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##
@@ -30,7 +30,7 @@ image:
   # pullSecrets:
   #   - myRegistryKeySecretName
 
-## String to turn on debug mode in Invoiceninja
+## String to turn on debug mode in Invoice Ninja
 ##
 debug: false
 
@@ -169,7 +169,7 @@ containerSecurityContext:
 ##
 replicaCount: 1
 
-## Set up update strategy for Invoiceninja installation. Set to Recreate if you use persistent volume that cannot be mounted by more than one pods to makesure the pods is destroyed first.
+## Set up update strategy for Invoice Ninja installation. Set to Recreate if you use persistent volume that cannot be mounted by more than one pods to makesure the pods is destroyed first.
 ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
 ## Example:
 ## updateStrategy:
@@ -247,7 +247,7 @@ service:
   annotations: {}
 
 ## Configure extra options for liveness and readiness probes
-## This applies to all the Invoiceninja in the sharded cluster
+## This applies to all the Invoice Ninja in the sharded cluster
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes)
 ##
 livenessProbe:
@@ -286,7 +286,7 @@ resources:
 persistence:
   public:
     enabled: true
-    ## Invoiceninja data Persistent Volume Storage Class
+    ## Invoice Ninja data Persistent Volume Storage Class
     ## If defined, storageClassName: <storageClass>
     ## If set to "-", storageClassName: "", which disables dynamic provisioning
     ## If undefined (the default) or set to null, no storageClassName spec is
@@ -305,7 +305,7 @@ persistence:
     dataSource: {}
   storage:
     enabled: true
-    ## Invoiceninja data Persistent Volume Storage Class
+    ## Invoice Ninja data Persistent Volume Storage Class
     ## If defined, storageClassName: <storageClass>
     ## If set to "-", storageClassName: "", which disables dynamic provisioning
     ## If undefined (the default) or set to null, no storageClassName spec is
@@ -394,7 +394,7 @@ externalDatabase:
   ## Database host
   ##
   host: ""
-  ## non-root Username for Invoiceninja Database
+  ## non-root Username for Invoice Ninja Database
   ##
   user: invoiceninja
   ## Database password
@@ -421,13 +421,13 @@ nginx:
     ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
     ##
     type: ClusterIP
-  ## Configure the ingress resource that allows you to access the Invoiceninja
+  ## Configure the ingress resource that allows you to access the Invoice Ninja
   ## ref: http://kubernetes.io/docs/user-guide/ingress/
   ##
   ingress:
     enabled: true
     hostname: invoiceninja.local
-  ## Configure the serverblock for Invoiceninja
+  ## Configure the serverblock for Invoice Ninja
   ## Note: you may need to replace the fastcgi_pass value if the release name is different
   ##
   serverBlock: |
@@ -456,7 +456,7 @@ nginx:
             fastcgi_buffers 4 16k;
         }
     }
-  ## Configure the extraVolumes and extraVolumeMounts for Invoiceninja
+  ## Configure the extraVolumes and extraVolumeMounts for Invoice Ninja
   ## Note: you may need to replace the claimName if the release name is different
   ##
   extraVolumes:
