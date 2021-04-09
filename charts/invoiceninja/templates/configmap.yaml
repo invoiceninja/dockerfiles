@@ -13,9 +13,9 @@ metadata:
   {{- end }}
 data:
   {{- if .Values.nginx.ingress.enabled }}
-  APP_URL: "http://{{ .Values.nginx.ingress.hostname }}/"
+  APP_URL: "http://{{ .Values.nginx.ingress.hostname }}"
   {{- else }}
-  APP_URL: "http://{{ include "common.names.fullname" . }}/"
+  APP_URL: "http://{{ include "common.names.fullname" . }}"
   {{- end }}
   APP_DEBUG: {{ .Values.debug | quote }}
   DB_HOST1: {{ include "invoiceninja.databaseHost" . | quote }}
