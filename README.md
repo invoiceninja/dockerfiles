@@ -59,7 +59,7 @@ To ensure folder permissions are correct when the container comes up for the fir
 From the terminal run
 
 ```bash
-chmod 755 docker/app/public
+sudo chmod 755 docker/app/public
 sudo chown -R 1500:1500 docker/app
 ```
 
