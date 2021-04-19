@@ -56,7 +56,7 @@ Copy the entire string and insert in the env file at `APP_KEY=base64....`
 
 To ensure folder permissions are correct when the container comes up for the first time it is important that you set the correct folder permissions on the `docker` folder.
 
-From the terminal run
+From the terminal run the following commands(Raspberry Pi 4 probably need sudo both commands)
 
 ```bash
 chmod 755 docker/app/public
@@ -84,7 +84,8 @@ All that is left to do now is bring up the container
 
 ### Running on ARM64 (Raspberry Pi 4)
 
-When deploying on an ARM64 system, you need to comment out the `image: mysql:5` line and uncomment `image: mariadb:10.4` in the `docker-compose.yml` file.
+When deploying on an ARM64 system, you need to comment out the 'version: 3.7' and uncomment `version: 3` in the `docker-compose.yml` file. 
+Also, you need to comment out the `image: mysql:5` line and uncomment `image: mariadb:10.4` in the `docker-compose.yml` file.
 
 ### Updating the Image when using `docker-compose`
 
