@@ -56,10 +56,10 @@ Copy the entire string and insert in the env file at `APP_KEY=base64....`
 
 To ensure folder permissions are correct when the container comes up for the first time it is important that you set the correct folder permissions on the `docker` folder.
 
-From the terminal run
+From the terminal run these commands(Raspberry Pi 4 sudo BOTH commands)
 
 ```bash
-sudo chmod 755 docker/app/public
+chmod 755 docker/app/public
 sudo chown -R 1500:1500 docker/app
 ```
 
