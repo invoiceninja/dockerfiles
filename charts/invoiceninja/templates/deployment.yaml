@@ -140,6 +140,14 @@ spec:
                   name: {{ include "invoiceninja.redisSecretName" . }}
                   key: redis-password
             {{- end }}
+            {{- if .Values.userEmail }}
+            - name: IN_USER_EMAIL
+              value: {{ .Values.userEmail | quote }}
+            {{- end }}
+            {{- if .Values.userPassword }}
+            - name: IN_PASSWORD
+              value: {{ .Values.userPassword | quote }}
+            {{- end }}
             {{- if .Values.extraEnvVars }}
               {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}

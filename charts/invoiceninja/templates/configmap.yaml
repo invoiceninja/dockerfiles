@@ -27,6 +27,7 @@ data:
   {{- else }}
   LOG_CHANNEL: stderr
   {{- end }}
+  MAIL_MAILER: {{ .Values.mailer | quote }}
   {{- if .Values.broadcastDriver }}
   BROADCAST_DRIVER: {{ .Values.broadcastDriver | quote }}
   {{- else if or .Values.redis.enabled .Values.externalRedis.host }}
@@ -56,3 +57,4 @@ data:
   REDIS_CACHE_CONNECTION: {{ include "invoiceninja.redisCacheConnection" . | quote }}
   REDIS_QUEUE_CONNECTION: {{ include "invoiceninja.redisQueueConnection" . | quote }}
   SESSION_CONNECTION: {{ include "invoiceninja.redisSessionConnection" . | quote }}
+  REQUIRE_HTTPS: {{ .Values.requireHttps | quote }}

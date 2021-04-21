@@ -18,7 +18,7 @@
 image:
   registry: docker.io
   repository: invoiceninja/invoiceninja
-  tag: 5.1.42
+  tag: 5.1.51
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##
@@ -37,6 +37,16 @@ debug: false
 ## A 32 character long Application Key
 ##
 appKey: ""
+
+## Email of user to create first run
+## If not specified, default user email will be "admin@example.com"
+##
+userEmail: ""
+
+## Password of user to create on first run
+## If not specified, default user password will be "changeme!"
+##
+userPassword: ""
 
 ## Name of log channel to use
 ##
@@ -61,6 +71,16 @@ queueConnection: ""
 ## Use local or Phantom JS PDF generation
 ##
 snappdf: true
+
+## Name of queue connection to use (use "log" for debug)
+## Please check the ref below for any other env you may need to define
+## ref: https://github.com/invoiceninja/invoiceninja/blob/v5-stable/config/mail.php
+##
+mailer: log
+
+## Force HTTPS for all connections to Invoice Ninja
+##
+requireHttps: false
 
 ## String to partially override fullname template (will maintain the release name)
 ##
