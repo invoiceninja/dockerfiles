@@ -115,6 +115,18 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `extraVolumeMounts`         | Additional volume mounts                                                                  | `[]`                           |
 | `extraVolumes`              | Additional volumes                                                                        | `[]`                           |
 
+### Volume Permissions parameters
+
+| Parameter                             | Description                                                                                                          | Default                                                 |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `volumePermissions.enabled`           | Enable init container that changes the owner and group of the persistent volume(s) mountpoint to `runAsUser:fsGroup` | `false`                                                 |
+| `volumePermissions.image.registry`    | Init container volume-permissions image registry                                                                     | `docker.io`                                             |
+| `volumePermissions.image.repository`  | Init container volume-permissions image name                                                                         | `bitnami/bitnami-shell`                                 |
+| `volumePermissions.image.tag`         | Init container volume-permissions image tag                                                                          | `"10"`                                                  |
+| `volumePermissions.image.pullPolicy`  | Init container volume-permissions image pull policy                                                                  | `Always`                                                |
+| `volumePermissions.image.pullSecrets` | Specify docker-registry secret names as an array                                                                     | `[]` (does not add image pull secrets to deployed pods) |
+| `volumePermissions.resources`         | Init container volume-permissions resource                                                                           | `{}`                                                    |
+
 ### Exposure parameters
 
 | Parameter                          | Description                                                                | Default                        |

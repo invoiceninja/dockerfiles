@@ -9,7 +9,14 @@ Return the proper image name
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "invoiceninja.imagePullSecrets" -}}
-{{- include "common.images.pullSecrets" (dict "images" (list .Values.image ) "global" .Values.global) -}}
+{{- include "common.images.pullSecrets" (dict "images" (list .Values.image .Values.volumePermissions.image) "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
+Return the proper image name (for the init container volume-permissions image)
+*/}}
+{{- define "invoiceninja.volumePermissions.image" -}}
+{{ include "common.images.image" (dict "imageRoot" .Values.volumePermissions.image "global" .Values.global) }}
 {{- end -}}
 
 {{/*
