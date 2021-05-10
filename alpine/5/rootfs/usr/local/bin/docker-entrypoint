@@ -27,18 +27,20 @@ file_env() {
     local fileVar="${var}_FILE"
     local def="${2:-}"
 
-    if [ "$(ie_gv ${var})" != "" ] && [ "$(ie_gv ${fileVar})" != "" ]; then
-        in_error "Both $var and $fileVar are set (but are exclusive)"
-    fi
-
-    local val="$def"
     if [ "$(ie_gv ${var})" != "" ]; then
-        val=$(ie_gv ${var})
-    elif [ "$(ie_gv ${fileVar})" != "" ]; then
-        val=$(cat $(ie_gv ${fileVar}))
+        if [ "$(ie_gv ${fileVar})" != "" ]; then
+            in_error "Both $var and $fileVar are set (but are exclusive)"
+        fi
+        unset "$fileVar"
+        return
     fi
 
-    export "$var"="$val"
+    if [ "$(ie_gv ${fileVar})" != "" ] && [ -f "$(ie_gv ${fileVar})" ]; then
+        export "$var"="$(cat $(ie_gv ${fileVar}))"
+    elif [ ! -z "$def" ]; then
+        export "$var"="$def"
+    fi
+
     unset "$fileVar"
 }
 

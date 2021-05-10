@@ -1,26 +1,33 @@
-APP_URL=http://in.localhost:8003/
+# IN application vars
+APP_URL=http://in.localhost:8003
 APP_KEY=<insert your generated key in here>
 APP_DEBUG=true
-MULTI_DB_ENABLED=false
-DB_HOST1=db
-DB_PORT1=3306
-DB_USERNAME1=ninja
-DB_PASSWORD1=ninja
-DB_DATABASE1=ninja
+REQUIRE_HTTPS=false
+PHANTOMJS_PDF_GENERATION=false
+
+# DB connection
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=ninja
+DB_USERNAME=ninja
+DB_PASSWORD=ninja
+
+# Mail options
+MAIL_MAILER=log
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS='user@example.com'
+MAIL_FROM_NAME='Self Hosted User'
+
+# MySQL
 MYSQL_ROOT_PASSWORD=ninjaAdm1nPassword
 MYSQL_USER=ninja
 MYSQL_PASSWORD=ninja
 MYSQL_DATABASE=ninja
 
-#this is a system variable please do not remove
-IS_DOCKER=true
-
-PHANTOMJS_PDF_GENERATION=false
-
-#V4 env vars
-DB_STRICT=false
-DB_HOST=db
-DB_DATABASE=ninja
-DB_USERNAME=ninja
-DB_PASSWORD=ninja
-APP_CIPHER=AES-256-CBC
+# V4 env vars
+# DB_STRICT=false
+# APP_CIPHER=AES-256-CBC
