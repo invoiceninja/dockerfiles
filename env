@@ -2,11 +2,11 @@ APP_URL=http://in.localhost:8003/
 APP_KEY=<insert your generated key in here>
 APP_DEBUG=true
 MULTI_DB_ENABLED=false
-DB_HOST1=db
-DB_PORT1=3306
-DB_USERNAME1=ninja
-DB_PASSWORD1=ninja
-DB_DATABASE1=ninja
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=ninja
+DB_USERNAME=ninja
+DB_PASSWORD=ninja
 MYSQL_ROOT_PASSWORD=ninjaAdm1nPassword
 MYSQL_USER=ninja
 MYSQL_PASSWORD=ninja
@@ -19,8 +19,4 @@ PHANTOMJS_PDF_GENERATION=false
 
 #V4 env vars
 DB_STRICT=false
-DB_HOST=db
-DB_DATABASE=ninja
-DB_USERNAME=ninja
-DB_PASSWORD=ninja
 APP_CIPHER=AES-256-CBC
