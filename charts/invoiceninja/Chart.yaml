@@ -17,7 +17,7 @@ version: 0.3.3
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
-appVersion: 5.1.42
+appVersion: 5.1.61
 keywords:
   - invoiceninja
 home: https://invoiceninja.github.io/dockerfiles
