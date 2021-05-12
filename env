@@ -12,6 +12,13 @@ DB_DATABASE=ninja
 DB_USERNAME=ninja
 DB_PASSWORD=ninja
 
+# Create initial user
+# Default to these values if empty
+# IN_USER_EMAIL=admin@example.com
+# IN_PASSWORD=changeme!
+IN_USER_EMAIL=
+IN_PASSWORD=
+
 # Mail options
 MAIL_MAILER=log
 MAIL_HOST=smtp.mailtrap.io
