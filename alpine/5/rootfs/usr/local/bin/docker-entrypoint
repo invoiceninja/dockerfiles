@@ -46,43 +46,52 @@ file_env() {
 
 # first arg is `-f` or `--some-option`
 if [ "${1#-}" != "$1" ]; then
-    set -- php-fpm "$@"
+    set -- supervisord "$@"
 fi
 
 # create storage volume
-if [ ! -d /var/www/app/storage ] && [ -d "$BAK_STORAGE_PATH" ]; then
-    mv "$BAK_STORAGE_PATH" /var/www/app/storage
-elif [ -d "$BAK_STORAGE_PATH" ]; then
-    # copy missing folders in storage
-    IN_STORAGE_BACKUP="$(ls "$BAK_STORAGE_PATH")"
-    for path in $IN_STORAGE_BACKUP; do
-        if [ ! -e "/var/www/app/storage/$path" ]; then
-            cp -Rp "$BAK_STORAGE_PATH/$path" "/var/www/app/storage/"
-        fi
-    done
+if [ -d "$BAK_STORAGE_PATH" ]; then
+    if [ ! -d /var/www/app/storage ]; then
+        mv "$BAK_STORAGE_PATH" /var/www/app/storage
+    else
+        # copy missing folders in storage
+        IN_STORAGE_BACKUP="$(ls "$BAK_STORAGE_PATH")"
+        for path in $IN_STORAGE_BACKUP; do
+            if [ ! -e "/var/www/app/storage/$path" ]; then
+                cp -Rp "$BAK_STORAGE_PATH/$path" "/var/www/app/storage/"
+            fi
+        done
+    fi
+    rm -rf "$BAK_STORAGE_PATH"
 fi
-rm -rf "$BAK_STORAGE_PATH"
+
+# prevent init scripts from running when upgrading from IN <= 5.1.62
+if [ -f /var/www/app/public/version ] && [ "$INVOICENINJA_VERSION" != "$(cat /var/www/app/public/version)" ]; then
+    touch /var/www/app/storage/.initialized
+fi
 
 # create public volume
-if [ ! -d /var/www/app/public ] && [ -d "$BAK_PUBLIC_PATH" ]; then
-    mv "$BAK_PUBLIC_PATH" /var/www/app/public
-elif [ ! -e /var/www/app/public/version ] || [ "$INVOICENINJA_VERSION" != "$(cat /var/www/app/public/version)" ]; then
-    # version mismatch, update all
-    cp -au "$BAK_PUBLIC_PATH/"* /var/www/app/public
-    echo "$INVOICENINJA_VERSION" >/var/www/app/public/version
-elif [ ! -d /var/www/app/public/logo ] && [ -d "$BAK_PUBLIC_PATH/logo" ]; then
-    # missing logo folder only, copy folder
-    cp -a "$BAK_PUBLIC_PATH/logo" /var/www/app/public/logo
-elif [ -d "$BAK_PUBLIC_PATH/logo" ]; then
-    # copy missing folders in logo
-    IN_LOGO_BACKUP="$(ls "$BAK_PUBLIC_PATH/logo")"
-    for path in $IN_LOGO_BACKUP; do
-        if [ ! -e "/var/www/app/public/logo/$path" ]; then
-            cp -a "$BAK_PUBLIC_PATH/logo/$path" "/var/www/app/public/logo/"
-        fi
-    done
+if [ -d "$BAK_PUBLIC_PATH" ]; then
+    if [ ! -d /var/www/app/public ]; then
+        mv "$BAK_PUBLIC_PATH" /var/www/app/public
+    elif [ ! -f /var/www/app/public/version ] || [ "$INVOICENINJA_VERSION" != "$(cat /var/www/app/public/version)" ]; then
+        # version mismatch, update all
+        cp -au "$BAK_PUBLIC_PATH/"* /var/www/app/public
+        echo "$INVOICENINJA_VERSION" >/var/www/app/public/version
+    elif [ ! -d /var/www/app/public/logo ] && [ -d "$BAK_PUBLIC_PATH/logo" ]; then
+        # missing logo folder only, copy folder
+        cp -a "$BAK_PUBLIC_PATH/logo" /var/www/app/public/logo
+    elif [ -d "$BAK_PUBLIC_PATH/logo" ]; then
+        # copy missing folders in logo
+        IN_LOGO_BACKUP="$(ls "$BAK_PUBLIC_PATH/logo")"
+        for path in $IN_LOGO_BACKUP; do
+            if [ ! -e "/var/www/app/public/logo/$path" ]; then
+                cp -a "$BAK_PUBLIC_PATH/logo/$path" "/var/www/app/public/logo/"
+            fi
+        done
+    fi
+    rm -rf "$BAK_PUBLIC_PATH"
 fi
-rm -rf "$BAK_PUBLIC_PATH"
 
 # Initialize values that might be stored in a file
 file_env 'APP_KEY'
