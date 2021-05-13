@@ -109,10 +109,10 @@ file_env 'MAILGUN_SECRET'
 file_env 'S3_KEY'
 file_env 'S3_SECRET'
 
-# Run Laravel stuff
+# Run IN/Laravel stuff
 if [[ "$1" == "supervisord" ]] || [[ "$1" == "php-fpm" ]]; then
-    echo "Initialising Laravel..."
-    . laravel-init.sh
+    in_log INFO "Initialising Invoice Ninja..."
+    . invoiceninja-init.sh
 fi
 
 exec docker-php-entrypoint "$@"
