@@ -29,9 +29,10 @@ php artisan config:cache
 php artisan optimize
 
 # Check if DB works, if not crash the app.
-DB_READY=$(php artisan tinker --execute='try { DB::connection()->getPdo(); } catch (\Exception $e) { echo(1); return; } echo(0);')
-if [ "$DB_READY" -ne "0" ]; then
+DB_READY=$(php artisan tinker --execute='echo app()->call("App\Utils\SystemHealth@dbCheck")["success"];')
+if [ "$DB_READY" != "1" ]; then
     echo "Error connecting to DB"
+    php artisan migrate:status # Print verbose error
     exit 1
 fi
 
