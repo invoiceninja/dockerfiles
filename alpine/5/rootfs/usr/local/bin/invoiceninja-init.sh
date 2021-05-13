@@ -12,14 +12,14 @@ docker_process_init_files() {
             # https://github.com/docker-library/postgres/issues/450#issuecomment-393167936
             # https://github.com/docker-library/postgres/pull/452
             if [ -x "$f" ]; then
-                in_log "$0: running $f"
+                in_log INFO "$0: running $f"
                 "$f"
             else
-                in_log "$0: sourcing $f"
+                in_log INFO "$0: sourcing $f"
                 . "$f"
             fi
             ;;
-        *) in_log "$0: ignoring $f" ;;
+        *) in_log INFO "$0: ignoring $f" ;;
         esac
         echo
     done
@@ -31,9 +31,8 @@ php artisan optimize
 # Check if DB works, if not crash the app.
 DB_READY=$(php artisan tinker --execute='echo app()->call("App\Utils\SystemHealth@dbCheck")["success"];')
 if [ "$DB_READY" != "1" ]; then
-    echo "Error connecting to DB"
     php artisan migrate:status # Print verbose error
-    exit 1
+    in_error "Error connecting to DB"
 fi
 
 php artisan migrate --force
