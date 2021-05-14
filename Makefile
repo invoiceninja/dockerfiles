@@ -17,15 +17,15 @@ VERSION=$(shell echo ${TAG} | sed "s/-.*//")
 
 # Building docker images based on alpine.
 # Assigned tags:
-#   - :alpine
-#   - :alpine-<RELEASE VERSION>
+#   - :4
+#   - :<RELEASE VERSION>
 .PHONY: build-alpine
 build-alpine:
 ifeq ($(IS_V5),)
 	$(info Make: Building "$(VERSION)" tagged images from alpine.)
-	@docker build -t ${HUB_NAMESPACE}/${IMAGE}:alpine-${VERSION} --build-arg INVOICENINJA_VERSION=${VERSION} ./alpine/4/
-	# Tag as alpine-4
-	@docker tag ${HUB_NAMESPACE}/${IMAGE}:alpine-${VERSION} ${HUB_NAMESPACE}/${IMAGE}:alpine-4
+	@docker build -t ${HUB_NAMESPACE}/${IMAGE}:${VERSION} --build-arg INVOICENINJA_VERSION=${VERSION} ./alpine/4/
+	# Tag as 4
+	@docker tag ${HUB_NAMESPACE}/${IMAGE}:alpine-${VERSION} ${HUB_NAMESPACE}/${IMAGE}:4
 	$(info Make: Done.)
 endif
 
@@ -33,8 +33,8 @@ endif
 push-alpine:
 ifeq ($(IS_V5),)
 	$(info Make: Pushing tagged images from alpine.)
-	@docker push ${HUB_NAMESPACE}/${IMAGE}:alpine-${VERSION}
-	@docker push ${HUB_NAMESPACE}/${IMAGE}:alpine-4
+	@docker push ${HUB_NAMESPACE}/${IMAGE}:${VERSION}
+	@docker push ${HUB_NAMESPACE}/${IMAGE}:4
 	$(info Make: Done.)
 endif
 
