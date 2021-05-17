@@ -1,6 +1,6 @@
 # Invoice Ninja Helm Chart
 
-This helm chart installs a Invoice Ninja (IN) and its dependencies into a running
+This helm chart installs Invoice Ninja (IN) and its dependencies into a running
 Kubernetes cluster.
 
 The chart installs the [Invoice Ninja](https://hub.docker.com/r/invoiceninja/invoiceninja) docker image.
@@ -90,7 +90,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `queueConnection`    | Name of queue connection to use                                  | `nil`                                                   |
 | `snappdf`            | Use snappdf instead of Phantom JS PDF generation                 | `true`                                                  |
 | `mailer`             | Name of the mailer to use (log, smtp, etc.)                      | `log`                                                   |
-| `requireHttps`       | Force HTTPS for all connections to Invoice Ninja                 | `false`                                                 |
+| `requireHttps`       | Force HTTPS for internal connections to Invoice Ninja (see #349) | `false`                                                 |
 | `extraEnvVars`       | Extra environment variables to be set on Invoice Ninja container | `{}`                                                    |
 | `extraEnvVarsCM`     | Name of existing ConfigMap containing extra env vars             | `nil`                                                   |
 | `extraEnvVarsSecret` | Name of existing Secret containing extra env vars                | `nil`                                                   |
