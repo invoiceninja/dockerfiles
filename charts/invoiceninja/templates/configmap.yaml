@@ -22,10 +22,10 @@ data:
   APP_URL: "http://{{ include "common.names.fullname" . }}"
   {{- end }}
   APP_DEBUG: {{ .Values.debug | quote }}
-  DB_HOST1: {{ include "invoiceninja.databaseHost" . | quote }}
-  DB_PORT1: {{ include "invoiceninja.databasePort" . | quote }}
-  DB_USERNAME1: {{ include "invoiceninja.databaseUser" . | quote }}
-  DB_DATABASE1: {{ include "invoiceninja.databaseName" . | quote }}
+  DB_HOST: {{ include "invoiceninja.databaseHost" . | quote }}
+  DB_PORT: {{ include "invoiceninja.databasePort" . | quote }}
+  DB_USERNAME: {{ include "invoiceninja.databaseUser" . | quote }}
+  DB_DATABASE: {{ include "invoiceninja.databaseName" . | quote }}
   {{- if .Values.logChannel }}
   LOG_CHANNEL: {{ .Values.logChannel | quote }}
   {{- else }}

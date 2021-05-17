@@ -148,7 +148,7 @@ spec:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
             {{- end }}
           env:
-            - name: DB_PASSWORD1
+            - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "invoiceninja.databaseSecretName" . }}
