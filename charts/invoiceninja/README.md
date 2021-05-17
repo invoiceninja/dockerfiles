@@ -82,7 +82,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `debug`              | Turn on debug mode on Invoice Ninja                              | `false`                                                 |
 | `appKey`             | Laravel Application Key                                          | _random 32 character alphanumeric string_               |
 | `userEmail`          | Initial user email address                                       | `admin@example.com`                                     |
-| `userPassword`       | Initial user password (**NOTE:** change this after login!)       | `changeme!`                                             |
+| `userPassword`       | Initial user password                                            | `changeme!`                                             |
 | `logChannel`         | Name of log channel to use                                       | `nil`                                                   |
 | `broadcastDriver`    | Name of broadcast driver to use                                  | `nil`                                                   |
 | `cacheDriver`        | Name of cache driver to use                                      | `nil`                                                   |
