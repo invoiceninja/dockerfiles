@@ -13,7 +13,11 @@ metadata:
   {{- end }}
 data:
   {{- if .Values.nginx.ingress.enabled }}
+  {{- if .Values.nginx.ingress.tls }}
+  APP_URL: "https://{{ .Values.nginx.ingress.hostname }}"
+  {{- else }}
   APP_URL: "http://{{ .Values.nginx.ingress.hostname }}"
+  {{- end }}
   {{- else }}
   APP_URL: "http://{{ include "common.names.fullname" . }}"
   {{- end }}

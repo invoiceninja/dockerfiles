@@ -236,8 +236,47 @@ The above command sets the number of replicas to 3 for a highly available (HA) s
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while [installing](https://helm.sh/docs/helm/helm_install/) the chart. For example,
 
+```yaml
+# values.yaml
+appKey: changeit
+replicaCount: 3
+nginx:
+  replicaCount: 3
+redis:
+  cluster:
+    slaveCount: 3
+  password: changeit
+mariadb:
+  auth:
+    rootPassword: changeit
+    password: changeit
+```
+
 ```bash
 helm install invoiceninja -f values.yaml invoiceninja/invoiceninja
+```
+
+## Setting Environment Variables
+
+Should you need to inject any environment variables into the `invoiceninja` container, you can use the `extraEnvVars` option:
+
+```yaml
+# ... values.yaml file
+# In this example, we are forcing REQUIRE_HTTPS to be false
+extraEnvVars:
+  - name: REQUIRE_HTTPS
+    value: 'false' # all values must be strings, so other types must be surrounded in quotes
+```
+
+Alternatively you can provide the name of an existing `configmap` or `secret` object:
+
+```bash
+kubectl create configmap examplemap --from-literal=REQUIRE_HTTPS='false'
+```
+
+```yaml
+# ... values.yaml file
+extraEnvVarsCM: examplemap
 ```
 
 ## Upgrading
