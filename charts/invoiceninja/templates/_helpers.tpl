@@ -59,14 +59,14 @@ Create the name of the service account to use
 Return the proper Storage Class
 */}}
 {{- define "invoiceninja.public.storageClass" -}}
-{{- include "common.storage.class" (dict "persistence" .Values.persistence "global" .Values.global) -}}
+{{- include "common.storage.class" (dict "persistence" .Values.persistence.public "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
 Return the proper Storage Class
 */}}
 {{- define "invoiceninja.storage.storageClass" -}}
-{{- include "common.storage.class" (dict "persistence" .Values.persistence "global" .Values.global) -}}
+{{- include "common.storage.class" (dict "persistence" .Values.persistence.storage "global" .Values.global) -}}
 {{- end -}}
 
 {{/*
