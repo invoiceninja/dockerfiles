@@ -262,20 +262,20 @@ helm install invoiceninja -f values.yaml invoiceninja/invoiceninja
 
 ## Setting Environment Variables
 
-Should you need to inject any environment variables into the `invoiceninja` container, you can use the `extraEnvVars` option:
+Should you need to inject any environment variables such as those in [here](https://github.com/invoiceninja/dockerfiles/blob/master/env) into the `invoiceninja` container, you can use the `extraEnvVars` option:
 
 ```yaml
 # ... values.yaml file
-# In this example, we are forcing REQUIRE_HTTPS to be false
+# In this example, we are setting the SMTP MAIL_HOST to be 'smtp.mailtrap.io'
 extraEnvVars:
-  - name: REQUIRE_HTTPS
-    value: 'false' # all values must be strings, so other types must be surrounded in quotes
+  - name: MAIL_HOST
+    value: 'smtp.mailtrap.io' # all values must be strings, so other types must be surrounded in quotes
 ```
 
 Alternatively you can provide the name of an existing `configmap` or `secret` object:
 
 ```bash
-kubectl create configmap examplemap --from-literal=REQUIRE_HTTPS='false'
+kubectl create configmap examplemap --from-literal=MAIL_HOST='smtp.mailtrap.io'
 ```
 
 ```yaml
