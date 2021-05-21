@@ -1,6 +1,6 @@
 # Invoice Ninja Helm Chart
 
-This helm chart installs a Invoice Ninja and its dependencies into a running
+This helm chart installs Invoice Ninja (IN) and its dependencies into a running
 Kubernetes cluster.
 
 The chart installs the [Invoice Ninja](https://hub.docker.com/r/invoiceninja/invoiceninja) docker image.
@@ -81,12 +81,16 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `serviceAccountName` | Name of a service account for the Invoice Ninja pods             | `default`                                               |
 | `debug`              | Turn on debug mode on Invoice Ninja                              | `false`                                                 |
 | `appKey`             | Laravel Application Key                                          | _random 32 character alphanumeric string_               |
+| `userEmail`          | Initial user email address                                       | `admin@example.com`                                     |
+| `userPassword`       | Initial user password                                            | `changeme!`                                             |
 | `logChannel`         | Name of log channel to use                                       | `nil`                                                   |
 | `broadcastDriver`    | Name of broadcast driver to use                                  | `nil`                                                   |
 | `cacheDriver`        | Name of cache driver to use                                      | `nil`                                                   |
 | `sessionDriver`      | Name of session driver to use                                    | `nil`                                                   |
 | `queueConnection`    | Name of queue connection to use                                  | `nil`                                                   |
 | `snappdf`            | Use snappdf instead of Phantom JS PDF generation                 | `true`                                                  |
+| `mailer`             | Name of the mailer to use (log, smtp, etc.)                      | `log`                                                   |
+| `requireHttps`       | Force HTTPS for internal connections to Invoice Ninja (see #349) | `false`                                                 |
 | `extraEnvVars`       | Extra environment variables to be set on Invoice Ninja container | `{}`                                                    |
 | `extraEnvVarsCM`     | Name of existing ConfigMap containing extra env vars             | `nil`                                                   |
 | `extraEnvVarsSecret` | Name of existing Secret containing extra env vars                | `nil`                                                   |
@@ -258,20 +262,20 @@ helm install invoiceninja -f values.yaml invoiceninja/invoiceninja
 
 ## Setting Environment Variables
 
-Should you need to inject any environment variables into the `invoiceninja` container, you can use the `extraEnvVars` option:
+Should you need to inject any environment variables such as those in [here](https://github.com/invoiceninja/dockerfiles/blob/master/env) into the `invoiceninja` container, you can use the `extraEnvVars` option:
 
 ```yaml
 # ... values.yaml file
-# In this example, we are forcing REQUIRE_HTTPS to be false
+# In this example, we are setting the SMTP MAIL_HOST to be 'smtp.mailtrap.io'
 extraEnvVars:
-  - name: REQUIRE_HTTPS
-    value: 'false' # all values must be strings, so other types must be surrounded in quotes
+  - name: MAIL_HOST
+    value: 'smtp.mailtrap.io' # all values must be strings, so other types must be surrounded in quotes
 ```
 
 Alternatively you can provide the name of an existing `configmap` or `secret` object:
 
 ```bash
-kubectl create configmap examplemap --from-literal=REQUIRE_HTTPS='false'
+kubectl create configmap examplemap --from-literal=MAIL_HOST='smtp.mailtrap.io'
 ```
 
 ```yaml
