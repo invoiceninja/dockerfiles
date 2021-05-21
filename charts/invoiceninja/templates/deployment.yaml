@@ -64,11 +64,13 @@ spec:
             - |
               COUNTER=0;
               while [  $COUNTER -lt 120 ]; do
-                if mysqladmin ping -h "$DB_HOST1" -P $DB_PORT1 --silent; then
-                  exit 0;
+                DB_READY=$(php artisan tinker --execute='echo app()->call("App\Utils\SystemHealth@dbCheck")["success"];')
+                if [ "$DB_READY" == "1" ]; then
+                    exit 0;
                 fi;
+                php artisan migrate:status
                 let COUNTER=COUNTER+1;
-                echo "Waiting for DB ($DB_HOST1:$DB_PORT1)"
+                echo "Waiting for DB"
                 sleep 2;
               done;
               echo "Did NOT see a database after 240 secs!";
