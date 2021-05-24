@@ -94,6 +94,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `extraEnvVars`       | Extra environment variables to be set on Invoice Ninja container | `{}`                                                    |
 | `extraEnvVarsCM`     | Name of existing ConfigMap containing extra env vars             | `nil`                                                   |
 | `extraEnvVarsSecret` | Name of existing Secret containing extra env vars                | `nil`                                                   |
+| `trustedProxy`       | List of trusted proxies for Invoice Ninja to communicate with the nginx proxy | `'*'`                                                   |
 
 ### Invoice Ninja deployment parameters
 

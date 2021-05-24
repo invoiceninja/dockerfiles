@@ -62,3 +62,4 @@ data:
   REDIS_QUEUE_CONNECTION: {{ include "invoiceninja.redisQueueConnection" . | quote }}
   SESSION_CONNECTION: {{ include "invoiceninja.redisSessionConnection" . | quote }}
   REQUIRE_HTTPS: {{ .Values.requireHttps | quote }}
+  TRUSTED_PROXIES: {{ .Values.trustedProxies | quote }}
