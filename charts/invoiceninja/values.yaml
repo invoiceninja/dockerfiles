@@ -68,6 +68,10 @@ sessionDriver: ""
 ##
 queueConnection: ""
 
+## List of trusted proxies for Invoice Ninja to communicate with the nginx proxy
+##
+trustedProxies: "*"
+
 ## Use local or Phantom JS PDF generation
 ##
 snappdf: true
