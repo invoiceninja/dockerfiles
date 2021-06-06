@@ -4,6 +4,7 @@ APP_KEY=<insert your generated key in here>
 APP_DEBUG=true
 REQUIRE_HTTPS=false
 PHANTOMJS_PDF_GENERATION=false
+QUEUE_CONNECTION=database
 
 # DB connection
 DB_HOST=db
