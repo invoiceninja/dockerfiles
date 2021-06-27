@@ -39,7 +39,7 @@ RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 # Install PHP extensions
 # https://hub.docker.com/r/mlocati/php-extension-installer/tags
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+COPY --from=mlocati/php-extension-installer/1.2.28 /usr/bin/install-php-extensions /usr/local/bin/
 
 RUN install-php-extensions \
     bcmath \
