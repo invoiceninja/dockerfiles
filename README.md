@@ -2,6 +2,8 @@
 [![Docker image, latest](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja/latest?label=latest)](https://hub.docker.com/r/invoiceninja/invoiceninja)
 [![Docker image, alpine](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja/alpine?label=alpine)](https://hub.docker.com/r/invoiceninja/invoiceninja)
 [![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/invoiceninja)](https://artifacthub.io/packages/search?repo=invoiceninja)
+[![Pusblish Image](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml) [![Cache v5 Image](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-v5.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-v5.yaml)
+
 
 
 # Docker for [Invoice Ninja](https://www.invoiceninja.com/)
