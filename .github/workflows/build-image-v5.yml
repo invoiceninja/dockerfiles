@@ -44,7 +44,7 @@ jobs:
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: ./alpine/5/
-          build-args: INVOICENINJA_VERSION=v5-stable
+          build-args: INVOICENINJA_VERSION=5-stable
           target: prod
           platforms: linux/amd64,linux/arm64
           tags: invoiceninja/invoiceninja:cache
