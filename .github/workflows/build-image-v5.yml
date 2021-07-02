@@ -30,17 +30,11 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Test
-        id: prep
-        run: |
-          MAJOR=5
-          echo ::set-output name=major::${MAJOR}
-
       - name: Cache Docker layers
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-5-${{ hashFiles('alpine/${{ steps.prep.outputs.major }}/cache_buster') }}
+          key: ${{ runner.os }}-buildx-5-${{ hashFiles('alpine/5/cache_buster') }}
           restore-keys: |
             ${{ runner.os }}-buildx-5-${{ hashFiles('alpine/5/cache_buster') }}
 
