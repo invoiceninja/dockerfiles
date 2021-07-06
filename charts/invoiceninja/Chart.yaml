@@ -32,7 +32,7 @@ dependencies:
     version: 1.x.x
   - name: nginx
     repository: https://charts.bitnami.com/bitnami
-    version: 8.8.x
+    version: 9.x.x
   - condition: mariadb.enabled
     name: mariadb
     repository: https://charts.bitnami.com/bitnami
@@ -40,7 +40,7 @@ dependencies:
   - condition: redis.enabled
     name: redis
     repository: https://charts.bitnami.com/bitnami
-    version: 12.9.x
+    version: 12.x.x
 maintainers:
   - email: lwj5@hotmail.com
     name: lwj5
