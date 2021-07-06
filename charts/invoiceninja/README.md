@@ -13,7 +13,7 @@ Please read [Upgrading](#upgrading) section before upgrading MAJOR versions.
 - The Bitnami [mariadb](https://github.com/bitnami/charts/tree/master/bitnami/mariadb) helm chart
 - The Bitnami [nginx](https://github.com/bitnami/charts/tree/master/bitnami/nginx) helm chart
 - The Bitnami [redis](https://github.com/bitnami/charts/tree/master/bitnami/redis) helm chart
-- Tested on Kubernetes 1.17+
+- Tested on Kubernetes 1.19+
 
 ## Installing the Chart
 
@@ -21,7 +21,7 @@ To install the chart with the release name `invoiceninja`:
 
 ```bash
 helm repo add invoiceninja https://invoiceninja.github.io/dockerfiles
-helm install invoiceninja invoiceninja/invoiceninja
+helm install invoiceninja invoiceninja/invoiceninja --set appKey=changeit --set mariadb.auth.rootPassword=changeit --set mariadb.auth.password=changeit --set redis.password=changeit
 ```
 
 The command deploys Invoice Ninja on the Kubernetes cluster in the default namespace. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
@@ -152,8 +152,8 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `nginx.service.type`                 | Kubernetes Service type               | `ClusterIP`                                             |
 | `nginx.ingress.enabled`              | Enable ingress controller resource    | `true`                                                  |
 | `nginx.ingress.hostname`             | Default host for the ingress resource | `invoiceninja.local`                                    |
-| `nginx.existingServerBlockConfigmap` | Custom NGINX server block config map  | `{{ include "invoiceninja.nginx.serverBlockName" . }}'` |
-| `nginx.staticSitePVC`                | Name of Invoice Ninja public PVC      | `invoiceninja-public`                                   |
+| `nginx.existingServerBlockConfigmap` | Custom NGINX server block config map  | `{{ include "invoiceninja.nginx.serverBlockName" . }}` |
+| `nginx.staticSitePVC`                | Name of Invoice Ninja public PVC      | `{{ include "invoiceninja.public.storageName" . }}`     |
 
 > See [Dependencies](#dependencies) for more.
 

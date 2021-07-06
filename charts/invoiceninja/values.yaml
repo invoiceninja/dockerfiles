@@ -474,4 +474,4 @@ nginx:
   existingServerBlockConfigmap: '{{ include "invoiceninja.nginx.serverBlockName" . }}'
   ## Use the public PVC created by Invoice Ninja
   ##
-  staticSitePVC: invoiceninja-public
+  staticSitePVC: '{{ include "invoiceninja.public.storageName" . }}'
