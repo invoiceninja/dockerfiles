@@ -18,7 +18,7 @@
 image:
   registry: docker.io
   repository: invoiceninja/invoiceninja
-  tag: 5.1.64
+  tag: 5.2.10
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##
@@ -469,43 +469,9 @@ nginx:
   ingress:
     enabled: true
     hostname: invoiceninja.local
-  ## Configure the serverblock for Invoice Ninja
-  ## Note: you may need to replace the fastcgi_pass value if the release name is different
+  ## Use the serverblock config map from Invoice Ninja
   ##
-  serverBlock: |
-    server {
-        listen 8080 default_server;
-        server_name _;
-
-        root /var/www/app/public/;
-        index index.php;
-
-        location / {
-            try_files $uri $uri/ /index.php?$query_string;
-        }
-
-        location = /favicon.ico { access_log off; log_not_found off; }
-        location = /robots.txt  { access_log off; log_not_found off; }
-
-        location ~ \.php$ {
-            fastcgi_split_path_info ^(.+\.php)(/.+)$;
-            fastcgi_pass invoiceninja:9000;
-            fastcgi_index index.php;
-            include fastcgi_params;
-            fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-            fastcgi_intercept_errors off;
-            fastcgi_buffer_size 16k;
-            fastcgi_buffers 4 16k;
-        }
-    }
-  ## Configure the extraVolumes and extraVolumeMounts for Invoice Ninja
-  ## Note: you may need to replace the claimName if the release name is different
+  existingServerBlockConfigmap: '{{ include "invoiceninja.nginx.serverBlockName" . }}'
+  ## Use the public PVC created by Invoice Ninja
   ##
-  extraVolumes:
-    - name: public
-      persistentVolumeClaim:
-        claimName: invoiceninja-public
-  extraVolumeMounts:
-    - mountPath: /var/www/app/public
-      name: public
-      readOnly: true
+  staticSitePVC: '{{ include "invoiceninja.public.storageName" . }}'

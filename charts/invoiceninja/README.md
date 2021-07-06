@@ -13,7 +13,7 @@ Please read [Upgrading](#upgrading) section before upgrading MAJOR versions.
 - The Bitnami [mariadb](https://github.com/bitnami/charts/tree/master/bitnami/mariadb) helm chart
 - The Bitnami [nginx](https://github.com/bitnami/charts/tree/master/bitnami/nginx) helm chart
 - The Bitnami [redis](https://github.com/bitnami/charts/tree/master/bitnami/redis) helm chart
-- Tested on Kubernetes 1.17+
+- Tested on Kubernetes 1.19+
 
 ## Installing the Chart
 
@@ -21,7 +21,7 @@ To install the chart with the release name `invoiceninja`:
 
 ```bash
 helm repo add invoiceninja https://invoiceninja.github.io/dockerfiles
-helm install invoiceninja invoiceninja/invoiceninja
+helm install invoiceninja invoiceninja/invoiceninja --set appKey=changeit --set mariadb.auth.rootPassword=changeit --set mariadb.auth.password=changeit --set redis.password=changeit
 ```
 
 The command deploys Invoice Ninja on the Kubernetes cluster in the default namespace. The [Parameters](#parameters) section lists the parameters that can be configured during installation.
@@ -70,30 +70,30 @@ The following table shows the configuration options for the Invoice Ninja helm c
 
 ### Invoice Ninja parameters
 
-| Parameter            | Description                                                      | Default                                                 |
-| -------------------- | ---------------------------------------------------------------- | ------------------------------------------------------- |
-| `image.registry`     | Invoice Ninja image registry                                     | `docker.io`                                             |
-| `image.repository`   | Invoice Ninja image name                                         | `invoiceninja/invoiceninja`                             |
-| `image.tag`          | Invoice Ninja image tag                                          | Check `values.yaml` file                                |
-| `image.pullPolicy`   | Invoice Ninja image pull policy                                  | `IfNotPresent`                                          |
-| `image.pullSecrets`  | Specify docker-registry secret names as an array                 | `[]` (does not add image pull secrets to deployed pods) |
-| `image.debug`        | Specify if debug logs should be enabled                          | `false`                                                 |
-| `serviceAccountName` | Name of a service account for the Invoice Ninja pods             | `default`                                               |
-| `debug`              | Turn on debug mode on Invoice Ninja                              | `false`                                                 |
-| `appKey`             | Laravel Application Key                                          | _random 32 character alphanumeric string_               |
-| `userEmail`          | Initial user email address                                       | `admin@example.com`                                     |
-| `userPassword`       | Initial user password                                            | `changeme!`                                             |
-| `logChannel`         | Name of log channel to use                                       | `nil`                                                   |
-| `broadcastDriver`    | Name of broadcast driver to use                                  | `nil`                                                   |
-| `cacheDriver`        | Name of cache driver to use                                      | `nil`                                                   |
-| `sessionDriver`      | Name of session driver to use                                    | `nil`                                                   |
-| `queueConnection`    | Name of queue connection to use                                  | `nil`                                                   |
-| `snappdf`            | Use snappdf instead of Phantom JS PDF generation                 | `true`                                                  |
-| `mailer`             | Name of the mailer to use (log, smtp, etc.)                      | `log`                                                   |
-| `requireHttps`       | Force HTTPS for internal connections to Invoice Ninja (see #349) | `false`                                                 |
-| `extraEnvVars`       | Extra environment variables to be set on Invoice Ninja container | `{}`                                                    |
-| `extraEnvVarsCM`     | Name of existing ConfigMap containing extra env vars             | `nil`                                                   |
-| `extraEnvVarsSecret` | Name of existing Secret containing extra env vars                | `nil`                                                   |
+| Parameter            | Description                                                                   | Default                                                 |
+| -------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------- |
+| `image.registry`     | Invoice Ninja image registry                                                  | `docker.io`                                             |
+| `image.repository`   | Invoice Ninja image name                                                      | `invoiceninja/invoiceninja`                             |
+| `image.tag`          | Invoice Ninja image tag                                                       | Check `values.yaml` file                                |
+| `image.pullPolicy`   | Invoice Ninja image pull policy                                               | `IfNotPresent`                                          |
+| `image.pullSecrets`  | Specify docker-registry secret names as an array                              | `[]` (does not add image pull secrets to deployed pods) |
+| `image.debug`        | Specify if debug logs should be enabled                                       | `false`                                                 |
+| `serviceAccountName` | Name of a service account for the Invoice Ninja pods                          | `default`                                               |
+| `debug`              | Turn on debug mode on Invoice Ninja                                           | `false`                                                 |
+| `appKey`             | Laravel Application Key                                                       | _random 32 character alphanumeric string_               |
+| `userEmail`          | Initial user email address                                                    | `admin@example.com`                                     |
+| `userPassword`       | Initial user password                                                         | `changeme!`                                             |
+| `logChannel`         | Name of log channel to use                                                    | `nil`                                                   |
+| `broadcastDriver`    | Name of broadcast driver to use                                               | `nil`                                                   |
+| `cacheDriver`        | Name of cache driver to use                                                   | `nil`                                                   |
+| `sessionDriver`      | Name of session driver to use                                                 | `nil`                                                   |
+| `queueConnection`    | Name of queue connection to use                                               | `nil`                                                   |
+| `snappdf`            | Use snappdf instead of Phantom JS PDF generation                              | `true`                                                  |
+| `mailer`             | Name of the mailer to use (log, smtp, etc.)                                   | `log`                                                   |
+| `requireHttps`       | Force HTTPS for internal connections to Invoice Ninja (see #349)              | `false`                                                 |
+| `extraEnvVars`       | Extra environment variables to be set on Invoice Ninja container              | `{}`                                                    |
+| `extraEnvVarsCM`     | Name of existing ConfigMap containing extra env vars                          | `nil`                                                   |
+| `extraEnvVarsSecret` | Name of existing Secret containing extra env vars                             | `nil`                                                   |
 | `trustedProxy`       | List of trusted proxies for Invoice Ninja to communicate with the nginx proxy | `'*'`                                                   |
 
 ### Invoice Ninja deployment parameters
@@ -147,15 +147,13 @@ The following table shows the configuration options for the Invoice Ninja helm c
 
 ### Ingress parameters 
 
-| Parameter                                               | Description                           | Default                  |
-| ------------------------------------------------------- | ------------------------------------- | ------------------------ |
-| `nginx.service.type`                                    | Kubernetes Service type               | `ClusterIP`              |
-| `nginx.ingress.enabled`                                 | Enable ingress controller resource    | `true`                   |
-| `nginx.ingress.hostname`                                | Default host for the ingress resource | `invoiceninja.local`     |
-| `nginx.serverBlock`                                     | Custom NGINX server block             | `nil`                    |
-| `nginx.extraVolumes`                                    | Array to add extra volumes            | Check `values.yaml` file |
-| `nginx.extraVolumes[0].persistentVolumeClaim.claimName` | Name of Invoice Ninja public PVC      | `invoiceninja-public`    |
-| `nginx.extraVolumeMounts`                               | Array to add extra mount              | Check `values.yaml` file |
+| Parameter                            | Description                           | Default                                                 |
+| ------------------------------------ | ------------------------------------- | ------------------------------------------------------- |
+| `nginx.service.type`                 | Kubernetes Service type               | `ClusterIP`                                             |
+| `nginx.ingress.enabled`              | Enable ingress controller resource    | `true`                                                  |
+| `nginx.ingress.hostname`             | Default host for the ingress resource | `invoiceninja.local`                                    |
+| `nginx.existingServerBlockConfigmap` | Custom NGINX server block config map  | `{{ include "invoiceninja.nginx.serverBlockName" . }}` |
+| `nginx.staticSitePVC`                | Name of Invoice Ninja public PVC      | `{{ include "invoiceninja.public.storageName" . }}`     |
 
 > See [Dependencies](#dependencies) for more.
 

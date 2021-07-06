@@ -248,3 +248,11 @@ Return the Session Connection Name
     {{- printf "default" -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Server block configmap name for nignx.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "invoiceninja.nginx.serverBlockName" -}}
+{{- printf "%s-%s" .Release.Name "server-block" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
