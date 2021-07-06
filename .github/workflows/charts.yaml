@@ -85,6 +85,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Create kind ${{ matrix.k8s }} cluster
         uses: helm/kind-action@v1.2.0
