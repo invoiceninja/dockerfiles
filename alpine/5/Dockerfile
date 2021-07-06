@@ -4,11 +4,9 @@ ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 
 # Get Invoice Ninja and install nodejs packages
 FROM --platform=$BUILDPLATFORM node:lts-alpine as build
-ARG INVOICENINJA_VERSION
-ARG BAK_STORAGE_PATH
-ARG BAK_PUBLIC_PATH
 
 # Download Invoice Ninja
+ARG INVOICENINJA_VERSION
 ADD https://github.com/invoiceninja/invoiceninja/tarball/v$INVOICENINJA_VERSION /tmp/ninja.tar.gz
 
 # Extract Invoice Ninja
@@ -21,6 +19,8 @@ RUN mkdir -p /var/www/app \
 WORKDIR /var/www/app/
 
 # Install node packages
+ARG BAK_STORAGE_PATH
+ARG BAK_PUBLIC_PATH
 RUN npm install --production \
     && npm run production \
     && rm -rf node_modules \
@@ -29,9 +29,6 @@ RUN npm install --production \
 
 # Prepare php image
 FROM php:${PHP_VERSION}-fpm-alpine3.13 as prod
-ARG INVOICENINJA_VERSION
-ARG BAK_STORAGE_PATH
-ARG BAK_PUBLIC_PATH
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
@@ -78,6 +75,9 @@ RUN addgroup --gid=$UID -S "$INVOICENINJA_USER" \
     "$INVOICENINJA_USER"
 
 # Set up app
+ARG INVOICENINJA_VERSION
+ARG BAK_STORAGE_PATH
+ARG BAK_PUBLIC_PATH
 ENV INVOICENINJA_VERSION $INVOICENINJA_VERSION
 ENV BAK_STORAGE_PATH $BAK_STORAGE_PATH
 ENV BAK_PUBLIC_PATH $BAK_PUBLIC_PATH

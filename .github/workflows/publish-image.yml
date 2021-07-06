@@ -48,9 +48,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ steps.prep.outputs.major }}-${{ hashFiles('alpine/${{ steps.prep.outputs.major }}/**') }}
+          key: ${{ runner.os }}-buildx-${{ steps.prep.outputs.major }}-${{ hashFiles('alpine/${{ steps.prep.outputs.major }}/cache_buster') }}
           restore-keys: |
-            ${{ runner.os }}-buildx-${{ steps.prep.outputs.major }}-${{ hashFiles('alpine/${{ steps.prep.outputs.major }}/**') }}
+            ${{ runner.os }}-buildx-${{ steps.prep.outputs.major }}-${{ hashFiles('alpine/${{ steps.prep.outputs.major }}/cache_buster') }}
 
       - name: Login to DockerHub
         if: github.event_name != 'pull_request'
@@ -71,7 +71,12 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.prep.outputs.tags }}
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
