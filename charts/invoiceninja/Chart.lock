@@ -1,15 +1,15 @@
 dependencies:
 - name: common
   repository: https://charts.bitnami.com/bitnami
-  version: 1.4.3
+  version: 1.7.0
 - name: nginx
   repository: https://charts.bitnami.com/bitnami
-  version: 8.8.5
+  version: 9.3.3
 - name: mariadb
   repository: https://charts.bitnami.com/bitnami
-  version: 9.3.11
+  version: 9.3.16
 - name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 12.9.2
-digest: sha256:4255a558312b033e820635f491b0960bd4ec8e716164025212af06adafbd4cb9
-generated: "2021-05-11T09:31:45.433+08:00"
+  version: 12.10.1
+digest: sha256:5ce417d2d74d1b150c59ecc75a52e406885c5770e27fbc9f106e0dc5fd75bbf4
+generated: "2021-07-06T13:21:32.452236+08:00"
