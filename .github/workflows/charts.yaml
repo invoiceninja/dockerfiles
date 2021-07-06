@@ -95,8 +95,8 @@ jobs:
         with:
           python-version: 3.7
 
-      - name: Run chart-testing (install)
+      - name: Set up chart-testing
         uses: helm/chart-testing-action@v2.0.1
-        with:
-          command: install
-          config: .github/ct-install.yaml
+
+      - name: Run chart-testing (install)
+        run: ct install --config .github/ct-install.yaml
