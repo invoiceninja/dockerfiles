@@ -377,9 +377,10 @@ autoscaling:
 ##
 redis:
   enabled: true
+  auth:
+    sentinel: false
   sentinel:
     enabled: true
-    usePassword: false
 
 ## External Redis Configuration
 ##

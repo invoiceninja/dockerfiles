@@ -147,13 +147,13 @@ The following table shows the configuration options for the Invoice Ninja helm c
 
 ### Ingress parameters 
 
-| Parameter                            | Description                           | Default                                                 |
-| ------------------------------------ | ------------------------------------- | ------------------------------------------------------- |
-| `nginx.service.type`                 | Kubernetes Service type               | `ClusterIP`                                             |
-| `nginx.ingress.enabled`              | Enable ingress controller resource    | `true`                                                  |
-| `nginx.ingress.hostname`             | Default host for the ingress resource | `invoiceninja.local`                                    |
+| Parameter                            | Description                           | Default                                                |
+| ------------------------------------ | ------------------------------------- | ------------------------------------------------------ |
+| `nginx.service.type`                 | Kubernetes Service type               | `ClusterIP`                                            |
+| `nginx.ingress.enabled`              | Enable ingress controller resource    | `true`                                                 |
+| `nginx.ingress.hostname`             | Default host for the ingress resource | `invoiceninja.local`                                   |
 | `nginx.existingServerBlockConfigmap` | Custom NGINX server block config map  | `{{ include "invoiceninja.nginx.serverBlockName" . }}` |
-| `nginx.staticSitePVC`                | Name of Invoice Ninja public PVC      | `{{ include "invoiceninja.public.storageName" . }}`     |
+| `nginx.staticSitePVC`                | Name of Invoice Ninja public PVC      | `{{ include "invoiceninja.public.storageName" . }}`    |
 
 > See [Dependencies](#dependencies) for more.
 
@@ -179,9 +179,9 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | Parameter                         | Description                                  | Default                                   |
 | --------------------------------- | -------------------------------------------- | ----------------------------------------- |
 | `redis.enabled`                   | If external redis is used, set it to `false` | `true`                                    |
-| `redis.password`                  | Redis password                               | _random 10 character alphanumeric string_ |
+| `redis.auth.password`             | Redis password                               | _random 10 character alphanumeric string_ |
+| `redis.auth.sentinel`             | Use password for sentinel containers         | `false`                                   |
 | `redis.sentinel.enabled`          | Enable sentinel containers                   | `true`                                    |
-| `redis.sentinel.usePassword`      | Use password for sentinel containers         | `false`                                   |
 | `externalRedis.host`              | Host of the external redis                   | `nil`                                     |
 | `externalRedis.port`              | Port of the external redis                   | `6379`                                    |
 | `externalRedis.password`          | Password for the external redis              | `nil`                                     |
@@ -284,4 +284,7 @@ extraEnvVarsCM: examplemap
 
 ## Upgrading
 
-Nothing yet.
+### To 0.7.0
+
+Redis chart dependency has been upgraded and may not be backwards compatible with previous versions. See [here](https://github.com/bitnami/charts/tree/master/bitnami/redis) for more info.
+

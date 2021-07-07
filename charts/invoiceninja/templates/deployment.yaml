@@ -167,7 +167,7 @@ spec:
                 secretKeyRef:
                   name: {{ include "invoiceninja.databaseSecretName" . }}
                   key: mariadb-password
-            {{- if or (and .Values.redis.enabled .Values.redis.usePassword) (or .Values.externalRedis.password .Values.externalRedis.existingSecret) }}
+            {{- if or (and .Values.redis.enabled .Values.redis.auth.enabled) (or .Values.externalRedis.password .Values.externalRedis.existingSecret) }}
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
