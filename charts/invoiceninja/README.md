@@ -160,20 +160,22 @@ The following table shows the configuration options for the Invoice Ninja helm c
 
 ### Persistence parameters
 
-| Parameter                           | Description                              | Default           |
-| ----------------------------------- | ---------------------------------------- | ----------------- |
-| `persistence.public.enabled`        | Enable persistence using PVC             | `true`            |
-| `persistence.public.existingClaim`  | Enable persistence using an existing PVC | `nil`             |
-| `persistence.public.storageClass`   | PVC Storage Class                        | `nil`             |
-| `persistence.public.accessModes`    | PVC Access Modes                         | `[ReadWriteMany]` |
-| `persistence.public.size`           | PVC Storage Request                      | `1Gi`             |
-| `persistence.public.dataSource`     | PVC data source                          | `{}`              |
-| `persistence.storage.enabled`       | Enable persistence using PVC             | `true`            |
-| `persistence.storage.existingClaim` | Enable persistence using an existing PVC | `nil`             |
-| `persistence.storage.storageClass`  | PVC Storage Class                        | `nil`             |
-| `persistence.storage.accessModes`   | PVC Access Modes                         | `[ReadWriteMany]` |
-| `persistence.storage.size`          | PVC Storage Request                      | `5Gi`             |
-| `persistence.storage.dataSource`    | PVC data source                          | `{}`              |
+| Parameter                           | Description                                         | Default           |
+| ----------------------------------- | --------------------------------------------------- | ----------------- |
+| `persistence.public.enabled`        | Enable persistence using PVC                        | `true`            |
+| `persistence.public.existingClaim`  | Enable persistence using an existing PVC            | `nil`             |
+| `persistence.public.storageClass`   | PVC Storage Class                                   | `nil`             |
+| `persistence.public.accessModes`    | PVC Access Modes                                    | `[ReadWriteMany]` |
+| `persistence.public.size`           | PVC Storage Request                                 | `1Gi`             |
+| `persistence.public.dataSource`     | PVC data source                                     | `{}`              |
+| `persistence.storage.enabled`       | Enable persistence using PVC (only for FILE driver) | `false`           |
+| `persistence.storage.existingClaim` | Enable persistence using an existing PVC            | `nil`             |
+| `persistence.storage.storageClass`  | PVC Storage Class                                   | `nil`             |
+| `persistence.storage.accessModes`   | PVC Access Modes                                    | `[ReadWriteMany]` |
+| `persistence.storage.size`          | PVC Storage Request                                 | `5Gi`             |
+| `persistence.storage.dataSource`    | PVC data source                                     | `{}`              |
+
+> See `values.yaml` for more details.
 
 ### Redis parameters
 
@@ -287,5 +289,5 @@ extraEnvVarsCM: examplemap
 
 ### To 0.7.0
 
-Redis chart dependency has been upgraded and may not be backwards compatible with previous versions. See [here](https://github.com/bitnami/charts/tree/master/bitnami/redis) for more info.
-
+- Redis chart dependency has been upgraded and may not be backwards compatible with previous versions. See [here](https://github.com/bitnami/charts/tree/master/bitnami/redis) for more info.
+- Storage persitence defaults to `false`, set to `true` if not using Redis, or using any FILE driver
