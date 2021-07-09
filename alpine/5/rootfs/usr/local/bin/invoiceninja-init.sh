@@ -38,7 +38,7 @@ fi
 php artisan migrate --force
 
 # If first IN run, it needs to be initialized
-if [ ! -f /var/www/app/storage/.initialized ]; then
+IN_INIT=$(php artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')
+if [ "$IN_INIT" == "1" ]; then
     docker_process_init_files /docker-entrypoint-init.d/*
-    touch /var/www/app/storage/.initialized
 fi
