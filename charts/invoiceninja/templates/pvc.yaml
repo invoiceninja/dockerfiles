@@ -14,7 +14,13 @@ metadata:
   {{- end }}
 spec:
   accessModes:
+  {{- if not (empty .Values.persistence.public.accessModes) }}
+  {{- range .Values.persistence.public.accessModes }}
+    - {{ . | quote }}
+  {{- end }}
+  {{- else }}
     - {{ .Values.persistence.public.accessMode | quote }}
+  {{- end }}
   resources:
     requests:
       storage: {{ .Values.persistence.public.size | quote }}
@@ -41,7 +47,13 @@ metadata:
   {{- end }}
 spec:
   accessModes:
+  {{- if not (empty .Values.persistence.storage.accessModes) }}
+  {{- range .Values.persistence.storage.accessModes }}
+    - {{ . | quote }}
+  {{- end }}
+  {{- else }}
     - {{ .Values.persistence.storage.accessMode | quote }}
+  {{- end }}
   resources:
     requests:
       storage: {{ .Values.persistence.storage.size | quote }}
