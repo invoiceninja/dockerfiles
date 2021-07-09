@@ -201,9 +201,9 @@ spec:
           imagePullPolicy: {{ .Values.http.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.http.containerPort.http }}
+              containerPort: {{ .Values.http.containerPorts.http }}
             - name: https
-              containerPort: {{ .Values.http.containerPort.https }}
+              containerPort: {{ .Values.http.containerPorts.https }}
           {{- if .Values.http.livenessProbe.enabled }}
           livenessProbe:
             initialDelaySeconds: {{ .Values.http.livenessProbe.initialDelaySeconds }}

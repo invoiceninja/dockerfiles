@@ -307,7 +307,7 @@ http:
 
   ## Container ports
   ##
-  containerPort:
+  containerPorts:
     http: 8080
     https: 8443
 
