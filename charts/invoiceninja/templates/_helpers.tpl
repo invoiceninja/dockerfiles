@@ -213,7 +213,7 @@ Return the Redis Secret Name
     {{- printf "%s" .Values.externalRedis.existingSecret -}}
 {{- else -}}
     {{- if .Values.redis.auth.existingSecret -}}
-        {{- printf "%s" .Values.mariadb.auth.existingSecret -}}
+        {{- printf "%s" .Values.redis.auth.existingSecret -}}
     {{- else -}}
         {{- printf "%s" (include "invoiceninja.redis.fullname" .) -}}
     {{- end -}}
