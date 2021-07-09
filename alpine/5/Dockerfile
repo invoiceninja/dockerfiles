@@ -21,9 +21,9 @@ WORKDIR /var/www/app/
 # Install node packages
 ARG BAK_STORAGE_PATH
 ARG BAK_PUBLIC_PATH
-RUN npm install --production \
+RUN --mount=target=/var/www/app/node_modules,type=cache \
+    npm install --production \
     && npm run production \
-    && rm -rf node_modules \
     && mv /var/www/app/storage $BAK_STORAGE_PATH \
     && mv /var/www/app/public $BAK_PUBLIC_PATH  
 

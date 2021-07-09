@@ -65,11 +65,6 @@ if [ -d "$BAK_STORAGE_PATH" ]; then
     rm -rf "$BAK_STORAGE_PATH"
 fi
 
-# prevent init scripts from running when upgrading from IN <= 5.1.62
-if [ -f /var/www/app/public/version ] && [ "$INVOICENINJA_VERSION" != "$(cat /var/www/app/public/version)" ]; then
-    touch /var/www/app/storage/.initialized
-fi
-
 # create public volume
 if [ -d "$BAK_PUBLIC_PATH" ]; then
     if [ ! -d /var/www/app/public ]; then
