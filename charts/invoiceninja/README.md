@@ -80,9 +80,9 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `image.debug`        | Specify if debug logs should be enabled                                       | `false`                                                 |
 | `serviceAccountName` | Name of a service account for the Invoice Ninja pods                          | `default`                                               |
 | `debug`              | Turn on debug mode on Invoice Ninja                                           | `false`                                                 |
-| `appKey`             | Laravel Application Key                                                       | _random 32 character alphanumeric string_               |
+| `appKey`             | Laravel Application Key (ignored if existing secret is provided)              | _random 32 character alphanumeric string_               |
 | `userEmail`          | Initial user email address                                                    | `admin@example.com`                                     |
-| `userPassword`       | Initial user password                                                         | `changeme!`                                             |
+| `userPassword`       | Initial user password (ignored if existing secret is provided)                | `changeme!`                                             |
 | `logChannel`         | Name of log channel to use                                                    | `nil`                                                   |
 | `broadcastDriver`    | Name of broadcast driver to use                                               | `nil`                                                   |
 | `cacheDriver`        | Name of cache driver to use                                                   | `nil`                                                   |
@@ -95,6 +95,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `extraEnvVarsCM`     | Name of existing ConfigMap containing extra env vars                          | `nil`                                                   |
 | `extraEnvVarsSecret` | Name of existing Secret containing extra env vars                             | `nil`                                                   |
 | `trustedProxy`       | List of trusted proxies for Invoice Ninja to communicate with the nginx proxy | `'*'`                                                   |
+| `existingSecret`     | Use existing secret that contain the keys `APP_KEY` and `IN_PASSWORD`         | `nil`                                                   |
 
 ### Invoice Ninja deployment parameters
 

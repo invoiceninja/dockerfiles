@@ -86,6 +86,12 @@ mailer: log
 ##
 requireHttps: false
 
+## Name of existing secret containing IN credentials
+## NOTE: Must contain key `APP_KEY` and `IN_PASSWORD`
+## NOTE: When it's set, the `appKey` and `userPassword` parameter is ignored
+##
+existingSecret:
+
 ## String to partially override fullname template (will maintain the release name)
 ##
 # nameOverride:

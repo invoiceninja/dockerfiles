@@ -56,6 +56,13 @@ Create the name of the service account to use
 {{- end -}}
 
 {{/*
+Return the Invoice Ninja Secret Name
+*/}}
+{{- define "invoiceninja.secretName" -}}
+{{- default (include "common.names.fullname" .) .Values.existingSecret }}
+{{- end -}}
+
+{{/*
 Return the proper Storage Class
 */}}
 {{- define "invoiceninja.public.storageClass" -}}
@@ -138,7 +145,11 @@ Return the MariaDB Secret Name
 {{- if .Values.externalDatabase.existingSecret -}}
     {{- printf "%s" .Values.externalDatabase.existingSecret -}}
 {{- else -}}
-    {{- printf "%s" (include "invoiceninja.mariadb.fullname" .) -}}
+    {{- if .Values.mariadb.auth.existingSecret -}}
+        {{- printf "%s" .Values.mariadb.auth.existingSecret -}}
+    {{- else -}}
+        {{- printf "%s" (include "invoiceninja.mariadb.fullname" .) -}}
+    {{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -201,7 +212,11 @@ Return the Redis Secret Name
 {{- if .Values.externalRedis.existingSecret -}}
     {{- printf "%s" .Values.externalRedis.existingSecret -}}
 {{- else -}}
-    {{- printf "%s" (include "invoiceninja.redis.fullname" .) -}}
+    {{- if .Values.redis.auth.existingSecret -}}
+        {{- printf "%s" .Values.redis.auth.existingSecret -}}
+    {{- else -}}
+        {{- printf "%s" (include "invoiceninja.redis.fullname" .) -}}
+    {{- end -}}
 {{- end -}}
 {{- end -}}
 
