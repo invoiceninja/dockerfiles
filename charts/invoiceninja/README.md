@@ -80,6 +80,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `image.debug`            | Specify if debug logs should be enabled                                       | `false`                                                 |
 | `debug`                  | Turn on debug mode on Invoice Ninja                                           | `false`                                                 |
 | `appKey`                 | Laravel Application Key (ignored if existing secret is provided)              | _random 32 character alphanumeric string_               |
+| `appURL`                 | Override Laravel Application URL (automatically set if blank)                 | `""`                                                    |
 | `userEmail`              | Initial user email address                                                    | `admin@example.com`                                     |
 | `userPassword`           | Initial user password (ignored if existing secret is provided)                | `changeme!`                                             |
 | `logChannel`             | Name of log channel to use                                                    | `nil`                                                   |

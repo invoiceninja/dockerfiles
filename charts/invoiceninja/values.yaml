@@ -38,6 +38,10 @@ debug: false
 ##
 appKey: ""
 
+## Override app URL
+##
+appURL: ""
+
 ## Email of user to create first run
 ## If not specified, default user email will be "admin@example.com"
 ##
