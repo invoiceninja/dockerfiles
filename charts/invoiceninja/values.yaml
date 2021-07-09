@@ -555,7 +555,7 @@ persistence:
     dataSource: {}
   storage:
     ## Only required when using FILE cache or session driver
-    enabled: false
+    enabled: true
     ## Invoice Ninja data Persistent Volume Storage Class
     ## If defined, storageClassName: <storageClass>
     ## If set to "-", storageClassName: "", which disables dynamic provisioning
