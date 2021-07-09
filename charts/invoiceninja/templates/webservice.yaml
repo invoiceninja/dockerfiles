@@ -1,0 +1,60 @@
+{{- if not .Values.nginx.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "invoiceninja.http.serviceName" . }}
+  labels:
+    {{- include "common.labels.standard" $ | nindent 4 }}
+    {{- if .Values.commonLabels }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonLabels "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- if or .Values.service.http.annotations .Values.commonAnnotations }}
+  annotations:
+    {{- if .Values.service.http.annotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.service.http.annotations "context" $ ) | nindent 4 }}
+    {{- end }}
+    {{- if .Values.commonAnnotations }}
+    {{- include "common.tplvalues.render" ( dict "value" .Values.commonAnnotations "context" $ ) | nindent 4 }}
+    {{- end }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.http.type }}
+  {{- if and .Values.service.http.clusterIP (eq .Values.service.http.type "ClusterIP") }}
+  clusterIP: {{ .Values.service.http.clusterIP }}
+  {{- end }}
+  {{- if (or (eq .Values.service.http.type "LoadBalancer") (eq .Values.service.http.type "NodePort")) }}
+  externalTrafficPolicy: {{ .Values.service.http.externalTrafficPolicy | quote }}
+  {{- end }}
+  {{- if (and (eq .Values.service.http.type "LoadBalancer") .Values.service.http.loadBalancerSourceRanges) }}
+  loadBalancerSourceRanges: {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- if (and (eq .Values.service.http.type "LoadBalancer") (not (empty .Values.service.http.loadBalancerIP))) }}
+  loadBalancerIP: {{ .Values.service.http.loadBalancerIP }}
+  {{- end }}
+  ports:
+    {{- if not (empty .Values.service.http.ports.http) }}
+    - name: http
+      port:  {{ .Values.service.http.ports.http }}
+      protocol: TCP
+      targetPort: http
+      {{- if (and (or (eq .Values.service.http.type "NodePort") (eq .Values.service.http.type "LoadBalancer")) (not (empty .Values.service.http.nodePorts.http))) }}
+      nodePort: {{ .Values.service.http.nodePorts.http }}
+      {{- else if eq .Values.service.http.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+    {{- if not (empty .Values.service.http.ports.https) }}
+    - name: https
+      port:  {{ .Values.service.http.ports.https }}
+      protocol: TCP
+      targetPort: https
+      {{- if (and (or (eq .Values.service.http.type "NodePort") (eq .Values.service.http.type "LoadBalancer")) (not (empty .Values.service.http.nodePorts.https))) }}
+      nodePort: {{ .Values.service.http.nodePorts.https }}
+      {{- else if eq .Values.service.http.type "ClusterIP" }}
+      nodePort: null
+      {{- end }}
+    {{- end }}
+  selector:
+    {{- include "common.labels.matchLabels" . | nindent 4 }}
+    app.kubernetes.io/component: server
+{{- end }}
