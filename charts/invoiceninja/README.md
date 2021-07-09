@@ -289,5 +289,5 @@ extraEnvVarsCM: examplemap
 
 ### To 0.7.0
 
-Redis chart dependency has been upgraded and may not be backwards compatible with previous versions. See [here](https://github.com/bitnami/charts/tree/master/bitnami/redis) for more info.
-
+- Redis chart dependency has been upgraded and may not be backwards compatible with previous versions. See [here](https://github.com/bitnami/charts/tree/master/bitnami/redis) for more info.
+- Storage persitence defaults to `false`, set to `true` if not using Redis, or using any FILE driver
