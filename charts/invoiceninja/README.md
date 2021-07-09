@@ -101,7 +101,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `readinessProbe`         | Readiness probe configuration for Invoice Ninja                               | Check `values.yaml` file                                |
 | `containerPorts.fastcgi` | FastCGI port to expose at container level                                     | `9000`                                                  |
 
-### Inline web server container parameters (when `nginx.enabled` is false)
+### Inline web server container parameters (only used when `nginx.enabled` is false)
 
 | Parameter                | Description                                              | Default                                                 |
 | ------------------------ | -------------------------------------------------------- | ------------------------------------------------------- |
@@ -168,7 +168,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `service.externalTrafficPolicy`    | Enable client source IP preservation                                       | `Cluster`                      |
 | `service.annotations`              | Service annotations                                                        | `{}` (evaluated as a template) |
 
-#### Inline web server (when `nginx.enabled` is false)
+#### Inline web server (only used when `nginx.enabled` is false)
 
 | Parameter                               | Description                                                                | Default                        |
 | --------------------------------------- | -------------------------------------------------------------------------- | ------------------------------ |
@@ -186,8 +186,11 @@ The following table shows the configuration options for the Invoice Ninja helm c
 
 ### Ingress parameters 
 
+#### Nginx sub-chart
+
 | Parameter                            | Description                           | Default                                                |
 | ------------------------------------ | ------------------------------------- | ------------------------------------------------------ |
+| `nginx.enabled`                      | Deploy Nginx sub-chart                | `true`                                                 |
 | `nginx.service.type`                 | Kubernetes Service type               | `ClusterIP`                                            |
 | `nginx.ingress.enabled`              | Enable ingress controller resource    | `true`                                                 |
 | `nginx.ingress.hostname`             | Default host for the ingress resource | `invoiceninja.local`                                   |
@@ -195,6 +198,24 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `nginx.staticSitePVC`                | Name of Invoice Ninja public PVC      | `{{ include "invoiceninja.public.storageName" . }}`    |
 
 > See [Dependencies](#dependencies) for more.
+
+#### Inline web server (only used when `nginx.enabled` is false)
+
+| Parameter                  | Description                                                                                           | Default                  |
+| -------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------ |
+| `ingress.enabled`          | Enable ingress                                                                                        | `true`                   |
+| `ingress.certManager`      | Add the corresponding annotations for cert-manager integration                                        | `false`                  |
+| `ingress.pathType`         | Ingress path type                                                                                     | `ImplementationSpecific` |
+| `ingress.apiVersion`       | Force Ingress API version (automatically detected if not set)                                         | `nil`                    |
+| `ingress.ingressClassName` | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)                         | `nil`                    |
+| `ingress.hostname`         | Default host for the ingress record                                                                   | `invoiceninja.local`     |
+| `ingress.path`             | Default path for the ingress record                                                                   | `/`                      |
+| `ingress.annotations`      | Additional custom annotations for the ingress record                                                  | `{}`                     |
+| `ingress.tls`              | Enable TLS configuration for the host defined at `ingress.hostname` parameter                         | `false`                  |
+| `ingress.extraHosts`       | An array with additional hostname(s) to be covered with the ingress record                            | `[]`                     |
+| `ingress.extraPaths`       | An array with additional arbitrary paths that may need to be added to the ingress under the main host | `[]`                     |
+| `ingress.extraTls`         | TLS configuration for additional hostname(s) to be covered with this ingress record                   | `[]`                     |
+| `ingress.secrets`          | Custom TLS certificates as secrets                                                                    | `[]`                     |
 
 ### Persistence parameters
 

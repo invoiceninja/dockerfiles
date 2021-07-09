@@ -278,3 +278,10 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- define "invoiceninja.nginx.serverBlockName" -}}
 {{- printf "%s-%s" .Release.Name "server-block" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Name of web service for inline web server.
+*/}}
+{{- define "invoiceninja.http.serviceName" -}}
+{{- printf "%s-%s" .Release.Name "web" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
