@@ -50,7 +50,6 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- printf "%s-%s" .Release.Name "redis" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-
 {{/*
 Create the name of the service account to use
 */}}
@@ -95,6 +94,29 @@ Return the proper Storage Name
 */}}
 {{- define "invoiceninja.storage.storageName" -}}
 {{- printf "%s-%s" .Release.Name "storage" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Return the proper Storage Name
+*/}}
+{{- define "invoiceninja.url" -}}
+    {{- if .Values.appURL }}
+        {{- printf "%s" .Values.appURL -}}
+    {{- else if .Values.nginx.ingress.enabled }}
+        {{- if .Values.nginx.ingress.tls }}
+            {{- printf "https://%s" .Values.nginx.ingress.hostname -}}
+        {{- else }}
+            {{- printf "http://%s" .Values.nginx.ingress.hostname -}}
+        {{- end }}
+    {{- else if .Values.ingress.enabled }}
+        {{- if .Values.ingress.tls }}
+            {{- printf "https://%s" .Values.ingress.hostname -}}
+        {{- else }}
+            {{- printf "http://%s" .Values.ingress.hostname -}}
+        {{- end }}
+    {{- else }}
+        {{- printf "http://%s" (include "common.names.fullname" .) -}}
+    {{- end }}
 {{- end -}}
 
 {{/*
