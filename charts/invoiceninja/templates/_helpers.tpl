@@ -6,10 +6,17 @@ Return the proper image name
 {{- end -}}
 
 {{/*
+Return the proper image name
+*/}}
+{{- define "invoiceninja.nginx.image" -}}
+{{- include "common.images.image" (dict "imageRoot" .Values.http.image "global" .Values.global) -}}
+{{- end -}}
+
+{{/*
 Return the proper Docker Image Registry Secret Names
 */}}
 {{- define "invoiceninja.imagePullSecrets" -}}
-{{- include "common.images.pullSecrets" (dict "images" (list .Values.image .Values.volumePermissions.image) "global" .Values.global) -}}
+{{- include "common.images.pullSecrets" (dict "images" (list .Values.image .Values.http.image .Values.volumePermissions.image) "global" .Values.global) -}}
 {{- end -}}
 
 {{/*

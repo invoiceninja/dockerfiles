@@ -30,7 +30,8 @@ dependencies:
     tags:
       - bitnami-common
     version: 1.x.x
-  - name: nginx
+  - condition: nginx.enabled
+    name: nginx
     repository: https://charts.bitnami.com/bitnami
     version: 9.x.x
   - condition: mariadb.enabled

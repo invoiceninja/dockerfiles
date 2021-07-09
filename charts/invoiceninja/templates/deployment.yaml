@@ -193,6 +193,61 @@ spec:
             {{- if .Values.extraVolumeMounts }}
               {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
             {{- end }}
+        {{- if not .Values.nginx.enabled }}
+        - name: nginx
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+          image: {{ include "invoiceninja.nginx.image" . }}
+          imagePullPolicy: {{ .Values.http.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.http.containerPort.http }}
+            - name: https
+              containerPort: {{ .Values.http.containerPort.https }}
+          {{- if .Values.http.livenessProbe.enabled }}
+          livenessProbe:
+            initialDelaySeconds: {{ .Values.http.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.http.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ $.Values.http.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ $.Values.http.livenessProbe.successThreshold }}
+            failureThreshold: {{ $.Values.http.livenessProbe.failureThreshold }}
+            tcpSocket:
+              port: http
+          {{- end }}
+          {{- if .Values.http.readinessProbe.enabled }}
+          readinessProbe:
+            initialDelaySeconds: {{ .Values.http.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.http.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ $.Values.http.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ $.Values.http.readinessProbe.successThreshold }}
+            failureThreshold: {{ $.Values.http.readinessProbe.failureThreshold }}
+            tcpSocket:
+              port: http
+          {{- end }}
+          envFrom:
+            {{- if .Values.http.extraEnvVarsCM }}
+            - configMapRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsCM "context" $) }}
+            {{- end }}
+            {{- if .Values.http.extraEnvVarsSecret }}
+            - secretRef:
+                name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsSecret "context" $) }}
+            {{- end }}
+          env:
+            {{- if .Values.http.extraEnvVars }}
+              {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.http.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /opt/bitnami/nginx/conf/server_blocks
+              name: nginx-server-block
+            - mountPath: /app
+              name: public
+            {{- if .Values.http.extraVolumeMounts }}
+              {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumeMounts "context" $) | nindent 12 }}
+            {{- end }}
+        {{- end }}
       volumes:
         - name: public
           {{- if .Values.persistence.public.enabled }}
@@ -208,6 +263,12 @@ spec:
           {{- else }}
           emptyDir: {}
           {{ end }}
+        {{- if not .Values.nginx.enabled }}
+        - name: nginx-server-block
+          configMap:
+            defaultMode: 420
+            name: {{ include "invoiceninja.nginx.serverBlockName" . }}
+        {{- end }}
         {{- if .Values.extraVolumes }}
           {{- include "common.tplvalues.render" (dict "value" .Values.extraVolumes "context" $) | nindent 8 }}
         {{- end }}
