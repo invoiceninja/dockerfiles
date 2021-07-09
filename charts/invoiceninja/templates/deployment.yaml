@@ -152,7 +152,7 @@ spec:
             - configMapRef:
                 name: {{ include "common.names.fullname" . }}
             - secretRef:
-                name: {{ include "common.names.fullname" . }}
+                name: {{ include "invoiceninja.secretName" . }}
             {{- if .Values.extraEnvVarsCM }}
             - configMapRef:
                 name: {{ include "common.tplvalues.render" (dict "value" .Values.extraEnvVarsCM "context" $) }}
