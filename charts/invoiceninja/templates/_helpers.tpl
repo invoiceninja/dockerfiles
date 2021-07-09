@@ -97,7 +97,7 @@ Return the proper Storage Name
 {{- end -}}
 
 {{/*
-Return the proper Storage Name
+Return the proper app URL
 */}}
 {{- define "invoiceninja.url" -}}
     {{- if .Values.appURL }}
