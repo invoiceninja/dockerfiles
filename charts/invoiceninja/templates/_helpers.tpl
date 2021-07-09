@@ -212,11 +212,10 @@ Return the Redis Secret Name
 {{- if .Values.externalRedis.existingSecret -}}
     {{- printf "%s" .Values.externalRedis.existingSecret -}}
 {{- else -}}
-    {{- printf "%s" (include "invoiceninja.redis.fullname" .) -}}
     {{- if .Values.redis.auth.existingSecret -}}
         {{- printf "%s" .Values.mariadb.auth.existingSecret -}}
     {{- else -}}
-        {{- printf "%s" (include "invoiceninja.mariadb.fullname" .) -}}
+        {{- printf "%s" (include "invoiceninja.redis.fullname" .) -}}
     {{- end -}}
 {{- end -}}
 {{- end -}}
