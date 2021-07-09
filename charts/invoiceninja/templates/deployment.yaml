@@ -135,8 +135,10 @@ spec:
             timeoutSeconds: {{ $.Values.livenessProbe.timeoutSeconds }}
             successThreshold: {{ $.Values.livenessProbe.successThreshold }}
             failureThreshold: {{ $.Values.livenessProbe.failureThreshold }}
-            tcpSocket:
-              port: {{ .Values.livenessProbe.port }}
+            exec:
+              command:
+              - pgrep
+              - php-fpm
           {{- end }}
           {{- if .Values.readinessProbe.enabled }}
           readinessProbe:
