@@ -300,12 +300,11 @@ service:
 ##
 livenessProbe:
   enabled: true
-  initialDelaySeconds: 30
+  initialDelaySeconds: 120
   periodSeconds: 10
   timeoutSeconds: 5
   failureThreshold: 6
   successThreshold: 1
-  port: fastcgi
 readinessProbe:
   enabled: true
   initialDelaySeconds: 15
