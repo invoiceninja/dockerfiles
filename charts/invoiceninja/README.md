@@ -343,15 +343,15 @@ kubectl create configmap examplemap --from-literal=MAIL_HOST='smtp.mailtrap.io'
 extraEnvVarsCM: examplemap
 ```
 
-## Inline web server vs Nginx sub-chart
+## Inline webserver vs Nginx sub-chart
 
 If you have the ability to use `ReadWriteMany` persistent volume access mode, using the Nginx sub-chart will provide you with the most features, such as:
 
 - independent scaling of Nginx and IN pods
-- built in TLS functionality
+- built-in TLS functionality
 - high-availability
 
-However, since there are a great deal of people without access to this volume type, using the inline Nginx web server will allow you to use a `ReadWriteOnce` public volume. Please note that you will need to change `persistence.public.accessModes` parameter and disable Nginx sub-chart by setting `nginx.enabled` to false. Please note that you will be limited 1 IN replica.
+However, since there are a lot of people without access to this volume type, using the inline Nginx web server will allow you to use a `ReadWriteOnce` public volume. Please note that you will need to change `persistence.public.accessModes` parameter and disable the Nginx sub-chart by setting `nginx.enabled` to false. Please note that you will be limited 1 IN replica.
 
 ## Upgrading
 
