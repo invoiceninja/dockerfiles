@@ -1,4 +1,4 @@
-name: Build Container Image
+name: Publish Container Image
 
 # When its time to do a release do a full cross platform build for all supported
 # architectures and push all of them to Docker Hub.
@@ -6,8 +6,8 @@ name: Build Container Image
 # Ref: https://github.com/metcalfc/docker-action-examples/blob/main/.github/workflows/release.yml
 on:
   push:
-    paths:
-      - "alpine/4/**"
+    tags-ignore:
+      - "invoiceninja-*"
 
 jobs:
   docker:
@@ -48,11 +48,18 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ hashFiles('alpine/**') }}
+          key: ${{ runner.os }}-buildx-${{ steps.prep.outputs.major }}-${{ hashFiles('alpine/${{ steps.prep.outputs.major }}/cache_buster') }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx-
+            ${{ runner.os }}-buildx-${{ steps.prep.outputs.major }}-${{ hashFiles('alpine/${{ steps.prep.outputs.major }}/cache_buster') }}-
 
-      - name: Build
+      - name: Login to DockerHub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
@@ -64,4 +71,12 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.prep.outputs.tags }}
           cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
