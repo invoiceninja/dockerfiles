@@ -48,7 +48,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ steps.prep.outputs.major }}-${{ hashFiles('alpine/${{ steps.prep.outputs.major }}/cache_buster') }}
+          key: ${{ runner.os }}-buildx-${{ steps.prep.outputs.major }}-${{ hashFiles('alpine/${{ steps.prep.outputs.major }}/cache_buster') }}-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-${{ steps.prep.outputs.major }}-${{ hashFiles('alpine/${{ steps.prep.outputs.major }}/cache_buster') }}
 

@@ -34,7 +34,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-4-${{ hashFiles('alpine/5/cache_buster') }}
+          key: ${{ runner.os }}-buildx-4-${{ hashFiles('alpine/5/cache_buster') }}-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-4-${{ hashFiles('alpine/5/cache_buster') }}
 
