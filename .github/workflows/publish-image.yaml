@@ -50,7 +50,7 @@ jobs:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ steps.prep.outputs.major }}-${{ hashFiles('alpine/${{ steps.prep.outputs.major }}/cache_buster') }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx-${{ steps.prep.outputs.major }}-${{ hashFiles('alpine/${{ steps.prep.outputs.major }}/cache_buster') }}
+            ${{ runner.os }}-buildx-${{ steps.prep.outputs.major }}-${{ hashFiles('alpine/${{ steps.prep.outputs.major }}/cache_buster') }}-
 
       - name: Login to DockerHub
         if: github.event_name != 'pull_request'
