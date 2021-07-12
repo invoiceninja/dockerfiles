@@ -4,6 +4,8 @@ APP_KEY=<insert your generated key in here>
 APP_DEBUG=true
 REQUIRE_HTTPS=false
 PHANTOMJS_PDF_GENERATION=false
+PDF_GENERATOR=snappdf
+
 QUEUE_CONNECTION=database
 
 # DB connection
