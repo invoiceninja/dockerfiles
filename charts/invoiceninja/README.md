@@ -88,7 +88,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `cacheDriver`            | Name of cache driver to use                                                   | `nil`                                                   |
 | `sessionDriver`          | Name of session driver to use                                                 | `nil`                                                   |
 | `queueConnection`        | Name of queue connection to use                                               | `nil`                                                   |
-| `snappdf`                | Use snappdf instead of Phantom JS PDF generation                              | `true`                                                  |
+| `pdfGenerator`           | PDF generation method (Allowed values: `snappdf` or `phantom`)                | `snappdf`                                               |
 | `mailer`                 | Name of the mailer to use (log, smtp, etc.)                                   | `log`                                                   |
 | `requireHttps`           | Force HTTPS for internal connections to Invoice Ninja (see #349)              | `false`                                                 |
 | `existingSecret`         | Use existing secret that contain the keys `APP_KEY` and `IN_PASSWORD`         | `nil`                                                   |
@@ -228,7 +228,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `persistence.public.accessModes`    | PVC Access Modes                                    | `[ReadWriteMany]` |
 | `persistence.public.size`           | PVC Storage Request                                 | `1Gi`             |
 | `persistence.public.dataSource`     | PVC data source                                     | `{}`              |
-| `persistence.storage.enabled`       | Enable persistence using PVC (only for FILE driver) | `false`            |
+| `persistence.storage.enabled`       | Enable persistence using PVC (only for FILE driver) | `false`           |
 | `persistence.storage.existingClaim` | Enable persistence using an existing PVC            | `nil`             |
 | `persistence.storage.storageClass`  | PVC Storage Class                                   | `nil`             |
 | `persistence.storage.accessModes`   | PVC Access Modes                                    | `[ReadWriteMany]` |
@@ -356,7 +356,11 @@ However, since there are a lot of people without access to this volume type, usi
 
 ## Upgrading
 
+### To 0.8.0
+
+- `snappdf` option has been replaced by `pdfGenerator`.
+
 ### To 0.7.0
 
 - Redis chart dependency has been upgraded and may not be backwards compatible with previous versions. See [here](https://github.com/bitnami/charts/tree/master/bitnami/redis) for more info.
-- Storage persitence defaults to `false`, set to `true` if not using Redis, or using any FILE driver
+- Storage persitence defaults to `false`. Set to `true` if not using Redis or using FILE driver
