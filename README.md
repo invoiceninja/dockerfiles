@@ -98,6 +98,10 @@ git pull
 
 You may need to manually merge any changes that cannot be merged automatically by git.
 
+### Thanks
+Massive thank you to [lwj5](https://github.com/lwj5) for the tireless work to continually improve the dockerfile and its associated tooling.
+
+
 ## Support
 
 If you discover a bug, please create and issue, if you query is general in nature please visit us on our [Forum ](https://forum.invoiceninja.com/)
