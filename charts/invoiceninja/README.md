@@ -245,7 +245,8 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `redis.auth.password`             | Redis password                               | _random 10 character alphanumeric string_ |
 | `redis.auth.sentinel`             | Use password for sentinel containers         | `false`                                   |
 | `redis.sentinel.enabled`          | Enable sentinel containers                   | `true`                                    |
-| `redis.replica.replicaCount`            | Number of Redis replicas to deploy           | `1`                                       |
+| `redis.sentinel.quorum`           | Sentinel Quorum                              | `1`                                       |
+| `redis.replica.replicaCount`      | Number of Redis replicas to deploy           | `1`                                       |
 | `externalRedis.host`              | Host of the external redis                   | `nil`                                     |
 | `externalRedis.port`              | Port of the external redis                   | `6379`                                    |
 | `externalRedis.password`          | Password for the external redis              | `nil`                                     |
@@ -293,6 +294,7 @@ helm install invoiceninja \
   --set replicaCount=3 \
   --set persistence.public.accessModes[0]=ReadWriteMany
   --set redis.auth.password=changeit \
+  --set redis.sentinel.quorum=2 \
   --set redis.replica.replicaCount=3 \
   --set mariadb.auth.rootPassword=changeit \
   --set mariadb.auth.password=changeit \
@@ -364,7 +366,7 @@ To improve the accessibility of this chart to regular users. Some of the default
 
 - `persistence.public.accessModes` now defaults to `ReadWriteOnce`.
 - `nginx.enabled` now defaults to false.
-- `redis.replica.replicaCount` now defaults to `1`.
+- `redis.replica.replicaCount` and `redis.sentinel.quorum` now defaults to `1`.
 
 Other changes:
 

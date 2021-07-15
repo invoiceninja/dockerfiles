@@ -591,6 +591,7 @@ redis:
     sentinel: false
   sentinel:
     enabled: true
+    quorum: 1
   replica:
     replicaCount: 1
 
