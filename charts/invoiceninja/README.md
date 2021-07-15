@@ -245,7 +245,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `redis.auth.password`             | Redis password                               | _random 10 character alphanumeric string_ |
 | `redis.auth.sentinel`             | Use password for sentinel containers         | `false`                                   |
 | `redis.sentinel.enabled`          | Enable sentinel containers                   | `true`                                    |
-| `replica.replicaCount`            | Number of Redis replicas to deploy           | `1`                                       |
+| `redis.replica.replicaCount`            | Number of Redis replicas to deploy           | `1`                                       |
 | `externalRedis.host`              | Host of the external redis                   | `nil`                                     |
 | `externalRedis.port`              | Port of the external redis                   | `6379`                                    |
 | `externalRedis.password`          | Password for the external redis              | `nil`                                     |
@@ -364,7 +364,7 @@ To improve the accessibility of this chart to regular users. Some of the default
 
 - `persistence.public.accessModes` now defaults to `ReadWriteOnce`.
 - `nginx.enabled` now defaults to false.
-- `replica.replicaCount` now defaults to `1`.
+- `redis.replica.replicaCount` now defaults to `1`.
 
 Other changes:
 
