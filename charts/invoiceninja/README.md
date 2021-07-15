@@ -102,7 +102,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `readinessProbe`         | Readiness probe configuration for Invoice Ninja                               | Check `values.yaml` file                                |
 | `containerPorts.fastcgi` | FastCGI port to expose at container level                                     | `9000`                                                  |
 
-### Inline web server container parameters (only used when `nginx.enabled` is false)
+### Inline web server container parameters (only used when `nginx.enabled` is **not** set to true)
 
 | Parameter                | Description                                              | Default                                                 |
 | ------------------------ | -------------------------------------------------------- | ------------------------------------------------------- |
@@ -169,7 +169,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `service.externalTrafficPolicy`    | Enable client source IP preservation                                       | `Cluster`                      |
 | `service.annotations`              | Service annotations                                                        | `{}` (evaluated as a template) |
 
-#### Inline web server (only used when `nginx.enabled` is false)
+#### Inline web server (only used when `nginx.enabled` is **not** set to true)
 
 | Parameter                               | Description                                                                | Default                        |
 | --------------------------------------- | -------------------------------------------------------------------------- | ------------------------------ |
@@ -187,20 +187,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 
 ### Ingress parameters 
 
-#### Nginx sub-chart
-
-| Parameter                            | Description                           | Default                                                |
-| ------------------------------------ | ------------------------------------- | ------------------------------------------------------ |
-| `nginx.enabled`                      | Deploy Nginx sub-chart                | `true`                                                 |
-| `nginx.service.type`                 | Kubernetes Service type               | `ClusterIP`                                            |
-| `nginx.ingress.enabled`              | Enable ingress controller resource    | `true`                                                 |
-| `nginx.ingress.hostname`             | Default host for the ingress resource | `invoiceninja.local`                                   |
-| `nginx.existingServerBlockConfigmap` | Custom NGINX server block config map  | `{{ include "invoiceninja.nginx.serverBlockName" . }}` |
-| `nginx.staticSitePVC`                | Name of Invoice Ninja public PVC      | `{{ include "invoiceninja.public.storageName" . }}`    |
-
-> See [Dependencies](#dependencies) for more.
-
-#### Inline web server (only used when `nginx.enabled` is false)
+#### Inline web server (only used when `nginx.enabled` is **not** set to true)
 
 | Parameter                  | Description                                                                                           | Default                  |
 | -------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------ |
@@ -218,6 +205,19 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `ingress.extraTls`         | TLS configuration for additional hostname(s) to be covered with this ingress record                   | `[]`                     |
 | `ingress.secrets`          | Custom TLS certificates as secrets                                                                    | `[]`                     |
 
+#### Nginx sub-chart
+
+| Parameter                            | Description                           | Default                                                |
+| ------------------------------------ | ------------------------------------- | ------------------------------------------------------ |
+| `nginx.enabled`                      | Deploy Nginx sub-chart                | `false`                                                |
+| `nginx.service.type`                 | Kubernetes Service type               | `ClusterIP`                                            |
+| `nginx.ingress.enabled`              | Enable ingress controller resource    | `true`                                                 |
+| `nginx.ingress.hostname`             | Default host for the ingress resource | `invoiceninja.local`                                   |
+| `nginx.existingServerBlockConfigmap` | Custom NGINX server block config map  | `{{ include "invoiceninja.nginx.serverBlockName" . }}` |
+| `nginx.staticSitePVC`                | Name of Invoice Ninja public PVC      | `{{ include "invoiceninja.public.storageName" . }}`    |
+
+> See [Dependencies](#dependencies) for more.
+
 ### Persistence parameters
 
 | Parameter                           | Description                                         | Default           |
@@ -225,7 +225,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `persistence.public.enabled`        | Enable persistence using PVC                        | `true`            |
 | `persistence.public.existingClaim`  | Enable persistence using an existing PVC            | `nil`             |
 | `persistence.public.storageClass`   | PVC Storage Class                                   | `nil`             |
-| `persistence.public.accessModes`    | PVC Access Modes                                    | `[ReadWriteMany]` |
+| `persistence.public.accessModes`    | PVC Access Modes                                    | `[ReadWriteOnce]` |
 | `persistence.public.size`           | PVC Storage Request                                 | `1Gi`             |
 | `persistence.public.dataSource`     | PVC data source                                     | `{}`              |
 | `persistence.storage.enabled`       | Enable persistence using PVC (only for FILE driver) | `false`           |
@@ -290,8 +290,9 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 helm install invoiceninja \
   --set appKey=changeit \
   --set replicaCount=3 \
-  --set nginx.replicaCount=3 \
+  --set persistence.public.accessModes[0]=ReadWriteMany
   --set redis.auth.password=changeit \
+  --set redis.replica.replicaCount=3 \
   --set mariadb.auth.rootPassword=changeit \
   --set mariadb.auth.password=changeit \
   invoiceninja/invoiceninja
@@ -304,13 +305,9 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 ```yaml
 # values.yaml
 appKey: changeit
-replicaCount: 3
-nginx:
-  replicaCount: 3
 redis:
-  cluster:
-    slaveCount: 3
-  password: changeit
+  auth:
+    password: changeit
 mariadb:
   auth:
     rootPassword: changeit

@@ -549,7 +549,7 @@ persistence:
     ## If you want to reuse an existing claim, you can pass the name of the PVC using
     ## the existingClaim variable
     # existingClaim: your-claim
-    accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
     size: 1Gi
     ## Custom dataSource
     ##
@@ -669,7 +669,7 @@ externalDatabase:
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/nginx/values.yaml
 ##
 nginx:
-  enabled: true
+  enabled: false
   service:
     ## Service type
     ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
