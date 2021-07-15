@@ -245,6 +245,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `redis.auth.password`             | Redis password                               | _random 10 character alphanumeric string_ |
 | `redis.auth.sentinel`             | Use password for sentinel containers         | `false`                                   |
 | `redis.sentinel.enabled`          | Enable sentinel containers                   | `true`                                    |
+| `replica.replicaCount`            | Number of Redis replicas to deploy           | `1`                                       |
 | `externalRedis.host`              | Host of the external redis                   | `nil`                                     |
 | `externalRedis.port`              | Port of the external redis                   | `6379`                                    |
 | `externalRedis.password`          | Password for the external redis              | `nil`                                     |
@@ -298,13 +299,17 @@ helm install invoiceninja \
   invoiceninja/invoiceninja
 ```
 
-The above command sets the number of replicas to 3 for a highly available (HA) setup. Note that you would need to use an external DB such as MariaDB Galera for a full HA production setup. For a production environment, it is recommended that you spin up the required databases in a separate Helm Chart to decouple the upgrading process.
+The above command sets the number of replicas to 3 for a highly available (HA) setup and uses a `ReadWriteMany` volume. Note that you would need to use an external DB such as MariaDB Galera for a full HA production setup. For a production environment, it is recommended that you spin up the required databases in a separate Helm Chart to decouple the upgrading process.
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while [installing](https://helm.sh/docs/helm/helm_install/) the chart. For example,
 
 ```yaml
 # values.yaml
 appKey: changeit
+persistence:
+  public:
+    accessModes:
+      - ReadWriteMany
 redis:
   auth:
     password: changeit
@@ -343,19 +348,27 @@ extraEnvVarsCM: examplemap
 
 ## Inline webserver vs Nginx sub-chart
 
-If you have the ability to use `ReadWriteMany` persistent volume access mode, using the Nginx sub-chart will provide you with the most features, such as:
+Since there are many people without access to a `ReadWriteMany` volume, the inline Nginx web server will allow you to use a `ReadWriteOnce` public volume limited to 1 IN replica.
+
+If you have the ability to use `ReadWriteMany` persistent volume, you can choose between the two by setting the `nginx.enabled` parameter. Setting `nginx.enabled` to true will enable the Nginx sub-chart and will provide you with some additional features, such as:
 
 - independent scaling of Nginx and IN pods
-- built-in TLS functionality
-- high-availability
-
-However, since there are a lot of people without access to this volume type, using the inline Nginx web server will allow you to use a `ReadWriteOnce` public volume. Please note that you will need to change `persistence.public.accessModes` parameter and disable the Nginx sub-chart by setting `nginx.enabled` to false. Also, you will be limited 1 IN replica.
+- separate resource limits/requests
+- other features available from the sub-chart
 
 ## Upgrading
 
 ### To 0.8.0
 
-- `snappdf` option has been replaced by `pdfGenerator`.
+To improve the accessibility of this chart to regular users. Some of the defaults have been changed. This include:
+
+- `persistence.public.accessModes` now defaults to `ReadWriteOnce`.
+- `nginx.enabled` now defaults to false.
+- `replica.replicaCount` now defaults to `1`.
+
+Other changes:
+
+- `snappdf` parameter has been replaced by `pdfGenerator`.
 
 ### To 0.7.0
 

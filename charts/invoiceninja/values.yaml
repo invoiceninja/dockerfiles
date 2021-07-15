@@ -591,6 +591,8 @@ redis:
     sentinel: false
   sentinel:
     enabled: true
+  replica:
+    replicaCount: 1
 
 ## External Redis Configuration
 ##
