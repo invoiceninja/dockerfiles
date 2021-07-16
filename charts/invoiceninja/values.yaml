@@ -18,7 +18,7 @@
 image:
   registry: docker.io
   repository: invoiceninja/invoiceninja
-  tag: 5.2.11
+  tag: 5.2.12
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
   ##
@@ -77,8 +77,9 @@ queueConnection: ""
 trustedProxies: "*"
 
 ## Use local or Phantom JS PDF generation
+## Options are `snappdf` or `phantom`
 ##
-snappdf: true
+pdfGenerator: snappdf
 
 ## Name of queue connection to use (use "log" for debug)
 ## Please check the ref below for any other env you may need to define
@@ -548,7 +549,7 @@ persistence:
     ## If you want to reuse an existing claim, you can pass the name of the PVC using
     ## the existingClaim variable
     # existingClaim: your-claim
-    accessMode: ReadWriteMany
+    accessMode: ReadWriteOnce
     size: 1Gi
     ## Custom dataSource
     ##
@@ -590,6 +591,9 @@ redis:
     sentinel: false
   sentinel:
     enabled: true
+    quorum: 1
+  replica:
+    replicaCount: 1
 
 ## External Redis Configuration
 ##
@@ -668,7 +672,7 @@ externalDatabase:
 ## ref: https://github.com/bitnami/charts/blob/master/bitnami/nginx/values.yaml
 ##
 nginx:
-  enabled: true
+  enabled: false
   service:
     ## Service type
     ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types

@@ -4,12 +4,12 @@ dependencies:
   version: 1.7.0
 - name: nginx
   repository: https://charts.bitnami.com/bitnami
-  version: 9.3.6
+  version: 9.3.7
 - name: mariadb
   repository: https://charts.bitnami.com/bitnami
-  version: 9.3.16
+  version: 9.3.17
 - name: redis
   repository: https://charts.bitnami.com/bitnami
-  version: 14.6.6
-digest: sha256:a9dced490c24324a0d76821d94569c12b49a2f40d7dc8f6aa07c139f116bf5ec
-generated: "2021-07-09T20:05:19.280732+08:00"
+  version: 14.7.1
+digest: sha256:495d7cedf5284501249705101853f33d1bb479b35ce11a518631682cdb38c15f
+generated: "2021-07-16T00:53:22.586326+08:00"

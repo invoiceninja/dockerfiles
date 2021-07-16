@@ -44,7 +44,9 @@ data:
   {{- else if or .Values.redis.enabled .Values.externalRedis.host }}
   QUEUE_CONNECTION: redis
   {{- end }}
-  PHANTOMJS_PDF_GENERATION: {{ not .Values.snappdf | quote}}
+  # PHANTOMJS_PDF_GENERATION is deprecated
+  PHANTOMJS_PDF_GENERATION: "false"
+  PDF_GENERATOR: {{ .Values.pdfGenerator | quote}}
   REDIS_HOST: {{ include "invoiceninja.redisHost" . | quote }}
   REDIS_PORT: {{ include "invoiceninja.redisPort" . | quote }}
   REDIS_DB: {{ include "invoiceninja.redisDatabase" . | quote }}

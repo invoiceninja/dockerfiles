@@ -88,7 +88,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `cacheDriver`            | Name of cache driver to use                                                   | `nil`                                                   |
 | `sessionDriver`          | Name of session driver to use                                                 | `nil`                                                   |
 | `queueConnection`        | Name of queue connection to use                                               | `nil`                                                   |
-| `snappdf`                | Use snappdf instead of Phantom JS PDF generation                              | `true`                                                  |
+| `pdfGenerator`           | PDF generation method (Allowed values: `snappdf` or `phantom`)                | `snappdf`                                               |
 | `mailer`                 | Name of the mailer to use (log, smtp, etc.)                                   | `log`                                                   |
 | `requireHttps`           | Force HTTPS for internal connections to Invoice Ninja (see #349)              | `false`                                                 |
 | `existingSecret`         | Use existing secret that contain the keys `APP_KEY` and `IN_PASSWORD`         | `nil`                                                   |
@@ -102,7 +102,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `readinessProbe`         | Readiness probe configuration for Invoice Ninja                               | Check `values.yaml` file                                |
 | `containerPorts.fastcgi` | FastCGI port to expose at container level                                     | `9000`                                                  |
 
-### Inline web server container parameters (only used when `nginx.enabled` is false)
+### Inline web server container parameters (only used when `nginx.enabled` is **not** set to true)
 
 | Parameter                | Description                                              | Default                                                 |
 | ------------------------ | -------------------------------------------------------- | ------------------------------------------------------- |
@@ -169,7 +169,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `service.externalTrafficPolicy`    | Enable client source IP preservation                                       | `Cluster`                      |
 | `service.annotations`              | Service annotations                                                        | `{}` (evaluated as a template) |
 
-#### Inline web server (only used when `nginx.enabled` is false)
+#### Inline web server (only used when `nginx.enabled` is **not** set to true)
 
 | Parameter                               | Description                                                                | Default                        |
 | --------------------------------------- | -------------------------------------------------------------------------- | ------------------------------ |
@@ -187,20 +187,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 
 ### Ingress parameters 
 
-#### Nginx sub-chart
-
-| Parameter                            | Description                           | Default                                                |
-| ------------------------------------ | ------------------------------------- | ------------------------------------------------------ |
-| `nginx.enabled`                      | Deploy Nginx sub-chart                | `true`                                                 |
-| `nginx.service.type`                 | Kubernetes Service type               | `ClusterIP`                                            |
-| `nginx.ingress.enabled`              | Enable ingress controller resource    | `true`                                                 |
-| `nginx.ingress.hostname`             | Default host for the ingress resource | `invoiceninja.local`                                   |
-| `nginx.existingServerBlockConfigmap` | Custom NGINX server block config map  | `{{ include "invoiceninja.nginx.serverBlockName" . }}` |
-| `nginx.staticSitePVC`                | Name of Invoice Ninja public PVC      | `{{ include "invoiceninja.public.storageName" . }}`    |
-
-> See [Dependencies](#dependencies) for more.
-
-#### Inline web server (only used when `nginx.enabled` is false)
+#### Inline web server (only used when `nginx.enabled` is **not** set to true)
 
 | Parameter                  | Description                                                                                           | Default                  |
 | -------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------ |
@@ -218,6 +205,19 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `ingress.extraTls`         | TLS configuration for additional hostname(s) to be covered with this ingress record                   | `[]`                     |
 | `ingress.secrets`          | Custom TLS certificates as secrets                                                                    | `[]`                     |
 
+#### Nginx sub-chart
+
+| Parameter                            | Description                           | Default                                                |
+| ------------------------------------ | ------------------------------------- | ------------------------------------------------------ |
+| `nginx.enabled`                      | Deploy Nginx sub-chart                | `false`                                                |
+| `nginx.service.type`                 | Kubernetes Service type               | `ClusterIP`                                            |
+| `nginx.ingress.enabled`              | Enable ingress controller resource    | `true`                                                 |
+| `nginx.ingress.hostname`             | Default host for the ingress resource | `invoiceninja.local`                                   |
+| `nginx.existingServerBlockConfigmap` | Custom NGINX server block config map  | `{{ include "invoiceninja.nginx.serverBlockName" . }}` |
+| `nginx.staticSitePVC`                | Name of Invoice Ninja public PVC      | `{{ include "invoiceninja.public.storageName" . }}`    |
+
+> See [Dependencies](#dependencies) for more.
+
 ### Persistence parameters
 
 | Parameter                           | Description                                         | Default           |
@@ -225,10 +225,10 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `persistence.public.enabled`        | Enable persistence using PVC                        | `true`            |
 | `persistence.public.existingClaim`  | Enable persistence using an existing PVC            | `nil`             |
 | `persistence.public.storageClass`   | PVC Storage Class                                   | `nil`             |
-| `persistence.public.accessModes`    | PVC Access Modes                                    | `[ReadWriteMany]` |
+| `persistence.public.accessModes`    | PVC Access Modes                                    | `[ReadWriteOnce]` |
 | `persistence.public.size`           | PVC Storage Request                                 | `1Gi`             |
 | `persistence.public.dataSource`     | PVC data source                                     | `{}`              |
-| `persistence.storage.enabled`       | Enable persistence using PVC (only for FILE driver) | `false`            |
+| `persistence.storage.enabled`       | Enable persistence using PVC (only for FILE driver) | `false`           |
 | `persistence.storage.existingClaim` | Enable persistence using an existing PVC            | `nil`             |
 | `persistence.storage.storageClass`  | PVC Storage Class                                   | `nil`             |
 | `persistence.storage.accessModes`   | PVC Access Modes                                    | `[ReadWriteMany]` |
@@ -245,6 +245,8 @@ The following table shows the configuration options for the Invoice Ninja helm c
 | `redis.auth.password`             | Redis password                               | _random 10 character alphanumeric string_ |
 | `redis.auth.sentinel`             | Use password for sentinel containers         | `false`                                   |
 | `redis.sentinel.enabled`          | Enable sentinel containers                   | `true`                                    |
+| `redis.sentinel.quorum`           | Sentinel Quorum                              | `1`                                       |
+| `redis.replica.replicaCount`      | Number of Redis replicas to deploy           | `1`                                       |
 | `externalRedis.host`              | Host of the external redis                   | `nil`                                     |
 | `externalRedis.port`              | Port of the external redis                   | `6379`                                    |
 | `externalRedis.password`          | Password for the external redis              | `nil`                                     |
@@ -290,27 +292,29 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 helm install invoiceninja \
   --set appKey=changeit \
   --set replicaCount=3 \
-  --set nginx.replicaCount=3 \
+  --set persistence.public.accessModes[0]=ReadWriteMany
   --set redis.auth.password=changeit \
+  --set redis.sentinel.quorum=2 \
+  --set redis.replica.replicaCount=3 \
   --set mariadb.auth.rootPassword=changeit \
   --set mariadb.auth.password=changeit \
   invoiceninja/invoiceninja
 ```
 
-The above command sets the number of replicas to 3 for a highly available (HA) setup. Note that you would need to use an external DB such as MariaDB Galera for a full HA production setup. For a production environment, it is recommended that you spin up the required databases in a separate Helm Chart to decouple the upgrading process.
+The above command sets the number of replicas to 3 for a highly available (HA) setup and uses a `ReadWriteMany` volume. Note that you would need to use an external DB such as MariaDB Galera for a full HA production setup. For a production environment, it is recommended that you spin up the required databases in a separate Helm Chart to decouple the upgrading process.
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while [installing](https://helm.sh/docs/helm/helm_install/) the chart. For example,
 
 ```yaml
 # values.yaml
 appKey: changeit
-replicaCount: 3
-nginx:
-  replicaCount: 3
+persistence:
+  public:
+    accessModes:
+      - ReadWriteMany
 redis:
-  cluster:
-    slaveCount: 3
-  password: changeit
+  auth:
+    password: changeit
 mariadb:
   auth:
     rootPassword: changeit
@@ -346,17 +350,29 @@ extraEnvVarsCM: examplemap
 
 ## Inline webserver vs Nginx sub-chart
 
-If you have the ability to use `ReadWriteMany` persistent volume access mode, using the Nginx sub-chart will provide you with the most features, such as:
+Since there are many people without access to a `ReadWriteMany` volume, the inline Nginx web server will allow you to use a `ReadWriteOnce` public volume limited to 1 IN replica.
+
+If you have the ability to use `ReadWriteMany` persistent volume, you can choose between the two by setting the `nginx.enabled` parameter. Setting `nginx.enabled` to true will enable the Nginx sub-chart and will provide you with some additional features, such as:
 
 - independent scaling of Nginx and IN pods
-- built-in TLS functionality
-- high-availability
-
-However, since there are a lot of people without access to this volume type, using the inline Nginx web server will allow you to use a `ReadWriteOnce` public volume. Please note that you will need to change `persistence.public.accessModes` parameter and disable the Nginx sub-chart by setting `nginx.enabled` to false. Also, you will be limited 1 IN replica.
+- separate resource limits/requests
+- other features available from the sub-chart
 
 ## Upgrading
+
+### To 0.8.0
+
+To improve the accessibility of this chart to regular users. Some of the defaults have been changed. This include:
+
+- `persistence.public.accessModes` now defaults to `ReadWriteOnce`.
+- `nginx.enabled` now defaults to false.
+- `redis.replica.replicaCount` and `redis.sentinel.quorum` now defaults to `1`.
+
+Other changes:
+
+- `snappdf` parameter has been replaced by `pdfGenerator`.
 
 ### To 0.7.0
 
 - Redis chart dependency has been upgraded and may not be backwards compatible with previous versions. See [here](https://github.com/bitnami/charts/tree/master/bitnami/redis) for more info.
-- Storage persitence defaults to `false`, set to `true` if not using Redis, or using any FILE driver
+- Storage persitence defaults to `false`. Set to `true` if not using Redis or using FILE driver
