@@ -57,7 +57,8 @@ RUN set -eux; \
     mysql-client \
     git \
     chromium \
-    ttf-freefont
+    ttf-freefont \
+    tzdata
 
 # Copy files
 COPY rootfs /
