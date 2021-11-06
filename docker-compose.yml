@@ -2,13 +2,13 @@ version: '3.7'
 
 services:
   server:
-    image: nginx
+    image: caddy
     restart: always
     env_file: env
     volumes:
       # Vhost configuration
-      #- ./config/caddy/Caddyfile:/etc/caddy/Caddyfiledocker-com
-      - ./config/nginx/in-vhost.conf:/etc/nginx/conf.d/in-vhost.conf:ro
+      - ./config/caddy/Caddyfile:/etc/caddy/Caddyfile
+      #- ./config/nginx/in-vhost.conf:/etc/nginx/conf.d/in-vhost.conf:ro
       - ./docker/app/public:/var/www/app/public:ro
     depends_on:
       - app
@@ -16,7 +16,7 @@ services:
     # Feel free to modify depending what port is already occupied
     ports:
       - "80:80"
-      #- "443:443"
+      - "443:443"
     networks:
       - invoiceninja
     extra_hosts:
