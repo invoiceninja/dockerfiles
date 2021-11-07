@@ -15,7 +15,7 @@ services:
     # Run webserver nginx on port 80
     # Feel free to modify depending what port is already occupied
     ports:
-      - "80:80"
+      - 127.0.0.1:8888:80
       #- "443:443"
     networks:
       - invoiceninja
@@ -45,7 +45,7 @@ services:
 #    build:
 #      context: ./config/mysql
     ports:
-      - "3305:3306"
+      - 127.0.0.1:3305:3306
     restart: always
     env_file: env
     volumes:

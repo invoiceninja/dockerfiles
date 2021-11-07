@@ -1,6 +1,6 @@
 # IN application vars
-APP_URL=http://in.localhost:8003
-APP_KEY=<insert your generated key in here>
+APP_URL=http://ninja.simple2b.net
+APP_KEY=base64:q/hRgAOFb92KCZyYYv/e/DjKSn9JkVf4G4LVKTGMe1g=
 APP_DEBUG=true
 REQUIRE_HTTPS=false
 PHANTOMJS_PDF_GENERATION=false
@@ -19,8 +19,8 @@ DB_PASSWORD=ninja
 # Default to these values if empty
 # IN_USER_EMAIL=admin@example.com
 # IN_PASSWORD=changeme!
-IN_USER_EMAIL=
-IN_PASSWORD=
+IN_USER_EMAIL=admin@simple2b.net
+IN_PASSWORD=Simple2B
 
 # Mail options
 MAIL_MAILER=log
