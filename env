@@ -1,7 +1,7 @@
 # IN application vars
 APP_URL=http://ninja.simple2b.net
 APP_KEY=base64:q/hRgAOFb92KCZyYYv/e/DjKSn9JkVf4G4LVKTGMe1g=
-APP_DEBUG=true
+APP_DEBUG=false
 REQUIRE_HTTPS=false
 PHANTOMJS_PDF_GENERATION=false
 PDF_GENERATOR=snappdf
