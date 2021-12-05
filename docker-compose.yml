@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 services:
   server:
@@ -24,7 +24,7 @@ services:
 
   app:
     image: invoiceninja/invoiceninja:5
-    env_file: env
+    env_file: .env
     restart: always
     volumes:
       - ./config/hosts:/etc/hosts:ro
@@ -39,11 +39,11 @@ services:
 
   db:
     image: mysql:5
-#    When running on ARM64 use MariaDB instead of MySQL
-#    image: mariadb:10.4
-#    For auto DB backups comment out image and use the build block below
-#    build:
-#      context: ./config/mysql
+    #    When running on ARM64 use MariaDB instead of MySQL
+    #    image: mariadb:10.4
+    #    For auto DB backups comment out image and use the build block below
+    #    build:
+    #      context: ./config/mysql
     ports:
       - 127.0.0.1:3305:3306
     restart: always
@@ -65,9 +65,9 @@ services:
   # cron:
   #   image: invoiceninja/invoiceninja:alpine-4
   #   volumes:
-      # - ./docker/app/public:/var/www/app/public:rw,delegated
-      # - ./docker/app/storage:/var/www/app/storage:rw,delegated
-      # - ./docker/app/public/logo:/var/www/app/public/logo:rw,delegated
+  # - ./docker/app/public:/var/www/app/public:rw,delegated
+  # - ./docker/app/storage:/var/www/app/storage:rw,delegated
+  # - ./docker/app/public/logo:/var/www/app/public/logo:rw,delegated
   #   entrypoint: |
   #     /bin/sh -c 'sh -s <<EOF
   #     trap "break;exit" SIGHUP SIGINT SIGTERM
