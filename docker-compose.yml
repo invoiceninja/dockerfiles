@@ -4,7 +4,7 @@ services:
   server:
     image: nginx
     restart: always
-    env_file: env
+    env_file: .env
     volumes:
       # Vhost configuration
       #- ./config/caddy/Caddyfile:/etc/caddy/Caddyfiledocker-com
@@ -47,7 +47,7 @@ services:
     ports:
       - 127.0.0.1:3305:3306
     restart: always
-    env_file: env
+    env_file: .env
     volumes:
       - ./docker/mysql/data:/var/lib/mysql:rw,delegated
 
