@@ -6,7 +6,7 @@ TIMESTAMP=$(date +"%Y-%m-%d")
 case $FREQUENTY in
 
   daily)
-    DAYS=6
+    DAYS=30
     ;;
 
   weekly)
