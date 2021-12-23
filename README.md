@@ -105,3 +105,79 @@ Massive thank you to [lwj5](https://github.com/lwj5) for the tireless work to co
 ## Support
 
 If you discover a bug, please create and issue, if you query is general in nature please visit us on our [Forum ](https://forum.invoiceninja.com/)
+
+
+
+# Migration from v4 to v5 problems solution
+
+
+When you have problems on migration with allocated memory on php side
+You must change php.ini files in project and on server side
+
+## For v4 php.ini changes
+
+Find files with command
+
+```bash
+sudo find / -type f -name "php.ini" 
+```
+
+you must look for files like this:
+
+/etc/php/7.4/apache2/php.ini
+
+
+/etc/php/7.4/fpm/php.ini
+
+depends on your version of php, nginx, apache, fpm etc.
+
+and set next value
+
+```memory_limit = 1024M ```
+
+
+## For v5 php.ini changes (on docker)
+
+You must copy ```php.ini``` file from docker-container of your app to your directory
+
+then change value ```memory_limit = 1024M ```
+
+and change docker-compose file:
+
+add this to app volumes
+
+```  - ./php.ini:/usr/local/etc/php/php.ini```
+
+run next commands
+
+```bash
+docker-compose down
+```
+```bash
+docker-compose up -d --build
+```
+
+## For v5 mysql cnf changes (on docker)
+When You have problems with mysql db: ``` Got a packet bigger than 'max_allowed_packet' bytes```
+
+You must create file ```my.cnf```
+with this inside
+
+```
+[mysql]
+max_allowed_packet=1G
+net_buffer_length=1048576 
+```
+
+and change docker-compose file in db section volumes:
+``` - ./my.cnf:/etc/mysql/conf.d/my.cnf ```
+
+
+run next command
+
+```bash
+docker-compose down
+```
+```bash
+docker-compose up -d --build
+```
