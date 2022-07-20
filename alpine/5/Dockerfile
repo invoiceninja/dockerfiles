@@ -1,4 +1,4 @@
-ARG PHP_VERSION=7.4
+ARG PHP_VERSION=8.1
 ARG BAK_STORAGE_PATH=/var/www/app/docker-backup-storage/
 ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 
@@ -28,7 +28,7 @@ RUN --mount=target=/var/www/app/node_modules,type=cache \
     && mv /var/www/app/public $BAK_PUBLIC_PATH  
 
 # Prepare php image
-FROM php:${PHP_VERSION}-fpm-alpine3.13 as prod
+FROM php:${PHP_VERSION}-fpm-alpine3.15 as prod
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
