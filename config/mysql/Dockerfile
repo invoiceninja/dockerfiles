@@ -1,4 +1,4 @@
-FROM mysql:5-debian
+FROM mysql:8.0-debian
 # When running on ARM64 use MariaDB instead of MySQL
 #FROM mariadb:10.4
 ENV force_color_prompt yes

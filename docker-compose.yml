@@ -38,7 +38,8 @@ services:
       - "in5.localhost:192.168.0.124 " #host and ip
 
   db:
-    image: mysql:5-debian
+    image: mysql:8.0-debian
+    command: --default-authentication-plugin=mysql_native_password
 #    When running on ARM64 use MariaDB instead of MySQL
 #    image: mariadb:10.4
 #    For auto DB backups comment out image and use the build block below
@@ -50,6 +51,7 @@ services:
     env_file: env
     volumes:
       - ./docker/mysql/data:/var/lib/mysql:rw,delegated
+      - ./config/mysql/my.cnf:/etc/mysql/conf.d/z_my.cnf:ro
 
       # remove comments for next 4 lines if you want auto sql backups
       #- ./docker/mysql/bak:/backups:rw
