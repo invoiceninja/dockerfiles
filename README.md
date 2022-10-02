@@ -4,8 +4,6 @@
 [![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/invoiceninja)](https://artifacthub.io/packages/search?repo=invoiceninja)
 [![Pusblish Image](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml) [![Cache v5 Image](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-v5.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-v5.yaml)
 
-
-
 # Docker for [Invoice Ninja](https://www.invoiceninja.com/)
 
 :crown: **Features**
@@ -23,6 +21,7 @@ Other resources:
 
 [Helm Chart](https://github.com/Saddamus/invoiceninja-helm) by @Saddamus  
 [K8s Manifest](https://github.com/invoiceninja/dockerfiles/issues/94) by @spacepluk
+[You Tube installation video by DBTech](https://www.youtube.com/watch?v=xo6a3KtLC2g&ab_channel=DBTech)
 
 ## Alternatively get started with Docker Compose
 
