@@ -96,6 +96,7 @@ To upgrade to a newer release image, please make sure to update the `docker-comp
 git pull
 ```
 
+It is recommended to perform a backup before.
 You may need to manually merge any changes that cannot be merged automatically by git.
 
 ### Thanks
