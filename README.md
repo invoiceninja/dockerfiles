@@ -20,7 +20,7 @@ Introducing our very own [Helm Chart](https://github.com/invoiceninja/dockerfile
 Other resources:
 
 [Helm Chart](https://github.com/Saddamus/invoiceninja-helm) by @Saddamus  
-[K8s Manifest](https://github.com/invoiceninja/dockerfiles/issues/94) by @spacepluk
+[K8s Manifest](https://github.com/invoiceninja/dockerfiles/issues/94) by @spacepluk  
 [You Tube installation video by DBTech](https://www.youtube.com/watch?v=xo6a3KtLC2g&ab_channel=DBTech)
 
 ## Alternatively get started with Docker Compose
