@@ -84,7 +84,7 @@ All that is left to do now is bring up the container
 
 ### Running on ARM64 (Raspberry Pi 4)
 
-When deploying on an ARM64 system, you need to comment out the `image: mysql:5` line and uncomment `image: mariadb:10.4` in the `docker-compose.yml` file.
+When deploying on an ARM64 system, you need to comment out the `image: mysql:8` line and uncomment `image: mariadb:10.4` in the `docker-compose.yml` file.
 
 ### Updating the Image when using `docker-compose`
 
