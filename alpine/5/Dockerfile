@@ -53,6 +53,18 @@ RUN install-php-extensions \
 # Install chromium
 RUN set -eux; \
     apk add --no-cache \
+    font-isas-misc \
+    terminus-font \
+    font-noto \
+    font-noto-thai \
+    font-noto-tibetan \
+    font-ipa \
+    font-sony-misc \
+    font-daewoo-misc \
+    font-noto-hebrew \
+    font-noto-lao \
+    font-arabic-misc \
+    font-jis-misc \
     supervisor \
     mysql-client \
     git \
