@@ -32,6 +32,10 @@ FROM php:${PHP_VERSION}-fpm-alpine3.15 as prod
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
+# Adding caching_sha2_password.so
+# With this we get native support for caching_sha2_password
+RUN apk add --no-cache mariadb-connector-c
+
 RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 # Install PHP extensions

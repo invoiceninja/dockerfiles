@@ -38,7 +38,7 @@ services:
       - "in5.localhost:192.168.0.124 " #host and ip
 
   db:
-    image: mysql:5
+    image: mysql:8
 #    When running on ARM64 use MariaDB instead of MySQL
 #    image: mariadb:10.4
 #    For auto DB backups comment out image and use the build block below
