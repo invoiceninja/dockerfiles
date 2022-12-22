@@ -17,14 +17,17 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Helm
-        uses: azure/setup-helm@v1
-
-      - uses: actions/setup-python@v2
+        uses: azure/setup-helm@v3
         with:
-          python-version: 3.7
+          version: v3.10.0
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+          check-latest: true
 
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.0.1
+        uses: helm/chart-testing-action@v2.3.1
 
       - name: Run chart-testing (list-changed)
         id: list-changed
@@ -49,12 +52,14 @@ jobs:
       matrix:
         chart: ${{ fromJson(needs.lint-chart.outputs.matrix) }}
         k8s:
-          - v1.19.11
-          - v1.20.7
-          - v1.21.2
+          - v1.25.5
+          - v1.23.15
+          - v1.24.9
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Update Helm depdendencies
         env:
@@ -64,11 +69,14 @@ jobs:
           mkdir kubeval
           helm template "${CHART_DIR}" > kubeval/combined.yaml
 
-      - name: Run kubeval
-        uses: instrumenta/kubeval-action@master
+      - uses: yokawasa/action-setup-kube-tools@v0.9.2
         with:
-          files: kubeval
-          version: ${{ matrix.k8s }}
+          setup-tools: |
+            kubeconform
+
+      - name: Run kubeval
+        if: ${{ matrix.k8s }}
+        run: kubeconform -kubernetes-version {{ matrix.k8s }} kubeval/combined.yaml
 
   install-chart:
     name: install-chart
@@ -89,7 +97,7 @@ jobs:
           fetch-depth: 0
 
       - name: Create kind ${{ matrix.k8s }} cluster
-        uses: helm/kind-action@v1.2.0
+        uses: helm/kind-action@v1.4.0
         with:
           node_image: kindest/node:${{ matrix.k8s }}
 
