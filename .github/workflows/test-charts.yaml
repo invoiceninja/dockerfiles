@@ -83,7 +83,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - lint-chart
-      - kubeval-chart
+      - kubeconform-chart
     strategy:
       matrix:
         k8s:
