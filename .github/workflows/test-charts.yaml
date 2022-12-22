@@ -53,8 +53,8 @@ jobs:
         chart: ${{ fromJson(needs.lint-chart.outputs.matrix) }}
         k8s:
           - v1.25.5
-          - v1.23.15
           - v1.24.9
+          - v1.23.15
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -76,7 +76,7 @@ jobs:
 
       - name: Run kubeconform
         if: ${{ matrix.k8s }}
-        run: kubeconform -kubernetes-version {{ matrix.k8s }} tmp/combined.yaml
+        run: kubeconform -kubernetes-version ${{ matrix.k8s }} tmp/combined.yaml
 
   install-chart:
     name: install-chart
@@ -87,9 +87,9 @@ jobs:
     strategy:
       matrix:
         k8s:
-          - v1.19.11
-          - v1.20.7
-          - v1.21.2
+          - v1.25.5
+          - v1.24.9
+          - v1.23.15
     steps:
       - name: Checkout
         uses: actions/checkout@v2
