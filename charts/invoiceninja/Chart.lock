@@ -1,7 +1,7 @@
 dependencies:
 - name: common
   repository: https://charts.bitnami.com/bitnami
-  version: 1.17.1
+  version: 2.2.2
 - name: nginx
   repository: https://charts.bitnami.com/bitnami
   version: 13.2.20
@@ -11,5 +11,5 @@ dependencies:
 - name: redis
   repository: https://charts.bitnami.com/bitnami
   version: 16.13.2
-digest: sha256:c60712ee5ca51c18136046f755c54a36fc46342356da92f891719af4a2991405
-generated: "2022-12-22T23:15:30.045985+08:00"
+digest: sha256:da0dca54f32ca0465f89744d6247421ad13c907f09cd40fb21985c81888aaef1
+generated: "2022-12-22T23:33:23.007968+08:00"

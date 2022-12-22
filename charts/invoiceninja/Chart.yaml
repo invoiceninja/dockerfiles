@@ -17,7 +17,7 @@ version: 0.10.0
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
-appVersion: 5.3.80
+appVersion: 5.5.49
 keywords:
   - invoiceninja
 home: https://invoiceninja.github.io/dockerfiles
@@ -29,7 +29,7 @@ dependencies:
     repository: https://charts.bitnami.com/bitnami
     tags:
       - bitnami-common
-    version: 1.x.x
+    version: 2.x.x
   - condition: nginx.enabled
     name: nginx
     repository: https://charts.bitnami.com/bitnami
