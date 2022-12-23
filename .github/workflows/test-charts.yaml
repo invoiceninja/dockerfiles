@@ -52,9 +52,9 @@ jobs:
       matrix:
         chart: ${{ fromJson(needs.lint-chart.outputs.matrix) }}
         k8s:
-          - v1.25.5
-          - v1.24.9
-          - v1.23.15
+          - "1.25.5"
+          - "1.24.9"
+          - "1.23.15"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
