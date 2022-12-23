@@ -360,6 +360,16 @@ If you have the ability to use `ReadWriteMany` persistent volume, you can choose
 
 ## Upgrading
 
+### To 0.10.0
+
+The following chart dependencies have been upgraded.
+- MariaDB 
+- Redis
+- Nginx
+- Bitnami common
+
+Please take note that this upgrade MariaDB from 10.5 to 10.6. Please backup your database before proceeding.
+
 ### To 0.8.0
 
 To improve the accessibility of this chart to regular users. Some of the defaults have been changed. This include:
