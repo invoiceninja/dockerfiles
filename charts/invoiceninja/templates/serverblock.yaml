@@ -15,6 +15,7 @@ data:
   server-block.conf: |-
     server {
         listen 8080 default_server;
+        listen [::]:8080 default_server;
         server_name _;
 
         root /app;
