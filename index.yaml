@@ -3,6 +3,43 @@ entries:
   invoiceninja:
   - apiVersion: v2
     appVersion: 5.5.49
+    created: "2022-12-24T06:48:59.968871393Z"
+    dependencies:
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    - condition: nginx.enabled
+      name: nginx
+      repository: https://charts.bitnami.com/bitnami
+      version: 13.x.x
+    - condition: mariadb.enabled
+      name: mariadb
+      repository: https://charts.bitnami.com/bitnami
+      version: 11.4.x
+    - condition: redis.enabled
+      name: redis
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.x.x
+    description: A Helm chart to install Invoice Ninja
+    digest: 353ee2609def7deb5b40bd39636746852e1289b4811b1c5ba9a3282c1fff1b4a
+    home: https://invoiceninja.github.io/dockerfiles
+    keywords:
+    - invoiceninja
+    maintainers:
+    - email: lwj5@hotmail.com
+      name: lwj5
+    name: invoiceninja
+    sources:
+    - https://github.com/invoiceninja/invoiceninja
+    - https://github.com/invoiceninja/dockerfiles
+    type: application
+    urls:
+    - https://github.com/invoiceninja/dockerfiles/releases/download/invoiceninja-0.10.1/invoiceninja-0.10.1.tgz
+    version: 0.10.1
+  - apiVersion: v2
+    appVersion: 5.5.49
     created: "2022-12-23T04:59:04.497271068Z"
     dependencies:
     - name: common
@@ -944,4 +981,4 @@ entries:
     urls:
     - https://github.com/invoiceninja/dockerfiles/releases/download/invoiceninja-0.1.0/invoiceninja-0.1.0.tgz
     version: 0.1.0
-generated: "2022-12-23T04:59:04.497574067Z"
+generated: "2022-12-24T06:48:59.969193898Z"
