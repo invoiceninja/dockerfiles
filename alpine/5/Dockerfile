@@ -9,6 +9,8 @@ FROM --platform=$BUILDPLATFORM node:lts-alpine as build
 ARG INVOICENINJA_VERSION
 ADD https://github.com/invoiceninja/invoiceninja/tarball/v$INVOICENINJA_VERSION /tmp/ninja.tar.gz
 
+RUN set -eux; apk add curl unzip
+
 # Extract Invoice Ninja
 RUN mkdir -p /var/www/app \
     && tar --strip-components=1 -xf /tmp/ninja.tar.gz -C /var/www/app/ \
@@ -16,6 +18,13 @@ RUN mkdir -p /var/www/app \
     && mv /var/www/app/.env.example /var/www/app/.env \
     && rm -rf /var/www/app/docs /var/www/app/tests
 
+# Download and extract the latest react application
+RUN curl -LGO $(curl https://api.github.com/repos/turbo124/ui-1/releases/latest | grep "browser_download_url" | awk '{ print $2 }' | sed 's/,$//' | sed 's/"//g');
+RUN cp invoiceninja-react.zip /tmp/invoiceninja-react.zip
+RUN unzip /tmp/invoiceninja-react.zip 
+RUN cp -r dist/react/* ./var/www/app/public/react/
+# Download and extract the latest react application
+# 
 WORKDIR /var/www/app/
 
 # Install node packages
