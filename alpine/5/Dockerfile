@@ -60,6 +60,8 @@ RUN install-php-extensions \
     opcache \
     pdo_mysql \
     zip \
+    pdo_pgsql \
+    pgsql \
     @composer \
     && rm /usr/local/bin/install-php-extensions
 
