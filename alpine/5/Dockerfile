@@ -19,7 +19,7 @@ RUN mkdir -p /var/www/app \
     && rm -rf /var/www/app/docs /var/www/app/tests
 
 # Download and extract the latest react application
-RUN curl -LGO $(curl https://api.github.com/repos/turbo124/ui-1/releases/latest | grep "browser_download_url" | awk '{ print $2 }' | sed 's/,$//' | sed 's/"//g');
+RUN curl -LGO $(curl https://api.github.com/repos/invoiceninja/ui/releases/latest | grep "browser_download_url" | awk '{ print $2 }' | sed 's/,$//' | sed 's/"//g');
 RUN cp invoiceninja-react.zip /tmp/invoiceninja-react.zip
 RUN unzip /tmp/invoiceninja-react.zip 
 RUN cp -r dist/react/* /var/www/app/public/react/
