@@ -1,0 +1,99 @@
+version: "3.7"
+
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: unless-stopped
+    env_file: env
+    ports:
+      # Run traefik on port 80 and 443
+      # Feel free to modify depending what port is already occupied
+      - "80:80"
+      - "443:443"
+      # Run traefik dashboard on port 8080
+      # Feel free to modify depending what port is already occupied
+      - "8080:8080"
+    command:
+      # By default, the level is set to ERROR. Alternative logging levels are
+      # DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
+      - --log.level=ERROR
+      - --global.sendAnonymousUsage=false
+      # Enable Dashboard
+      - --api.insecure=false
+      - --api.dashboard=true
+      - --api.debug=true
+      # We are using Docker
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      # (Optional) Set default hostname if not given explicitly
+      - --providers.docker.defaultRule=Host(`${APP_URL_DOMAIN}`)
+      # Listen on port 80 (http)
+      - --entrypoints.web.address=:80
+      # Listen on port 443 (https)
+      - --entrypoints.websecure.address=:443
+      # Listen on port 8080 (traefik Dashboard)
+      - --entrypoints.traefik-dashboard.address=:8080
+      # Watch dynamic configuration file
+      - --providers.file.directory=/config
+      - --providers.file.watch=true
+      # Enable Access Log
+      - --accesslog.filepath=/var/log/www/access.log
+      # Automaticly redirect from http to https
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+
+      ################ START SSL configuration ################
+      # ---------> Cloudflare <---------
+      # DNS challenge via Cloudflare
+      - --certificatesresolvers.cloudflare.acme.email=${ACME_EMAIL}
+      - --certificatesresolvers.cloudflare.acme.storage=/ssl/acme.json
+      - --certificatesresolvers.cloudflare.acme.dnsChallenge.provider=cloudflare
+      - --certificatesresolvers.cloudflare.acme.dnsChallenge.delayBeforeCheck=60
+      - --certificatesresolvers.cloudflare.acme.dnsChallenge.resolvers=1.1.1.1:53
+      # (Optional) Use testing server before receiving the productive ssl certificate
+      #- --certificatesresolvers.cloudflare.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --entrypoints.websecure.http.tls.domains[0].main=${APP_URL_DOMAIN}
+      # (Optional) Use only, if you are able to receive a wildcard ssl certificate
+      # - --entrypoints.websecure.http.tls.domains[0].main=*.${CLOUDFLARE_DOMAIN}
+      # --------------------------------
+      ################  END SSL configuration  ################
+    volumes:
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Dynamic configuration files
+      - ./config/traefik/config:/config
+      # Enable Access Log
+      - ./config/traefik/logs/:/var/log/www/
+      # LetsEncrypt Configuration Storage
+      - ./config/traefik/ssl:/ssl
+    labels:
+      # Enable Traefik
+      - traefik.enable=true
+      # Set Network to use
+      - traefik.docker.network=invoiceninja
+      # Load dynamic config
+      - traefik.http.routers.traefik-dashboard.middlewares=default@file
+      # Service related labels
+      - traefik.http.routers.traefik-dashboard.entrypoints=traefik-dashboard
+      - traefik.http.routers.traefik-dashboard.middlewares=traefik-auth@file
+      - traefik.http.routers.traefik-dashboard.service=api@internal
+      - traefik.http.routers.traefik-dashboard.tls=true
+      - traefik.http.routers.traefik-dashboard.tls.certResolver=cloudflare
+      - traefik.http.routers.traefik-dashboard.rule=Host(`${APP_URL_DOMAIN}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+    networks:
+      - invoiceninja
+
+  server:
+    labels:
+      # Enable Traefik
+      - "traefik.enable=true"
+      # Set Network to use
+      - "traefik.docker.network=invoiceninja"
+      # Load dynamic config
+      - "traefik.http.routers.ninja-nginx.middlewares=default@file"
+      # Service related labels
+      - "traefik.http.routers.ninja-nginx.entrypoints=websecure"
+      - "traefik.http.routers.ninja-nginx.tls=true"
+      - "traefik.http.routers.ninja-nginx.tls.certResolver=cloudflare"
+      - "traefik.http.routers.ninja-nginx.rule=Host(`${APP_URL_DOMAIN}`)"
