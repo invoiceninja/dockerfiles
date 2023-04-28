@@ -1,0 +1,42 @@
+---
+http:
+  middlewares:
+    basic-auth:
+      basicAuth:
+        users:
+          # Generate encrypted password string via 'htpasswd -nB username'
+          # enter your password twice and paste the output here
+          # myusername:mysafepassword
+          - "myusername:$2y$05$Tx/.9qaFoZiLi41ZDvO1fOqiSohhuAr8jf9yEbQxZWlqANMKQYnYe"
+    gzip:
+      compress: {}
+    security-headers:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        frameDeny: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 31536000
+        customFrameOptionsValue: "SAMEORIGIN"
+        referrerPolicy: "no-referrer"
+        customRequestHeaders:
+          X-Forwarded-Proto: "https"
+    strict-ratelimit:
+      rateLimit:
+        average: 10
+        burst: 50
+    default-ratelimit:
+      rateLimit:
+        average: 100
+        burst: 50
+    high-ratelimit:
+      rateLimit:
+        average: 1000
+        burst: 500
+    default:
+      chain:
+        middlewares:
+          - "security-headers"
+          - "gzip"

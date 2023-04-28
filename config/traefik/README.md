@@ -15,9 +15,9 @@ Traefik in combination with [Cloudflare](https://cloudflare.com) receives and se
 
 ## Usage
 
-1. Copy the [docker-compose.override.yml](./docker-compose.override.yml) to the repositorie's root directory
+1. Either copy the [HTTP-01 docker-compose.override.yml](./examples/http-01/docker-compose.override.yml) to the repositorie's root directory for issueing ssl certificates via `http-01` challenge, or copy the [DNS-01 cloudflare docker-compose.override.yml](./examples/dns-01-cloudflare/docker-compose.override.yml) to use Cloudflare and `dns-01` challenge.
 1. Set the Traefik proxy vars in the [env](../../env) file
-1. Update the basic-auth username and password in [dynamic.yml](./config/dynamic.yml)
+1. Update the basic-auth username and password in [dynamic-http.yml](./config/dynamic-http.yml)
 1. Start the docker compose stack
 
 A few seconds later, you should be able to visit `https://${APP_URL_DOMAIN}:8080/dashboard/` and should be prompted for a username and password. If you have not changed it, it should be `username` and `EncryptedPassword`.
@@ -31,3 +31,5 @@ If anything does not work as expected, consider checking Traefik's container log
 ```bash
 docker compose logs -tf traefik
 ```
+
+and check the official [Traefik Documentation](https://doc.traefik.io/traefik/).

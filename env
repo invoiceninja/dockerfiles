@@ -59,7 +59,8 @@ MYSQL_DATABASE=ninja
 # APP_CIPHER=AES-256-CBC
 
 ## Traefik proxy vars
+ACME_EMAIL=ssl-maintainer@domain.tld
+# Cloudflare only vars
 CLOUDFLARE_EMAIL=cloudflare@domain.tld
 CLOUDFLARE_DNS_API_TOKEN=yourApiTokenHere
 CLOUDFLARE_DOMAIN=domain.tld
-ACME_EMAIL=ssl-maintainer@domain.tld
