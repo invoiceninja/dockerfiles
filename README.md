@@ -25,17 +25,19 @@ Other resources:
 
 ## Alternatively get started with Docker Compose
 
-The dockerfile has been revamped to make it easier to get started, by default the base image selected is 5 which will pull in the latest v5 stable image.
+The dockerfile has been revamped to make it easier to get started, by default the base image selected is 5 which will pull in the latest v5 stable image. 
 
 ```bash
 git clone https://github.com/invoiceninja/dockerfiles.git
 cd dockerfiles
 ```
 
-Instead of defining our environment variables inside our docker-compose.yml file we now define this in the `env` file, open this file up and insert your `APP_URL`, `APP_KEY` and update the rest of the variables as required.
+Instead of defining our environment variables inside our docker-compose.yml file we now define this in the `env` file, open this file up and insert your `APP_URL_*` variables, `APP_KEY` and update the rest of the variables as required.
 
 ```
-APP_URL=http://in.localhost:8003/
+APP_URL_SCHEME=http
+APP_URL_DOMAIN=in.localhost
+APP_URL_PORT=8003
 APP_KEY=<insert your generated key in here>
 APP_DEBUG=true
 REQUIRE_HTTPS=false
@@ -60,6 +62,12 @@ From the terminal run
 ```bash
 chmod 755 docker/app/public
 sudo chown -R 1500:1500 docker/app
+```
+
+If you want to modify the docker compose stack (e.g. changing the `nginx` port), please do any changes in the `docker-compose.override.yml` file. When starting the stack, both files will be merged. You can check the merged config from the terminal by executing 
+
+```bash
+docker compose config
 ```
 
 ### Note for people running the container locally on their PC ###
