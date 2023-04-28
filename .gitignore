@@ -12,9 +12,3 @@ charts/**/charts/
 
 # Compose filesystem
 /docker
-
-# Traefik filesystem
-config/traefik/logs/*
-!config/traefik/logs/.gitkeep
-config/traefik/ssl-files/*
-!config/traefik/ssl-files/.gitkeep
