@@ -24,7 +24,7 @@ docker_process_init_files() {
         echo
     done
 }
-
+php artisan package:discover --ansi
 php artisan config:cache
 php artisan optimize
 php artisan ninja:react
