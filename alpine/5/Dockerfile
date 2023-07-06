@@ -45,7 +45,10 @@ LABEL maintainer="David Bomba <turbo124@gmail.com>"
 # With this we get native support for caching_sha2_password
 RUN apk add --no-cache mariadb-connector-c
 
-RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+#RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+
+COPY ./config/php/php.ini /usr/local/etc/php/php.ini
+COPY ./config/php/php-cli.ini /usr/local/etc/php/php-cli.ini
 
 # Install PHP extensions
 # https://hub.docker.com/r/mlocati/php-extension-installer/tags
