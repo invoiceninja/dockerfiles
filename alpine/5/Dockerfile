@@ -102,11 +102,9 @@ WORKDIR /var/www/app
 
 # Do not remove this ENV
 ENV IS_DOCKER true
-#RUN /usr/local/bin/composer install --no-dev --quiet
-FROM composer:2.5.8 AS composer
-COPY --from=composer /usr/bin/composer /usr/bin/composer
-
-RUN /usr/bin/composer install --no-dev
+RUN which composer
+RUN composer -v
+RUN /usr/local/bin/composer install --no-dev --quiet
 
 # Override the environment settings from projects .env file
 ENV APP_ENV production
