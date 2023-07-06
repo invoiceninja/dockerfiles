@@ -100,6 +100,8 @@ COPY --from=build --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app /va
 USER $UID
 WORKDIR /var/www/app
 
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 # Do not remove this ENV
 ENV IS_DOCKER true
 RUN /usr/local/bin/composer install --no-dev --quiet
