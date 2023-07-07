@@ -49,6 +49,16 @@ RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 # https://hub.docker.com/r/mlocati/php-extension-installer/tags
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
+# Install chromium
+RUN set -eux; \
+    apk add --no-cache \
+    font-isas-misc \
+    supervisor \
+    mysql-client \
+    git \
+    chromium \
+    ttf-freefont
+
 RUN install-php-extensions \
     bcmath \
     exif \
@@ -60,16 +70,6 @@ RUN install-php-extensions \
     zip \
     @composer \
     && rm /usr/local/bin/install-php-extensions
-
-# Install chromium
-RUN set -eux; \
-    apk add --no-cache \
-    font-isas-misc \
-    supervisor \
-    mysql-client \
-    git \
-    chromium \
-    ttf-freefont
 
 # Copy files
 COPY rootfs /
@@ -100,7 +100,7 @@ WORKDIR /var/www/app
 
 # Do not remove this ENV
 ENV IS_DOCKER true
-RUN /usr/local/bin/composer install --no-dev --no-scripts
+RUN /usr/local/bin/composer install --no-dev --no-scripts --no-interaction --no-autoloader 
 
 # Override the environment settings from projects .env file
 ENV APP_ENV production
