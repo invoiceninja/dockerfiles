@@ -25,6 +25,7 @@ docker_process_init_files() {
     done
 }
 
+composer dump-autoload
 php artisan config:cache
 php artisan optimize
 php artisan ninja:react

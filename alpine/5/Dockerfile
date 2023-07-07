@@ -14,10 +14,8 @@ RUN set -eux; apk add curl unzip
 # Extract Invoice Ninja
 RUN mkdir -p /var/www/app \
     && tar --strip-components=1 -xf /tmp/ninja.tar.gz -C /var/www/app/ \
-    && mkdir -p /var/www/app/public/logo /var/www/app/storage \
-    && mv /var/www/app/.env.example /var/www/app/.env \
-    && rm -rf /var/www/app/docs /var/www/app/tests
-
+    && mkdir -p /var/www/app/public/logo /var/www/app/storage
+    
 # Download and extract the latest react application
 RUN curl -LGO $(curl https://api.github.com/repos/invoiceninja/ui/releases/latest | grep "browser_download_url" | awk '{ print $2 }' | sed 's/,$//' | sed 's/"//g');
 RUN cp invoiceninja-react.zip /tmp/invoiceninja-react.zip
@@ -51,6 +49,16 @@ RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 # https://hub.docker.com/r/mlocati/php-extension-installer/tags
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
+# Install chromium
+RUN set -eux; \
+    apk add --no-cache \
+    font-isas-misc \
+    supervisor \
+    mysql-client \
+    git \
+    chromium \
+    ttf-freefont
+
 RUN install-php-extensions \
     bcmath \
     exif \
@@ -62,16 +70,6 @@ RUN install-php-extensions \
     zip \
     @composer \
     && rm /usr/local/bin/install-php-extensions
-
-# Install chromium
-RUN set -eux; \
-    apk add --no-cache \
-    font-isas-misc \
-    supervisor \
-    mysql-client \
-    git \
-    chromium \
-    ttf-freefont
 
 # Copy files
 COPY rootfs /
@@ -102,7 +100,7 @@ WORKDIR /var/www/app
 
 # Do not remove this ENV
 ENV IS_DOCKER true
-RUN /usr/local/bin/composer install --no-dev --quiet
+RUN /usr/local/bin/composer install --no-dev --no-scripts --no-interaction --no-autoloader 
 
 # Override the environment settings from projects .env file
 ENV APP_ENV production
