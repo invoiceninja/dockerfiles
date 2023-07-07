@@ -21,6 +21,9 @@ RUN curl -LGO $(curl https://api.github.com/repos/invoiceninja/ui/releases/lates
 RUN cp invoiceninja-react.zip /tmp/invoiceninja-react.zip
 RUN unzip /tmp/invoiceninja-react.zip 
 RUN cp -r dist/react/* /var/www/app/public/react/
+RUN mkdir -p /var/www/app/public/tinymce_6.4.2/tinymce/js/
+RUN cp -r dist/tinymce_6.4.2/* /var/www/app/public/tinymce_6.4.2/
+
 # Download and extract the latest react application
 # 
 WORKDIR /var/www/app/
