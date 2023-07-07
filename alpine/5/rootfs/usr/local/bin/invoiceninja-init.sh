@@ -25,6 +25,7 @@ docker_process_init_files() {
     done
 }
 
+composer dump-autoload
 php artisan config:cache
 php artisan optimize
 php artisan ninja:react
@@ -36,7 +37,6 @@ if [ "$DB_READY" != "1" ]; then
     in_error "Error connecting to DB"
 fi
 
-composer dump-autoload
 php artisan migrate --force
 
 # If first IN run, it needs to be initialized
