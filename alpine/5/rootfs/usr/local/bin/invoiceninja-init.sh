@@ -25,9 +25,9 @@ docker_process_init_files() {
     done
 }
 
-composer dump-autoload
 php artisan config:cache
 php artisan optimize
+php artisan package:discover
 php artisan ninja:react
 
 # Check if DB works, if not crash the app.

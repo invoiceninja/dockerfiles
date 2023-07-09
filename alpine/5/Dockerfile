@@ -1,4 +1,4 @@
-ARG PHP_VERSION=8.1
+ARG PHP_VERSION=8.2
 ARG BAK_STORAGE_PATH=/var/www/app/docker-backup-storage/
 ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 
@@ -38,7 +38,7 @@ RUN --mount=target=/var/www/app/node_modules,type=cache \
     && mv /var/www/app/public $BAK_PUBLIC_PATH  
 
 # Prepare php image
-FROM php:${PHP_VERSION}-fpm-alpine3.15 as prod
+FROM php:${PHP_VERSION}-fpm-alpine as prod
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
@@ -103,7 +103,8 @@ WORKDIR /var/www/app
 
 # Do not remove this ENV
 ENV IS_DOCKER true
-RUN /usr/local/bin/composer install --no-dev --no-scripts --no-interaction --no-autoloader 
+RUN /usr/local/bin/composer install --no-dev --no-scripts --no-interaction 
+RUN /usr/local/bin/composer dump-autoload --optimize --no-dev --classmap-authoritative --no-scripts --no-interaction 
 
 # Override the environment settings from projects .env file
 ENV APP_ENV production
