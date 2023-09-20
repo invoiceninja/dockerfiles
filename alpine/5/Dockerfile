@@ -21,13 +21,8 @@ RUN curl -LGO $(curl https://api.github.com/repos/invoiceninja/ui/releases/lates
 RUN cp invoiceninja-react.zip /tmp/invoiceninja-react.zip
 RUN unzip /tmp/invoiceninja-react.zip 
 RUN find /var/www/app/public/react/ -type f -delete
-RUN for file in dist/react/* ; do \
-          filename=$(basename -- "$file") \
-          extension="${filename##*.}" \
-          filename="${filename%.*}" \
-          version=v$INVOICENINJA_VERSION \
-          cp $file ../public/react/$filename"."$version"."$extension \
-          done \
+COPY loop.sh loop.sh
+RUN ./loop.sh
           
 RUN mkdir -p /var/www/app/public/tinymce_6.4.2/tinymce/js/
 RUN cp -r dist/tinymce_6.4.2/* /var/www/app/public/tinymce_6.4.2/
