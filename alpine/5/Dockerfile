@@ -20,6 +20,7 @@ RUN mkdir -p /var/www/app \
 RUN curl -LGO $(curl https://api.github.com/repos/invoiceninja/ui/releases/latest | grep "browser_download_url" | awk '{ print $2 }' | sed 's/,$//' | sed 's/"//g');
 RUN cp invoiceninja-react.zip /tmp/invoiceninja-react.zip
 RUN unzip /tmp/invoiceninja-react.zip 
+RUN mkdir  /var/www/app/public/react/v$INVOICENINJA_VERSION/
 RUN cp -r dist/react/* /var/www/app/public/react/v$INVOICENINJA_VERSION/
           
 RUN mkdir -p /var/www/app/public/tinymce_6.4.2/tinymce/js/
