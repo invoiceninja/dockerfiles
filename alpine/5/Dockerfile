@@ -22,6 +22,7 @@ RUN cp invoiceninja-react.zip /tmp/invoiceninja-react.zip
 RUN unzip /tmp/invoiceninja-react.zip 
 RUN mkdir  /var/www/app/public/react/v$INVOICENINJA_VERSION/
 RUN cp -r dist/react/* /var/www/app/public/react/v$INVOICENINJA_VERSION/
+RUN cp -r dist/react/* /var/www/app/public/react/
           
 RUN mkdir -p /var/www/app/public/tinymce_6.4.2/tinymce/js/
 RUN cp -r dist/tinymce_6.4.2/* /var/www/app/public/tinymce_6.4.2/
