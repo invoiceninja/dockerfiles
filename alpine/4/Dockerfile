@@ -1,4 +1,4 @@
-ARG PHP_VERSION=7.3
+ARG PHP_VERSION=7.4
 ARG BAK_STORAGE_PATH=/var/www/app/docker-backup-storage/
 ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 
