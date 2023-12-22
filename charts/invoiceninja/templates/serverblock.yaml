@@ -37,4 +37,9 @@ data:
             fastcgi_buffer_size 16k;
             fastcgi_buffers 4 16k;
         }
+
+{{ if .Values.ingress.additionalServerBlockConfig }}
+{{ .Values.ingress.additionalServerBlockConfig | indent 8 }}
+{{ end }}
+
     }
