@@ -535,6 +535,10 @@ ingress:
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
 ##
 persistence:
+  ## Custom subPath
+  ## If the storage provider uses ext4 filesystems, a subPath is necessary to avoid
+  ## permissions issues with the `lost+found` folder at the root of the volume
+  # subPath: ""
   public:
     enabled: true
     ## Invoice Ninja data Persistent Volume Storage Class

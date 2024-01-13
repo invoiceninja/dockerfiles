@@ -222,6 +222,7 @@ The following table shows the configuration options for the Invoice Ninja helm c
 
 | Parameter                           | Description                                         | Default           |
 | ----------------------------------- | --------------------------------------------------- | ----------------- |
+| `persistence.subPath`               | PVC sub path (applies to `public` and `storage`)    | `nil`             |
 | `persistence.public.enabled`        | Enable persistence using PVC                        | `true`            |
 | `persistence.public.existingClaim`  | Enable persistence using an existing PVC            | `nil`             |
 | `persistence.public.storageClass`   | PVC Storage Class                                   | `nil`             |
