@@ -3,7 +3,7 @@ ARG BAK_STORAGE_PATH=/var/www/app/docker-backup-storage/
 ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 
 # Get Invoice Ninja and install nodejs packages
-FROM --platform=$BUILDPLATFORM node:lts-alpine as build
+FROM --platform=$BUILDPLATFORM node:20-alpine as build
 
 # Download Invoice Ninja
 ARG INVOICENINJA_VERSION
