@@ -3,7 +3,7 @@ ARG BAK_STORAGE_PATH=/var/www/app/docker-backup-storage/
 ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 
 # Get Invoice Ninja and install nodejs packages
-FROM --platform=$BUILDPLATFORM node:lts-alpine as build
+FROM --platform=$BUILDPLATFORM node:lts-alpine as nodebuild
 
 # Download Invoice Ninja
 ARG INVOICENINJA_VERSION
@@ -30,9 +30,7 @@ RUN cp -r dist/tinymce_6.4.2/* /var/www/app/public/tinymce_6.4.2/
 # Download and extract the latest react application
 # 
 # Prepare php image
-FROM php:${PHP_VERSION}-fpm-alpine as prod
-
-COPY --from=build / /
+FROM php:${PHP_VERSION}-fpm-alpine as phpbuild
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
@@ -90,7 +88,7 @@ ARG BAK_PUBLIC_PATH
 ENV INVOICENINJA_VERSION $INVOICENINJA_VERSION
 ENV BAK_STORAGE_PATH $BAK_STORAGE_PATH
 ENV BAK_PUBLIC_PATH $BAK_PUBLIC_PATH
-COPY --from=build --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app /var/www/app
+COPY --from=nodebuild --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app /var/www/app
 
 USER $UID
 WORKDIR /var/www/app
@@ -98,17 +96,26 @@ WORKDIR /var/www/app
 # Do not remove this ENV
 ENV IS_DOCKER true
 RUN /usr/local/bin/composer install --no-dev --no-scripts --no-interaction 
-RUN /usr/local/bin/composer dump-autoload --optimize --no-dev --classmap-authoritative --no-scripts --no-interaction 
+RUN /usr/local/bin/composer dump-autoload --optimize --no-dev --classmap-authoritative --no-scripts --no-interaction
 
-WORKDIR /var/www/app/
+FROM --platform=$BUILDPLATFORM nodebuild AS dependencybuild
+
+WORKDIR /var/www/app
+
+COPY --from=phpbuild /var/www/app/vendor /var/www/app/vendor
 
 # Install node packages
 ARG BAK_STORAGE_PATH
 ARG BAK_PUBLIC_PATH
-RUN npm install 
-RUN npm run production 
-RUN mv /var/www/app/storage $BAK_STORAGE_PATH 
-RUN mv /var/www/app/public $BAK_PUBLIC_PATH  
+RUN --mount=target=/var/www/app/node_modules,type=cache \
+	npm install \
+	&& npm run production \
+	&& mv /var/www/app/storage $BAK_STORAGE_PATH \
+	&& mv /var/www/app/public $BAK_PUBLIC_PATH
+
+FROM phpbuild as prod
+
+COPY --from=dependencybuild --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app /var/www/app
 
 # Override the environment settings from projects .env file
 ENV APP_ENV production
