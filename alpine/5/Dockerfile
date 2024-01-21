@@ -115,16 +115,6 @@ FROM phpbuild as prod
 
 COPY --from=dependencybuild --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app /var/www/app
 
-WORKDIR /var/www/app/
-
-# Install node packages
-ARG BAK_STORAGE_PATH
-ARG BAK_PUBLIC_PATH
-RUN npm install 
-RUN npm run production 
-RUN mv /var/www/app/storage $BAK_STORAGE_PATH 
-RUN mv /var/www/app/public $BAK_PUBLIC_PATH  
-
 # Override the environment settings from projects .env file
 ENV APP_ENV production
 ENV LOG errorlog
