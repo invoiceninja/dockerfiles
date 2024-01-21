@@ -111,7 +111,7 @@ RUN --mount=target=/var/www/app/node_modules,type=cache \
 	&& mv /var/www/app/storage $BAK_STORAGE_PATH \
 	&& mv /var/www/app/public $BAK_PUBLIC_PATH
 
-FROM phpbuild as prodbuild
+FROM phpbuild as prod
 
 COPY --from=dependencybuild --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app /var/www/app
 
