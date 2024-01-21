@@ -100,6 +100,8 @@ RUN /usr/local/bin/composer dump-autoload --optimize --no-dev --classmap-authori
 
 FROM --platform=$BUILDPLATFORM nodebuild AS dependencybuild
 
+WORKDIR /var/www/app
+
 COPY --from=phpbuild /var/www/app/vendor /var/www/app/vendor
 
 # Install node packages
