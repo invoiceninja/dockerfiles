@@ -29,19 +29,10 @@ RUN cp -r dist/tinymce_6.4.2/* /var/www/app/public/tinymce_6.4.2/
 
 # Download and extract the latest react application
 # 
-WORKDIR /var/www/app/
-
-# Install node packages
-ARG BAK_STORAGE_PATH
-ARG BAK_PUBLIC_PATH
-RUN --mount=target=/var/www/app/node_modules,type=cache \
-    npm install \
-    && npm run production \
-    && mv /var/www/app/storage $BAK_STORAGE_PATH \
-    && mv /var/www/app/public $BAK_PUBLIC_PATH  
-
 # Prepare php image
 FROM php:${PHP_VERSION}-fpm-alpine as prod
+
+COPY --from=build / /
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
@@ -108,6 +99,16 @@ WORKDIR /var/www/app
 ENV IS_DOCKER true
 RUN /usr/local/bin/composer install --no-dev --no-scripts --no-interaction 
 RUN /usr/local/bin/composer dump-autoload --optimize --no-dev --classmap-authoritative --no-scripts --no-interaction 
+
+WORKDIR /var/www/app/
+
+# Install node packages
+ARG BAK_STORAGE_PATH
+ARG BAK_PUBLIC_PATH
+RUN npm install 
+RUN npm run production 
+RUN mv /var/www/app/storage $BAK_STORAGE_PATH 
+RUN mv /var/www/app/public $BAK_PUBLIC_PATH  
 
 # Override the environment settings from projects .env file
 ENV APP_ENV production
