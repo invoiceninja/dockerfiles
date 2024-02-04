@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   server:
-    image: nginx
+    image: nginx:1.25
     restart: always
     env_file: env
     volumes:
