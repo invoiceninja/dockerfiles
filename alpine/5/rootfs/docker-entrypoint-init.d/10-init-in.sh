@@ -12,4 +12,3 @@ if [[ ! -z "${IN_PASSWORD}" ]]; then
 fi
 
 php artisan ninja:create-account $email $password
-php artisan ninja:react

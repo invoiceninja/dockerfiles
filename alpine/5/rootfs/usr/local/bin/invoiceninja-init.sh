@@ -28,7 +28,6 @@ docker_process_init_files() {
 php artisan config:cache
 php artisan optimize
 php artisan package:discover
-php artisan ninja:react
 
 # Check if DB works, if not crash the app.
 DB_READY=$(php artisan tinker --execute='echo app()->call("App\Utils\SystemHealth@dbCheck")["success"];')

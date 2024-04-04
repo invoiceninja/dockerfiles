@@ -7,7 +7,6 @@ FROM --platform=$BUILDPLATFORM node:lts-alpine as nodebuild
 
 # Download Invoice Ninja
 ARG INVOICENINJA_VERSION
-# ADD https://github.com/invoiceninja/invoiceninja/tarball/v$INVOICENINJA_VERSION /tmp/ninja.tar.gz
 ADD https://github.com/invoiceninja/invoiceninja/releases/download/v$INVOICENINJA_VERSION/react-invoiceninja.tar /tmp/ninja.tar
 
 RUN set -eux; apk add curl unzip
@@ -17,37 +16,11 @@ RUN mkdir -p /var/www/app \
     && tar -xvf /tmp/ninja.tar -C /var/www/app/ \
     && mkdir -p /var/www/app/public/logo /var/www/app/storage
     
+WORKDIR /var/www/app
+
 RUN rm -f /var/www/app/public/main.*
 RUN rm -f /var/www/app/public/flutter*
 
-# Download and extract the latest react application
-# RUN curl -LGO $(curl https://api.github.com/repos/invoiceninja/ui/releases/latest | grep "browser_download_url" | awk '{ print $2 }' | sed 's/,$//' | sed 's/"//g');
-# RUN cp invoiceninja-react.zip /tmp/invoiceninja-react.zip
-# RUN unzip /tmp/invoiceninja-react.zip 
-# RUN mkdir  /var/www/app/public/react/v$INVOICENINJA_VERSION/
-# RUN cp -r dist/react/* /var/www/app/public/react/v$INVOICENINJA_VERSION/
-# RUN cp -r dist/react/* /var/www/app/public/react/
-          
-# RUN mkdir -p /var/www/app/public/tinymce_6.4.2/tinymce/js/
-# RUN cp -r dist/tinymce_6.4.2/* /var/www/app/public/tinymce_6.4.2/
-
-
-# WORKDIR /var/www/app
-
-# RUN git clone https://github.com/invoiceninja/ui.git
-
-# WORKDIR /var/www/app/ui
-
-# RUN git checkout develop
-# RUN npm i
-# RUN npm run build
-# RUN cp -r dist/* /var/www/app/public/
-
-
-# WORKDIR /var/www/app
-
-# Download and extract the latest react application
-# 
 # Prepare php image
 FROM php:${PHP_VERSION}-fpm-alpine as phpbuild
 
@@ -99,6 +72,8 @@ RUN addgroup --gid=$UID -S "$INVOICENINJA_USER" \
     --ingroup "$INVOICENINJA_USER" \
     "$INVOICENINJA_USER"
 
+WORKDIR /var/www/app
+
 # Set up app
 ARG INVOICENINJA_VERSION
 ARG BAK_STORAGE_PATH
@@ -110,33 +85,28 @@ COPY --from=nodebuild --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app
 
 RUN rm -f /var/www/app/public/main.*
 RUN rm -f /var/www/app/public/flutter*
+RUN rm -rf /var/www/app/ui
 
 USER $UID
 WORKDIR /var/www/app
 
 # Do not remove this ENV
 ENV IS_DOCKER true
-# RUN /usr/local/bin/composer install --no-dev --no-scripts --no-interaction 
-# RUN /usr/local/bin/composer dump-autoload --optimize --no-dev --classmap-authoritative --no-scripts --no-interaction
+FROM --platform=$BUILDPLATFORM nodebuild AS dependencybuild
 
-# FROM --platform=$BUILDPLATFORM nodebuild AS dependencybuild
-
-# WORKDIR /var/www/app
-
-# COPY --from=phpbuild /var/www/app/vendor /var/www/app/vendor
+WORKDIR /var/www/app
+COPY --from=phpbuild /var/www/app /var/www/app
 
 # # Install node packages
-# ARG BAK_STORAGE_PATH
-# ARG BAK_PUBLIC_PATH
-# RUN --mount=target=/var/www/app/node_modules,type=cache \
-# 	npm install \
-# 	&& npm run production \
-# 	&& mv /var/www/app/storage $BAK_STORAGE_PATH \
-# 	&& mv /var/www/app/public $BAK_PUBLIC_PATH
+ARG BAK_STORAGE_PATH
+ARG BAK_PUBLIC_PATH
+
+RUN mv /var/www/app/storage $BAK_STORAGE_PATH \
+    && mv /var/www/app/public $BAK_PUBLIC_PATH
 
 FROM phpbuild as prod
 
-# COPY --from=dependencybuild --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app /var/www/app
+COPY --from=dependencybuild --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app /var/www/app
 
 # Override the environment settings from projects .env file
 ENV APP_ENV production
