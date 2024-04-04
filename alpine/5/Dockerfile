@@ -83,8 +83,6 @@ ENV BAK_STORAGE_PATH $BAK_STORAGE_PATH
 ENV BAK_PUBLIC_PATH $BAK_PUBLIC_PATH
 COPY --from=nodebuild --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app /var/www/app
 
-RUN rm -f /var/www/app/public/main.*
-RUN rm -f /var/www/app/public/flutter*
 RUN rm -rf /var/www/app/ui
 
 USER $UID
