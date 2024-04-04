@@ -17,6 +17,8 @@ RUN mkdir -p /var/www/app \
     && tar -xvf /tmp/ninja.tar -C /var/www/app/ \
     && mkdir -p /var/www/app/public/logo /var/www/app/storage
     
+WORKDIR /var/www/app
+
 RUN rm -f /var/www/app/public/main.*
 RUN rm -f /var/www/app/public/flutter*
 
@@ -99,6 +101,8 @@ RUN addgroup --gid=$UID -S "$INVOICENINJA_USER" \
     --ingroup "$INVOICENINJA_USER" \
     "$INVOICENINJA_USER"
 
+WORKDIR /var/www/app
+
 # Set up app
 ARG INVOICENINJA_VERSION
 ARG BAK_STORAGE_PATH
@@ -110,6 +114,7 @@ COPY --from=nodebuild --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app
 
 RUN rm -f /var/www/app/public/main.*
 RUN rm -f /var/www/app/public/flutter*
+RUN rm -rf /var/www/app/ui
 
 USER $UID
 WORKDIR /var/www/app
@@ -119,24 +124,29 @@ ENV IS_DOCKER true
 # RUN /usr/local/bin/composer install --no-dev --no-scripts --no-interaction 
 # RUN /usr/local/bin/composer dump-autoload --optimize --no-dev --classmap-authoritative --no-scripts --no-interaction
 
-# FROM --platform=$BUILDPLATFORM nodebuild AS dependencybuild
+FROM --platform=$BUILDPLATFORM nodebuild AS dependencybuild
 
-# WORKDIR /var/www/app
+WORKDIR /var/www/app
 
 # COPY --from=phpbuild /var/www/app/vendor /var/www/app/vendor
 
+COPY --from=phpbuild /var/www/app /var/www/app
+
 # # Install node packages
-# ARG BAK_STORAGE_PATH
-# ARG BAK_PUBLIC_PATH
+ARG BAK_STORAGE_PATH
+ARG BAK_PUBLIC_PATH
 # RUN --mount=target=/var/www/app/node_modules,type=cache \
 # 	npm install \
 # 	&& npm run production \
 # 	&& mv /var/www/app/storage $BAK_STORAGE_PATH \
 # 	&& mv /var/www/app/public $BAK_PUBLIC_PATH
 
+RUN mv /var/www/app/storage $BAK_STORAGE_PATH \
+    && mv /var/www/app/public $BAK_PUBLIC_PATH
+
 FROM phpbuild as prod
 
-# COPY --from=dependencybuild --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app /var/www/app
+COPY --from=dependencybuild --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app /var/www/app
 
 # Override the environment settings from projects .env file
 ENV APP_ENV production
