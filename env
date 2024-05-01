@@ -40,6 +40,10 @@ MYSQL_USER=ninja
 MYSQL_PASSWORD=ninja
 MYSQL_DATABASE=ninja
 
+# GoCardless/Nordigen API key for banking integration
+NORDIGEN_SECRET_ID=
+NORDIGEN_SECRET_KEY=
+
 # V4 env vars
 # DB_STRICT=false
 # APP_CIPHER=AES-256-CBC
