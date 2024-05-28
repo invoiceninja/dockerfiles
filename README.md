@@ -60,6 +60,7 @@ From the terminal run
 ```bash
 chmod 755 docker/app/public
 sudo chown -R 1500:1500 docker/app
+mkdir -p docker/app/storage/app docker/app/storage/logs docker/app/storage/framework docker/app/storage/framework/sessions docker/app/storage/framework/views docker/app/storage/framework/cache
 ```
 
 ### Note for people running the container locally on their PC ###
