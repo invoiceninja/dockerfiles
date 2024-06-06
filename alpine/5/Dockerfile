@@ -38,13 +38,16 @@ RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
 # Install chromium
+# `ttf-dejavu` is Chinese supported fonts
 RUN set -eux; \
     apk add --no-cache \
     font-isas-misc \
     supervisor \
     mysql-client \
     chromium \
-    ttf-freefont
+    tzdata \
+    ttf-freefont \
+    ttf-dejavu
 
 RUN install-php-extensions \
     bcmath \
