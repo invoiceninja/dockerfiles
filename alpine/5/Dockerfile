@@ -45,7 +45,6 @@ RUN set -eux; \
     supervisor \
     mysql-client \
     chromium \
-    tzdata \
     ttf-freefont \
     ttf-dejavu
 
