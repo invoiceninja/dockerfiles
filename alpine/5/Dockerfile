@@ -18,10 +18,6 @@ RUN mkdir -p /var/www/app \
     
 WORKDIR /var/www/app
 
-RUN echo ls -l
-
-RUN cp /var/www/app/ui/dist/index.html /var/www/app/resources/views/react/index.blade.php
-
 # Prepare php image
 FROM php:${PHP_VERSION}-fpm-alpine as phpbuild
 
