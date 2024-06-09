@@ -7,9 +7,15 @@ FROM --platform=$BUILDPLATFORM node:lts-alpine as nodebuild
 
 # Download Invoice Ninja
 ARG INVOICENINJA_VERSION
-ADD https://github.com/invoiceninja/invoiceninja/releases/download/v$INVOICENINJA_VERSION/react-invoiceninja.tar /tmp/ninja.tar
+ARG REPOSITORY=invoiceninja/invoiceninja
+ARG FILENAME=react-invoiceninja.tar
 
-RUN set -eux; apk add curl unzip
+RUN set -eux; apk add curl unzip grep
+
+# Fetch the latest release information
+RUN release_info=$(curl -s "https://api.github.com/repos/${REPOSITORY}/releases/latest") && \
+    download_url=$(echo "$release_info" | grep -o '"browser_download_url": "[^"]*'${FILENAME}'"' | cut -d '"' -f 4) && \
+    curl -LJO "$download_url" -o "/tmp/${FILENAME}"
 
 # Extract Invoice Ninja
 RUN mkdir -p /var/www/app \
@@ -34,15 +40,13 @@ RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
 # Install chromium
-# `ttf-dejavu` is Chinese supported fonts
 RUN set -eux; \
     apk add --no-cache \
     font-isas-misc \
     supervisor \
     mysql-client \
     chromium \
-    ttf-freefont \
-    ttf-dejavu
+    ttf-freefont
 
 RUN install-php-extensions \
     bcmath \
@@ -71,7 +75,7 @@ RUN addgroup --gid=$UID -S "$INVOICENINJA_USER" \
     --ingroup "$INVOICENINJA_USER" \
     "$INVOICENINJA_USER"
 
-# WORKDIR /var/www/app
+WORKDIR /var/www/app
 
 # Set up app
 ARG INVOICENINJA_VERSION
