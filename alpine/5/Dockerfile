@@ -71,7 +71,7 @@ RUN addgroup --gid=$UID -S "$INVOICENINJA_USER" \
     --ingroup "$INVOICENINJA_USER" \
     "$INVOICENINJA_USER"
 
-WORKDIR /var/www/app
+# WORKDIR /var/www/app
 
 # Set up app
 ARG INVOICENINJA_VERSION
