@@ -46,7 +46,8 @@ RUN set -eux; \
     supervisor \
     mysql-client \
     chromium \
-    ttf-freefont
+    ttf-freefont \
+    ttf-dejavu
 
 RUN install-php-extensions \
     bcmath \
