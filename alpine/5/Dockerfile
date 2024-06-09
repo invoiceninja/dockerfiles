@@ -12,9 +12,9 @@ ARG FILENAME=react-invoiceninja.tar
 
 RUN set -eux; apk add curl unzip grep
 
-# Fetch the latest release information
-RUN download_url=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | grep -o '"browser_download_url": "[^"]*react-invoiceninja.tar"' | cut -d '"' -f 4) && \
-    curl -LJO "$download_url" -o "/tmp/ninja.tar"
+RUN DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | grep -o '"browser_download_url": "[^"]*react-invoiceninja.tar"' | cut -d '"' -f 4) && \
+    curl -LJO "$DOWNLOAD_URL" && \
+    mv react-invoiceninja.tar /tmp/ninja.tar
 
 # Extract Invoice Ninja
 RUN mkdir -p /var/www/app \
