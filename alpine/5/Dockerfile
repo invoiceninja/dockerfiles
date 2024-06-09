@@ -15,7 +15,7 @@ RUN set -eux; apk add curl unzip grep
 # Fetch the latest release information
 RUN release_info=$(curl -s "https://api.github.com/repos/${REPOSITORY}/releases/latest") && \
     download_url=$(echo "$release_info" | grep -o '"browser_download_url": "[^"]*'${FILENAME}'"' | cut -d '"' -f 4) && \
-    curl -LJO "$download_url" -o "/tmp/${FILENAME}"
+    curl -LJO "$download_url" -o "/tmp/ninja.tar"
 
 # Extract Invoice Ninja
 RUN mkdir -p /var/www/app \
