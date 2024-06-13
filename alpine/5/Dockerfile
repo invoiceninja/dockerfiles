@@ -10,7 +10,7 @@ ARG INVOICENINJA_VERSION
 ARG REPOSITORY=invoiceninja/invoiceninja
 ARG FILENAME=react-invoiceninja.tar
 
-RUN set -eux; apk add curl unzip grep
+RUN set -eux; apk add curl unzip grep vim nano
 
 RUN DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | grep -o '"browser_download_url": "[^"]*react-invoiceninja.tar"' | cut -d '"' -f 4) && \
     curl -LJO "$DOWNLOAD_URL" && \
@@ -41,6 +41,7 @@ COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr
 
 # `ttf-dejavu` is Chinese supported fonts
 # Install chromium
+# `ttf-dejavu` is Chinese supported fonts
 RUN set -eux; \
     apk add --no-cache \
     font-isas-misc \
@@ -135,5 +136,19 @@ ENV SNAPPDF_EXECUTABLE_PATH /usr/bin/chromium-browser
 
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["supervisord"]
+
+
+# Chinese 
+# setting Locale
+RUN echo "zh_CN.UTF-8 UTF-8" >> /etc/locale.gen && \
+    /usr/glibc-compat/bin/localedef -i zh_CN -f UTF-8 zh_CN.UTF-8
+
+# setting Env Var
+RUN echo 'export LANG=zh_CN.UTF-8' >> /etc/profile && \
+    echo 'export LANGUAGE=zh_CN:zh' >> /etc/profile && \
+    echo 'export LC_ALL=zh_CN.UTF-8' >> /etc/profile
+
+# make configuration apply when container starts
+CMD ["/bin/sh"]
 
 
