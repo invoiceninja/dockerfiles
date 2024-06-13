@@ -5,16 +5,15 @@ ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 # Get Invoice Ninja and install nodejs packages
 FROM --platform=$BUILDPLATFORM node:lts-alpine as nodebuild
 
+
+
+
+
 # Download Invoice Ninja
 ARG INVOICENINJA_VERSION
-ARG REPOSITORY=invoiceninja/invoiceninja
-ARG FILENAME=react-invoiceninja.tar
+ADD https://github.com/invoiceninja/invoiceninja/releases/download/v$INVOICENINJA_VERSION/react-invoiceninja.tar /tmp/ninja.tar
 
-RUN set -eux; apk add curl unzip grep
-
-RUN DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | grep -o '"browser_download_url": "[^"]*react-invoiceninja.tar"' | cut -d '"' -f 4) && \
-    curl -LJO "$DOWNLOAD_URL" && \
-    mv react-invoiceninja.tar /tmp/ninja.tar
+RUN set -eux; apk add curl unzip
 
 # Extract Invoice Ninja
 RUN mkdir -p /var/www/app \
@@ -22,6 +21,10 @@ RUN mkdir -p /var/www/app \
     && mkdir -p /var/www/app/public/logo /var/www/app/storage
     
 WORKDIR /var/www/app
+
+RUN echo ls -l
+
+RUN cp /var/www/app/ui/dist/index.html /var/www/app/resources/views/react/index.blade.php
 
 # Prepare php image
 FROM php:${PHP_VERSION}-fpm-alpine as phpbuild
@@ -39,13 +42,17 @@ RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
 # Install chromium
+# `ttf-dejavu` is Chinese supported fonts
 RUN set -eux; \
     apk add --no-cache \
     font-isas-misc \
     supervisor \
     mysql-client \
     chromium \
+    tzdata \
     ttf-freefont \
+    font-noto-cjk \
+    glibc-i18n \
     ttf-dejavu
 
 RUN install-php-extensions \
@@ -116,3 +123,20 @@ ENV SNAPPDF_EXECUTABLE_PATH /usr/bin/chromium-browser
 
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["supervisord"]
+
+
+# Chinese fonts support installation
+# setting Locale
+RUN echo "zh_CN.UTF-8 UTF-8" >> /etc/locale.gen && \
+    /usr/glibc-compat/bin/localedef -i zh_CN -f UTF-8 zh_CN.UTF-8
+
+# setting Env Var
+RUN echo 'export LANG=zh_CN.UTF-8' >> /etc/profile && \
+    echo 'export LANGUAGE=zh_CN:zh' >> /etc/profile && \
+    echo 'export LC_ALL=zh_CN.UTF-8' >> /etc/profile
+
+# Make sure to apply the configuration when the container starts.
+CMD ["/bin/sh"]
+
+
+
