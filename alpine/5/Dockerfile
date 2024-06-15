@@ -128,14 +128,12 @@ RUN echo 'export LANG=zh_CN.UTF-8' >> /etc/profile && \
     echo 'export LC_ALL=zh_CN.UTF-8' >> /etc/profile
 
 # Make sure to apply the configuration when the container starts.
-CMD ["/bin/sh"]
 
 
 ENV LOG errorlog
 ENV SNAPPDF_EXECUTABLE_PATH /usr/bin/chromium-browser
 
 ENTRYPOINT ["docker-entrypoint"]
-CMD ["supervisord"]
 
 
 # Chinese 
