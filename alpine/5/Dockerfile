@@ -14,7 +14,7 @@ ARG FILENAME=react-invoiceninja.tar
 #RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories  && \
 #apk update  && apk upgrade
 
-RUN set -eux; apk add curl unzip grep nano
+RUN set -eux; apk add curl unzip grep nano wget
 
 RUN DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | grep -o '"browser_download_url": "[^"]*react-invoiceninja.tar"' | cut -d '"' -f 4) && \
     curl -LJO "$DOWNLOAD_URL" && \
