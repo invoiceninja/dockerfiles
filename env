@@ -7,6 +7,11 @@ PHANTOMJS_PDF_GENERATION=false
 PDF_GENERATOR=snappdf
 TRUSTED_PROXIES='*'
 
+# uncomment below if you want Chinese Language Env
+#RUN echo "export LANG=zh_CN.UTF-8" >> /etc/profile \
+#&& echo "export LANGUAGE=zh_CN.UTF-8" >> /etc/profile \
+#&& echo "export LC_ALL=zh_CN.UTF-8" >> /etc/profile
+
 
 QUEUE_CONNECTION=database
 
