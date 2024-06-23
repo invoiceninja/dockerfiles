@@ -60,9 +60,9 @@ RUN set -eux; \
 RUN mkfontscale && mkfontdir && fc-cache -fv
 
 # Setup Chinese Language Env
-RUN echo "export LANG=zh_CN.UTF-8" >> /etc/profile \
-&& echo "export LANGUAGE=zh_CN.UTF-8" >> /etc/profile \
-&& echo "export LC_ALL=zh_CN.UTF-8" >> /etc/profile
+#RUN echo "export LANG=zh_CN.UTF-8" >> /etc/profile \
+#&& echo "export LANGUAGE=zh_CN.UTF-8" >> /etc/profile \
+#&& echo "export LC_ALL=zh_CN.UTF-8" >> /etc/profile
 
 # Ensure that it remains effective after the restart
 CMD ["/bin/sh"]
