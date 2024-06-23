@@ -10,7 +10,11 @@ ARG INVOICENINJA_VERSION
 ARG REPOSITORY=invoiceninja/invoiceninja
 ARG FILENAME=react-invoiceninja.tar
 
-RUN set -eux; apk add curl unzip grep
+# optional for repo source changed, You can enable it if you are inside of China
+#RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories  && \
+#apk update  && apk upgrade
+
+RUN set -eux; apk add curl unzip grep nano
 
 RUN DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | grep -o '"browser_download_url": "[^"]*react-invoiceninja.tar"' | cut -d '"' -f 4) && \
     curl -LJO "$DOWNLOAD_URL" && \
@@ -38,7 +42,6 @@ RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 # https://hub.docker.com/r/mlocati/php-extension-installer/tags
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-# Install chromium
 RUN set -eux; \
     apk add --no-cache \
     font-isas-misc \
@@ -46,7 +49,24 @@ RUN set -eux; \
     mysql-client \
     chromium \
     ttf-freefont \
-    ttf-dejavu
+    font-noto-cjk \ 
+    ttf-dejavu \
+    bash \
+    && apk add --no-cache --virtual .build-deps \
+    wget \
+    && rm -rf /var/cache/apk/*
+
+# Make sure Chinese fonts installed 
+RUN mkfontscale && mkfontdir && fc-cache -fv
+
+# Setup Chinese Language Env
+RUN echo "export LANG=zh_CN.UTF-8" >> /etc/profile \
+&& echo "export LANGUAGE=zh_CN.UTF-8" >> /etc/profile \
+&& echo "export LC_ALL=zh_CN.UTF-8" >> /etc/profile
+
+# Ensure that it remains effective after the restart
+CMD ["/bin/sh"]
+
 
 RUN install-php-extensions \
     bcmath \
