@@ -17,12 +17,6 @@ DB_DATABASE=ninja
 DB_USERNAME=ninja
 DB_PASSWORD=ninja
 
-# DB connection example, if you want setup customizable database/name, enable/uncomment this and must comment above.
-#DB_HOST=db
-#DB_PORT=3306
-#DB_DATABASE=kingofworld
-#DB_USERNAME=kingofworld
-#DB_PASSWORD=A1B2C3D4E5
 
 
 # Create initial user
@@ -48,11 +42,7 @@ MYSQL_USER=ninja
 MYSQL_PASSWORD=ninja
 MYSQL_DATABASE=ninja
 
-# MySQL - if you want setup customizable database/name, enable/uncomment this and must comment above.
-#MYSQL_ROOT_PASSWORD=ninjaAdm1nPassword
-#DB_DATABASE=kingofworld
-#DB_USERNAME=kingofworld
-#DB_PASSWORD=A1B2C3D4E5
+
 
 
 # GoCardless/Nordigen API key for banking integration
