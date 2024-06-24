@@ -10,7 +10,11 @@ ARG INVOICENINJA_VERSION
 ARG REPOSITORY=invoiceninja/invoiceninja
 ARG FILENAME=invoiceninja.tar
 
-RUN set -eux; apk add curl unzip grep
+# Optional for repo source changed, You can enable it if you are inside of China
+#RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories  && \
+#apk update  && apk upgrade
+
+RUN set -eux; apk add curl unzip grep nano wget
 
 RUN DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | cut -d '"' -f 4) && \
     curl -LJO "$DOWNLOAD_URL" && \
@@ -44,9 +48,20 @@ RUN set -eux; \
     font-isas-misc \
     supervisor \
     mysql-client \
-    chromium \
     ttf-freefont \
-    ttf-dejavu
+    font-noto-cjk \ 
+    ttf-dejavu \
+    bash \
+    && apk add --no-cache --virtual .build-deps \
+    wget \
+    && rm -rf /var/cache/apk/*
+
+# Make sure Chinese fonts installed 
+RUN mkfontscale && mkfontdir && fc-cache -fv
+
+# Ensure applied after restart
+CMD ["/bin/sh"]
+
 
 RUN install-php-extensions \
     bcmath \
