@@ -73,7 +73,7 @@ CMD ["/bin/sh"]
 
 #安装localedef必要的包
 RUN set -eux; \
-inutils \
+binutils \
 build-base \
 gcc \
 musl-dev \
