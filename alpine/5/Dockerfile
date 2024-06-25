@@ -10,13 +10,13 @@ ARG INVOICENINJA_VERSION
 ARG REPOSITORY=invoiceninja/invoiceninja
 ARG FILENAME=invoiceninja.tar
 
-
 # Optional for repo source changed, You can enable it if you are inside of China
 #RUN echo -e 'https://mirrors.aliyun.com/alpine/v3.20/main/\nhttps://mirrors.aliyun.com/alpine/v3.20/community/' > /etc/apk/repositories \
 # && apk update \
 # && apk upgrade 
 
-RUN set -eux; apk add curl unzip grep nano wget tzdata
+
+RUN set -eux; apk add curl unzip grep nano wget tzdata ca-certificates
 
 RUN DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | cut -d '"' -f 4) && \
     curl -LJO "$DOWNLOAD_URL" && \
@@ -44,6 +44,7 @@ RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 # https://hub.docker.com/r/mlocati/php-extension-installer/tags
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
+# Install chromium
 RUN set -eux; \
     apk add --no-cache \
     font-isas-misc \
@@ -61,9 +62,50 @@ RUN set -eux; \
 # Make sure Chinese fonts installed 
 RUN mkfontscale && mkfontdir && fc-cache -fv
 
-# Mark sure applied after restart
+# Ensure applied after restart
 CMD ["/bin/sh"]
 
+# Enable below if needs, waiting transfer to env so let user choice which timezone to go.
+#RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+#&& echo "Asia/Shanghai" > /etc/timezon
+
+
+
+#Install necessary packages for localedef
+RUN set -eux; \
+apk add build-base \
+binutils \
+build-base \
+gcc \
+musl-dev \
+libc-dev \
+gettext
+
+
+
+# Install Glibc for dispaly Chinese and/or other languages better
+# Step 1: download keys
+RUN curl -L -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
+# Step 2: download alpine-pkg-glibc, need imporve late to catch most latest glibc version
+&& curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-2.29-r0.apk \
+&& curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-bin-2.29-r0.apk \
+&& curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-dev-2.29-r0.apk \
+&& curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-i18n-2.29-r0.apk 
+
+# Step 3: Install alpine-pkg-glibc forcely 
+RUN apk add --force-overwrite glibc-2.29-r0.apk \
+&& apk add --force-overwrite glibc-bin-2.29-r0.apk \
+&& apk add --force-overwrite glibc-dev-2.29-r0.apk \
+&& apk add --force-overwrite glibc-i18n-2.29-r0.apk
+
+# Step 4: Adding /usr/glibc-compat/bin to PATH
+RUN export PATH=/usr/glibc-compat/bin:$PATH
+
+# Step 5：localedef to generating localization and setup Language environment to UTF-8 
+
+RUN apk --no-cache add glibc-i18n && \
+    /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8 && \
+    echo "export LANG=en_US.UTF-8" > /etc/profile.d/locale.sh
 
 RUN install-php-extensions \
     bcmath \
