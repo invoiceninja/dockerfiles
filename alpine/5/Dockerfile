@@ -48,6 +48,7 @@ RUN set -eux; \
     font-isas-misc \
     supervisor \
     mysql-client \
+    chromium \
     ttf-freefont \
     font-noto-cjk \ 
     ttf-dejavu \
