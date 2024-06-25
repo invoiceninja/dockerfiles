@@ -87,20 +87,20 @@ gettext
 # Step 1: download keys
 RUN curl -L -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
 # Step 2: download alpine-pkg-glibc, need imporve late to catch most latest glibc version
-&& curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-2.29-r0.apk \
-&& curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-bin-2.29-r0.apk \
-&& curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-dev-2.29-r0.apk \
-&& curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-i18n-2.29-r0.apk 
+&& curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r1/glibc-2.35-r1.apk \
+&& curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r1/glibc-bin-2.35-r1.apk \
+&& curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r1/glibc-dev-2.35-r1.apk \
+&& curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r1/glibc-i18n-2.35-r1.apk 
 
 # Step 3: Install alpine-pkg-glibc forcely 
-RUN apk add --force-overwrite glibc-2.29-r0.apk \
-&& rm glibc-2.29-r0.apk                             \
-&& apk add --force-overwrite glibc-bin-2.29-r0.apk \
-&& rm glibc-bin-2.29-r0.apk                         \
-&& apk add --force-overwrite glibc-dev-2.29-r0.apk \
-&& rm glibc-dev-2.29-r0.apk                          \
-&& apk add --force-overwrite glibc-i18n-2.29-r0.apk \
-&& rm glibc-i18n-2.29-r0.apk
+RUN apk add --force-overwrite glibc-2.35-r1.apk \
+&& rm glibc-2.35-r1.apk                             \
+&& apk add --force-overwrite glibc-bin-2.35-r1.apk \
+&& rm glibc-bin-2.35-r1.apk                         \
+&& apk add --force-overwrite glibc-dev-2.35-r1.apk \
+&& rm glibc-dev-2.35-r1.apk                          \
+&& apk add --force-overwrite glibc-i18n-2.35-r1.apk \
+&& rm glibc-i18n-2.35-r1.apk
 
 
 # Step 4: Adding /usr/glibc-compat/bin to PATH
