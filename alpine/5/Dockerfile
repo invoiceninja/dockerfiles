@@ -10,7 +10,13 @@ ARG INVOICENINJA_VERSION
 ARG REPOSITORY=invoiceninja/invoiceninja
 ARG FILENAME=invoiceninja.tar
 
-RUN set -eux; apk add curl unzip grep
+
+# Optional for repo source changed, You can enable it if you are inside of China
+#RUN echo -e 'https://mirrors.aliyun.com/alpine/v3.20/main/\nhttps://mirrors.aliyun.com/alpine/v3.20/community/' > /etc/apk/repositories \
+# && apk update \
+# && apk upgrade 
+
+RUN set -eux; apk add curl unzip grep nano wget tzdata
 
 RUN DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | cut -d '"' -f 4) && \
     curl -LJO "$DOWNLOAD_URL" && \
@@ -38,7 +44,6 @@ RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 # https://hub.docker.com/r/mlocati/php-extension-installer/tags
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-# Install chromium
 RUN set -eux; \
     apk add --no-cache \
     font-isas-misc \
@@ -46,7 +51,19 @@ RUN set -eux; \
     mysql-client \
     chromium \
     ttf-freefont \
-    ttf-dejavu
+    font-noto-cjk \ 
+    ttf-dejavu \
+    bash \
+    && apk add --no-cache --virtual .build-deps \
+    wget \
+    && rm -rf /var/cache/apk/*
+
+# Make sure Chinese fonts installed 
+RUN mkfontscale && mkfontdir && fc-cache -fv
+
+# Mark sure applied after restart
+CMD ["/bin/sh"]
+
 
 RUN install-php-extensions \
     bcmath \
