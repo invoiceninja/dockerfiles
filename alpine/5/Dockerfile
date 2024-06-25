@@ -71,7 +71,7 @@ CMD ["/bin/sh"]
 
 
 
-#安装localedef必要的包
+#Install necessary packages for localedef
 RUN set -eux; \
 apk add build-base \
 binutils \
@@ -83,25 +83,26 @@ gettext
 
 
 
-#安装Glibc以便更好支持中文显示
-# Step 1: 下载证书文件到指定文件夹
+# Install Glibc for dispaly Chinese and/or other languages better
+# Step 1: download keys
 RUN curl -L -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
-# Step 2: 下载alpine-pkg-glibc
+# Step 2: download alpine-pkg-glibc, need imporve late to catch most latest glibc version
 && curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-2.29-r0.apk \
 && curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-bin-2.29-r0.apk \
 && curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-dev-2.29-r0.apk \
 && curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-i18n-2.29-r0.apk 
 
-# Step 3:安装alpine-pkg-glibc
+# Step 3: Install alpine-pkg-glibc forcely 
 RUN apk add --force-overwrite glibc-2.29-r0.apk \
 && apk add --force-overwrite glibc-bin-2.29-r0.apk \
 && apk add --force-overwrite glibc-dev-2.29-r0.apk \
 && apk add --force-overwrite glibc-i18n-2.29-r0.apk
 
-# Step 4: 将/usr/glibc-compat/bin加入PATH环境变量
+# Step 4: Adding /usr/glibc-compat/bin to PATH
 RUN export PATH=/usr/glibc-compat/bin:$PATH
 
-# Step 6：使用localedef生成本地化配置并设置LANG环境变量
+# Step 5：localedef to generating localization and setup Language environment to UTF-8 
+
 RUN apk --no-cache add glibc-i18n && \
     /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8 && \
     echo "export LANG=en_US.UTF-8" > /etc/profile.d/locale.sh
