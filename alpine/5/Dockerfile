@@ -94,9 +94,14 @@ RUN curl -L -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/s
 
 # Step 3: Install alpine-pkg-glibc forcely 
 RUN apk add --force-overwrite glibc-2.29-r0.apk \
+&& rm glibc-2.29-r0.apk                             \
 && apk add --force-overwrite glibc-bin-2.29-r0.apk \
+&& rm glibc-bin-2.29-r0.apk                         \
 && apk add --force-overwrite glibc-dev-2.29-r0.apk \
-&& apk add --force-overwrite glibc-i18n-2.29-r0.apk
+&& rm glibc-dev-2.29-r0.apk                          \
+&& apk add --force-overwrite glibc-i18n-2.29-r0.apk \
+&& rm glibc-i18n-2.29-r0.apk
+
 
 # Step 4: Adding /usr/glibc-compat/bin to PATH
 RUN export PATH=/usr/glibc-compat/bin:$PATH
