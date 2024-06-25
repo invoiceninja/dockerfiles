@@ -70,6 +70,16 @@ CMD ["/bin/sh"]
 #&& echo "Asia/Shanghai" > /etc/timezone
 
 
+RUN set -eux; \
+inutils \
+build-base \
+gcc \
+musl-dev \
+libc-dev \
+gettext
+
+
+
 #安装Glibc以便更好支持中文显示
 # Step 1: 下载证书文件到指定文件夹
 RUN curl -L -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
@@ -88,11 +98,10 @@ RUN apk add --force-overwrite glibc-2.29-r0.apk \
 # Step 4: 将/usr/glibc-compat/bin加入PATH环境变量
 RUN export PATH=/usr/glibc-compat/bin:$PATH
 
-# Step 5: 使用localedef生成本地化配置
-RUN localedef -i en_US -f UTF-8 en_US.UTF-8
-# Step 6: 设置LANG环境变量
-RUN export LANG=en_US.UTF-8
-
+# Step 6：使用localedef生成本地化配置并设置LANG环境变量
+RUN apk --no-cache add glibc-i18n && \
+    /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8 && \
+    echo "export LANG=en_US.UTF-8" > /etc/profile.d/locale.sh
 
 RUN install-php-extensions \
     bcmath \
