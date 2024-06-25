@@ -11,10 +11,12 @@ ARG REPOSITORY=invoiceninja/invoiceninja
 ARG FILENAME=invoiceninja.tar
 
 # Optional for repo source changed, You can enable it if you are inside of China
-#RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories  && \
-#apk update  && apk upgrade
+#RUN echo -e 'https://mirrors.aliyun.com/alpine/v3.20/main/\nhttps://mirrors.aliyun.com/alpine/v3.20/community/' > /etc/apk/repositories \
+# && apk update \
+# && apk upgrade \
 
-RUN set -eux; apk add curl unzip grep nano wget
+
+RUN set -eux; apk add curl unzip grep nano wget tzdata ca-certificates
 
 RUN DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | cut -d '"' -f 4) && \
     curl -LJO "$DOWNLOAD_URL" && \
@@ -62,6 +64,34 @@ RUN mkfontscale && mkfontdir && fc-cache -fv
 
 # Ensure applied after restart
 CMD ["/bin/sh"]
+
+# Enable below if needs, waiting transfer to env so let user choice which timezone to go.
+#RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+#&& echo "Asia/Shanghai" > /etc/timezone
+
+
+#安装Glibc以便更好支持中文显示
+# Step 1: 下载证书文件到指定文件夹
+RUN curl -L -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
+# Step 2: 下载alpine-pkg-glibc
+&& curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-2.29-r0.apk \
+&& curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-bin-2.29-r0.apk \
+&& curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-dev-2.29-r0.apk \
+&& curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-i18n-2.29-r0.apk 
+
+# Step 3:安装alpine-pkg-glibc
+RUN apk add glibc-2.29-r0.apk \
+&& apk add glibc-bin-2.29-r0.apk \
+&& apk add glibc-dev-2.29-r0.apk \
+&& apk add glibc-i18n-2.29-r0.apk
+
+# Step 4: 将/usr/glibc-compat/bin加入PATH环境变量
+RUN export PATH=/usr/glibc-compat/bin:$PATH
+
+# Step 5: 使用localedef生成本地化配置
+RUN localedef -i en_US -f UTF-8 en_US.UTF-8
+# Step 6: 设置LANG环境变量
+RUN export LANG=en_US.UTF-8
 
 
 RUN install-php-extensions \
