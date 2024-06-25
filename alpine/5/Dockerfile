@@ -67,9 +67,11 @@ CMD ["/bin/sh"]
 
 # Enable below if needs, waiting transfer to env so let user choice which timezone to go.
 #RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-#&& echo "Asia/Shanghai" > /etc/timezone
+#&& echo "Asia/Shanghai" > /etc/timezon
 
 
+
+#安装localedef必要的包
 RUN set -eux; \
 inutils \
 build-base \
