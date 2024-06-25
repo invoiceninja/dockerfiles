@@ -80,10 +80,10 @@ RUN curl -L -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/s
 && curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.29-r0/glibc-i18n-2.29-r0.apk 
 
 # Step 3:安装alpine-pkg-glibc
-RUN apk add glibc-2.29-r0.apk \
-&& apk add glibc-bin-2.29-r0.apk \
-&& apk add glibc-dev-2.29-r0.apk \
-&& apk add glibc-i18n-2.29-r0.apk
+RUN apk add --force-overwrite glibc-2.29-r0.apk \
+&& apk add --force-overwrite glibc-bin-2.29-r0.apk \
+&& apk add --force-overwrite glibc-dev-2.29-r0.apk \
+&& apk add --force-overwrite glibc-i18n-2.29-r0.apk
 
 # Step 4: 将/usr/glibc-compat/bin加入PATH环境变量
 RUN export PATH=/usr/glibc-compat/bin:$PATH
