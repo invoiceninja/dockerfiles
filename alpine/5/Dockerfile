@@ -73,6 +73,7 @@ CMD ["/bin/sh"]
 
 #安装localedef必要的包
 RUN set -eux; \
+apk add build-base \
 binutils \
 build-base \
 gcc \
