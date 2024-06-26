@@ -86,21 +86,15 @@ gettext
 # Install Glibc for dispaly Chinese and/or other languages better
 # Step 1: download keys
 RUN curl -L -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
-# Step 2: download alpine-pkg-glibc, need imporve late to catch most latest glibc version
+# Step 2: download alpine-pkg-glibc, need imporve late to catch most latest glibc version automatically
 && curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r1/glibc-2.35-r1.apk \
 && curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r1/glibc-bin-2.35-r1.apk \
 && curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r1/glibc-dev-2.35-r1.apk \
 && curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r1/glibc-i18n-2.35-r1.apk 
 
-# Step 3: Install alpine-pkg-glibc forcely 
-RUN apk add --force-overwrite glibc-2.35-r1.apk \
-&& rm glibc-2.35-r1.apk                             \
-&& apk add --force-overwrite glibc-bin-2.35-r1.apk \
-&& rm glibc-bin-2.35-r1.apk                         \
-&& apk add --force-overwrite glibc-dev-2.35-r1.apk \
-&& rm glibc-dev-2.35-r1.apk                          \
-&& apk add --force-overwrite glibc-i18n-2.35-r1.apk \
-&& rm glibc-i18n-2.35-r1.apk
+# Step 3: Install alpine-pkg-glibc forcely and remove apk files after installation
+RUN apk add --force-overwrite glibc-*.apk && \
+rm glibc-*.apk
 
 
 # Step 4: Adding /usr/glibc-compat/bin to PATH
