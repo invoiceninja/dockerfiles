@@ -10,7 +10,13 @@ ARG INVOICENINJA_VERSION
 ARG REPOSITORY=invoiceninja/invoiceninja
 ARG FILENAME=invoiceninja.tar
 
-RUN set -eux; apk add curl unzip grep
+# Optional for repo source changed, You can enable it if you are inside of China
+#RUN echo -e 'https://mirrors.aliyun.com/alpine/v3.20/main/\nhttps://mirrors.aliyun.com/alpine/v3.20/community/' > /etc/apk/repositories \
+# && apk update \
+# && apk upgrade 
+
+
+RUN set -eux; apk add curl unzip grep nano wget tzdata ca-certificates
 
 RUN DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | cut -d '"' -f 4) && \
     curl -LJO "$DOWNLOAD_URL" && \
@@ -46,8 +52,49 @@ RUN set -eux; \
     mysql-client \
     chromium \
     ttf-freefont \
-    ttf-dejavu
+    font-noto-cjk \ 
+    ttf-dejavu \
+    bash \
+    && apk add --no-cache --virtual .build-deps \
+    wget \
+    && rm -rf /var/cache/apk/*
 
+# Ensure Chinese fonts installed 
+RUN mkfontscale && mkfontdir && fc-cache -fv
+
+# Ensure applied while restart
+CMD ["/bin/sh"]
+
+
+# Install necessary packages for localedef setup LANG
+RUN set -eux; \
+apk add build-base \
+binutils \
+build-base \
+gcc \
+musl-dev \
+libc-dev \
+gettext
+
+
+# Install Glibc for Chinese of multilingual & i18n support better
+RUN curl -L -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub
+RUN curl -s 'https://api.github.com/repos/sgerrand/alpine-pkg-glibc/releases/latest' | grep 'browser_download_url' | sed -E 's/.*"([^"]+)".*/\1/' | xargs -n 1 curl -LO
+
+RUN apk add --force-overwrite glibc-*.apk && \
+    rm glibc-*.apk
+
+RUN export PATH=/usr/glibc-compat/bin:$PATH
+
+RUN apk --no-cache add glibc-i18n && \
+    /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8 && \
+    echo "export LANG=en_US.UTF-8" > /etc/profile.d/locale.sh
+
+# Enable below if need choice timezone to go.
+#RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+#&& echo "Asia/Shanghai" > /etc/timezon
+
+    
 RUN install-php-extensions \
     bcmath \
     exif \
