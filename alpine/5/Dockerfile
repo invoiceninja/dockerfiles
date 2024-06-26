@@ -65,11 +65,6 @@ RUN mkfontscale && mkfontdir && fc-cache -fv
 # Ensure applied after restart
 CMD ["/bin/sh"]
 
-# Enable below if needs, waiting transfer to env so let user choice which timezone to go.
-#RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-#&& echo "Asia/Shanghai" > /etc/timezon
-
-
 
 #Install necessary packages for localedef
 RUN set -eux; \
@@ -80,8 +75,6 @@ gcc \
 musl-dev \
 libc-dev \
 gettext
-
-
 
 # Install Glibc for dispaly Chinese and/or other languages better
 # Step 1: download keys
@@ -101,11 +94,17 @@ rm glibc-*.apk
 RUN export PATH=/usr/glibc-compat/bin:$PATH
 
 # Step 5：localedef to generating localization and setup Language environment to UTF-8 
-
 RUN apk --no-cache add glibc-i18n && \
     /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8 && \
     echo "export LANG=en_US.UTF-8" > /etc/profile.d/locale.sh
 
+
+# Enable below if need choice which timezone to go.
+#RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+#&& echo "Asia/Shanghai" > /etc/timezon
+
+
+    
 RUN install-php-extensions \
     bcmath \
     exif \
