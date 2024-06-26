@@ -84,7 +84,7 @@ gettext
 
 
 # Install Glibc for dispaly Chinese and/or other languages better
-# Step 1: download keys
+# Step 1: Download keys
 RUN curl -L -o /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub \
 # Step 2: download alpine-pkg-glibc, need imporve late to catch most latest glibc version
 && curl -LO https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.35-r1/glibc-2.35-r1.apk \
