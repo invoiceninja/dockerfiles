@@ -57,6 +57,7 @@ RUN install-php-extensions \
     opcache \
     pdo_mysql \
     zip \
+    intl \
     @composer \
     && rm /usr/local/bin/install-php-extensions
 
