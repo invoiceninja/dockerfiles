@@ -13,7 +13,7 @@ type: application
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.10.2
+version: 0.11.0
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
@@ -33,15 +33,15 @@ dependencies:
   - condition: nginx.enabled
     name: nginx
     repository: https://charts.bitnami.com/bitnami
-    version: 13.x.x
+    version: 18.x.x
   - condition: mariadb.enabled
     name: mariadb
     repository: https://charts.bitnami.com/bitnami
-    version: 11.4.x
+    version: 19.x.x
   - condition: redis.enabled
     name: redis
     repository: https://charts.bitnami.com/bitnami
-    version: 16.x.x
+    version: 20.x.x
 maintainers:
   - email: lwj5@hotmail.com
     name: lwj5

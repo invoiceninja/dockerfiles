@@ -360,6 +360,17 @@ If you have the ability to use `ReadWriteMany` persistent volume, you can choose
 
 ## Upgrading
 
+### To 0.11.0
+
+The following chart dependencies have been upgraded.
+- MariaDB 
+- Redis
+- Nginx
+
+Please take note that this upgrades MariaDB from 10.6 to 11.4.3 and Redis from 6.2.x to 7.4.x Please backup your data before proceeding.
+
+The inline NGINX image has been kept at 1.22.1 but now uses the image tag `1.22.1-debian-11-r66` which supports both AMD64 and ARM64.
+
 ### To 0.10.0
 
 The following chart dependencies have been upgraded.
@@ -368,7 +379,7 @@ The following chart dependencies have been upgraded.
 - Nginx
 - Bitnami common
 
-Please take note that this upgrade MariaDB from 10.5 to 10.6. Please backup your database before proceeding.
+Please take note that this upgrades MariaDB from 10.5 to 10.6. Please backup your database before proceeding.
 
 ### To 0.8.0
 
