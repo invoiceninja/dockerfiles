@@ -1,0 +1,109 @@
+version: '3.8'
+
+x-logging: &default-logging
+  options:
+    max-size: "10m"
+    max-file: "3"
+  driver: json-file
+
+services:
+  app:
+    image: deb6:latest 
+    user: "www-data:www-data"  # Set user explicitly
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      - app_storage:/var/www/html/storage:rw
+      - app_public:/var/www/html/public/uploads:rw
+      - app_cache:/var/www/html/bootstrap/cache:rw
+    networks:
+      - app-network
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+    logging: *default-logging
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "8012:80"
+    volumes:
+      - app_public:/var/www/html/public/uploads:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - app-network
+    depends_on:
+      - app
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+    logging: *default-logging
+
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    logging: *default-logging
+
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    logging: *default-logging
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  app_storage:
+    driver: local
+  app_public:
+    driver: local
+  app_cache:
+    driver: local
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
