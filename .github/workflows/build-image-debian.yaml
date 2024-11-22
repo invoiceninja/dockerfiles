@@ -17,6 +17,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Debug - Show current directory and files
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Files in current directory:"
+          ls -la
+          echo "Files in debian directory (if exists):"
+          ls -la debian/ || echo "debian directory not found"
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -39,7 +47,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           builder: ${{ steps.buildx.outputs.name }}
-          context: .
+          context: debian/
           file: Dockerfile
           push: false
           build-args: INVOICENINJA_VERSION=5-develop
