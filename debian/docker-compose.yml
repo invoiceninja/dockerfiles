@@ -8,7 +8,7 @@ x-logging: &default-logging
 
 services:
   app:
-    image: deb39e:latest 
+    image: invoiceninja/invoiceninja-debian:latest 
     restart: unless-stopped
     env_file:
       - ./.env

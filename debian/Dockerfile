@@ -32,6 +32,12 @@ RUN apt-get update && apt-get install -y \
     libxkbcommon0 \
     libxrandr2 \
     xdg-utils \
+    fonts-liberation \
+    fonts-noto-cjk \
+    fonts-noto-cjk-extra \ 
+    fonts-wqy-microhei \  
+    fonts-wqy-zenhei \ 
+    xfonts-wqy \      
     wget \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
