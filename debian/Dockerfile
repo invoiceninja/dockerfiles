@@ -95,18 +95,18 @@ COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 # Configure Saxon
 WORKDIR /opt
 
-## fetch
-RUN curl https://downloads.saxonica.com/SaxonC/HE/12/libsaxon-HEC-linux-x86_64-v${saxon}.zip --output saxon.zip
-RUN unzip saxon.zip -d saxon
-RUN cp saxon/libsaxon-HEC-linux-amd64-v${saxon}/libs/nix/libsaxon-hec-${saxon}.so /usr/lib/
-WORKDIR /opt/saxon/libsaxon-HEC-linux-amd64-v${saxon}/Saxon.C.API
-RUN phpize
-RUN ./configure --enable-saxon
-RUN make
-RUN ls -al
-RUN make install
-RUN echo 'extension=saxon.so' > "/usr/local/etc/php/conf.d/app.ini"
-
+RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
+        curl https://downloads.saxonica.com/SaxonC/HE/12/libsaxon-HEC-linux-x86_64-v${saxon}.zip --output saxon.zip \
+        && unzip saxon.zip -d saxon \
+        && cp saxon/libsaxon-HEC-linux-amd64-v${saxon}/libs/nix/libsaxon-hec-${saxon}.so /usr/lib/ \
+        && cd /opt/saxon/libsaxon-HEC-linux-amd64-v${saxon}/Saxon.C.API \
+        && phpize \
+        && ./configure --enable-saxon \
+        && make \
+        && make install \
+        && echo 'extension=saxon.so' > "/usr/local/etc/php/conf.d/app.ini"; \
+    fi
+    
 # Copy scripts
 COPY rootfs /
 
