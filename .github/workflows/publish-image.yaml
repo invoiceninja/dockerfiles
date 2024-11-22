@@ -1,4 +1,4 @@
-name: Publish Debian and Alpine Container Images
+name: Publish Debian Container Images
 
 on:
   push:
