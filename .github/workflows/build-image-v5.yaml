@@ -7,12 +7,14 @@ name: Build Container Image
 on:
   pull_request:
     paths:
-      - "alpine/5/**"
+      - "debian/**"
+    branches:
+      - debian  
   push:
     paths:
-      - "alpine/5/**"
+      - "debian/**"
     branches:
-      - master
+      - debian  
 
 jobs:
   docker:
@@ -20,6 +22,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          ref: debian
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
