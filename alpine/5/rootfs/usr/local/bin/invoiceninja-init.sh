@@ -1,8 +1,10 @@
 #!/bin/sh
 
-# usage: docker_process_init_files [file [file [...]]]
-#    ie: docker_process_init_files /always-initdb.d/*
-# process initializer files, based on file extensions
+in_log() {
+        local type="$1"; shift
+        printf '%s [%s] [Entrypoint]: %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$type" "$*"
+}
+
 docker_process_init_files() {
     echo
     local f

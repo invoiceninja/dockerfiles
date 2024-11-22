@@ -8,15 +8,16 @@ x-logging: &default-logging
 
 services:
   app:
-    image: deb6:latest 
-    user: "www-data:www-data"  # Set user explicitly
+    image: deb39b:latest 
     restart: unless-stopped
     env_file:
-      - .env
+      - ./.env
     volumes:
-      - app_storage:/var/www/html/storage:rw
-      - app_public:/var/www/html/public/uploads:rw
-      - app_cache:/var/www/html/bootstrap/cache:rw
+      - ./.env:/var/www/html/.env  
+      - app_storage:/var/www/html/storage
+      - app_cache:/var/www/html/bootstrap/cache
+      - public_files:/var/www/html/public  
+
     networks:
       - app-network
     depends_on:
@@ -36,9 +37,12 @@ services:
     ports:
       - "8012:80"
     volumes:
-      - app_public:/var/www/html/public/uploads:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - type: volume
+        source: public_files
+        target: /var/www/html/public
+        read_only: true
     networks:
       - app-network
     depends_on:
@@ -53,7 +57,7 @@ services:
     image: mysql:8.0
     restart: unless-stopped
     env_file:
-      - .env
+      - ./.env
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
@@ -64,7 +68,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -106,4 +110,6 @@ volumes:
   mysql_data:
     driver: local
   redis_data:
+    driver: local
+  public_files:  
     driver: local

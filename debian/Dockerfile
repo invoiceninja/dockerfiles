@@ -1,4 +1,4 @@
-FROM php:8.2-fpm as base
+FROM php:8.2-fpm AS base
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -9,14 +9,19 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
+    gosu \
+    default-mysql-client \
     supervisor \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
+# Copy Install PHP extensions installer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+
+# Install Required PHP extensions.
 RUN install-php-extensions \
     pdo_mysql \
+    mysqli \     
     mbstring \
     exif \
     pcntl \
@@ -24,6 +29,10 @@ RUN install-php-extensions \
     gd \
     opcache \
     redis \
+    soap \
+    imagick \
+    curl \
+    gmp \
     zip \
     @composer
 
@@ -31,11 +40,14 @@ RUN install-php-extensions \
 COPY php/php.ini /usr/local/etc/php/conf.d/app.ini
 COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 
+# Copy scripts
+COPY rootfs /
+
 # Set working directory
 WORKDIR /var/www/html
 
-# Download and extract application in a single layer
-RUN set -eux; \
+# Download and extract application
+RUN set -eux; \ 
     DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
     grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | cut -d '"' -f 4) && \
     curl -L "$DOWNLOAD_URL" | tar -xvz -C /var/www/html && \
@@ -57,7 +69,13 @@ COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Add initialization script
 COPY scripts/init.sh /usr/local/bin/init.sh
+
+# Make executable
 RUN chmod +x /usr/local/bin/init.sh
+
+# Configure PHP-FPM
+RUN sed -i "s/user = www-data/user = www-data/g" /usr/local/etc/php-fpm.d/www.conf \
+    && sed -i "s/group = www-data/group = www-data/g" /usr/local/etc/php-fpm.d/www.conf
 
 # Create volume directories
 RUN mkdir -p \
@@ -67,6 +85,7 @@ RUN mkdir -p \
     /var/www/html/storage/framework/views \
     /var/www/html/storage/logs \
     /var/www/html/public/uploads \
+    /var/run \
     /var/log/supervisor 
 
 # Set permissions
@@ -74,14 +93,14 @@ RUN chown -R www-data:www-data \
     /var/www/html/storage \
     /var/www/html/bootstrap/cache \
     /var/www/html/public/uploads \
+    /var/run \
     /var/log/supervisor \
     && chmod -R 775 \
         /var/www/html/public/uploads \
         /var/www/html/storage \
         /var/www/html/bootstrap/cache \
+        /var/run \
         /var/log/supervisor 
-
-USER www-data
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
