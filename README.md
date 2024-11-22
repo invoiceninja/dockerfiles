@@ -1,4 +1,3 @@
-![Docker images](https://github.com/invoiceninja/dockerfiles/workflows/Docker%20images/badge.svg)
 [![Docker image, latest](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja-debian/latest?label=latest)](https://hub.docker.com/r/invoiceninja/invoiceninja-debian)
 [![Docker image, debian](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja-debian/debian?label=debian)](https://hub.docker.com/r/invoiceninja/invoiceninja-debian)
 [![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/invoiceninja)](https://artifacthub.io/packages/search?repo=invoiceninja)
