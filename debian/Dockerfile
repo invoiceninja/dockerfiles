@@ -52,16 +52,20 @@ RUN apt-get update && apt-get install -y \
 RUN mkdir -p /var/www/.chrome/chrome-profile \
     && chown -R www-data:www-data /var/www/.chrome \
     && chmod -R 755 /var/www/.chrome \
-    && chown root:root /usr/bin/google-chrome \
-    && chmod 4755 /usr/bin/google-chrome \
-    && chown -R root:root /opt/google/chrome \
-    && chmod -R 755 /opt/google/chrome \
+    && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
+        chown root:root /usr/bin/google-chrome \
+        && chmod 4755 /usr/bin/google-chrome \
+        && chown -R root:root /opt/google/chrome \
+        && chmod -R 755 /opt/google/chrome; \
+    fi \
     && chown -R www-data:www-data /var/www
 
 # Create required directories with proper permissions
 RUN mkdir -p /tmp/chrome \
-    && chown -R www-data:www-data /tmp/chrome \
-    && chmod -R 755 /tmp/chrome
+    && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
+        chown -R www-data:www-data /tmp/chrome \
+        && chmod -R 755 /tmp/chrome; \
+    fi
     
 # Copy Install PHP extensions installer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
