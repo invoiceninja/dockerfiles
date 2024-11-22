@@ -1,4 +1,5 @@
 FROM php:8.2-fpm AS base
+ARG saxon=12.3
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -12,6 +13,34 @@ RUN apt-get update && apt-get install -y \
     gosu \
     default-mysql-client \
     supervisor \
+    fonts-liberation \
+    libasound2 \
+    libatk-bridge2.0-0 \
+    libatk1.0-0 \
+    libatspi2.0-0 \
+    libcups2 \
+    libdbus-1-3 \
+    libdrm2 \
+    libgbm1 \
+    libgtk-3-0 \
+    libnspr4 \
+    libnss3 \
+    libwayland-client0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxfixes3 \
+    libxkbcommon0 \
+    libxrandr2 \
+    xdg-utils \
+    wget \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Chrome
+RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+    && apt-get update \
+    && apt-get install -y ./google-chrome-stable_current_amd64.deb \
+    && rm google-chrome-stable_current_amd64.deb \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -39,6 +68,21 @@ RUN install-php-extensions \
 # Configure PHP
 COPY php/php.ini /usr/local/etc/php/conf.d/app.ini
 COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
+
+# Configure Saxon
+WORKDIR /opt
+
+## fetch
+RUN curl https://www.saxonica.com/download/libsaxon-HEC-linux-v${saxon}.zip --output saxon.zip
+RUN unzip saxon.zip -d saxon
+RUN cp saxon/libsaxon-HEC-linux-v${saxon}/libs/nix/libsaxon-hec-${saxon}.so /usr/lib/
+WORKDIR /opt/saxon/libsaxon-HEC-linux-v${saxon}/Saxon.C.API
+RUN phpize
+RUN ./configure --enable-saxon
+RUN make
+RUN ls -al
+RUN make install
+RUN echo 'extension=saxon.so' > "/usr/local/etc/php/conf.d/app.ini"
 
 # Copy scripts
 COPY rootfs /
