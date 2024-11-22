@@ -16,9 +16,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: debian
-          fetch-depth: 0
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -42,7 +39,9 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           builder: ${{ steps.buildx.outputs.name }}
-          context: debian/Dockerfile
+          context: .
+          file: Dockerfile
+          push: false
           build-args: INVOICENINJA_VERSION=5-develop
           platforms: linux/amd64,linux/arm64
           tags: invoiceninja/invoiceninja-debian:cache
