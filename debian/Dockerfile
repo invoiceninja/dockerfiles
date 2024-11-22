@@ -1,5 +1,5 @@
 FROM php:8.2-fpm AS base
-ARG saxon=12.3
+ARG saxon=12.5.0
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -44,6 +44,21 @@ RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd6
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# Set permissions for www-data to execute    
+RUN mkdir -p /var/www/.chrome/chrome-profile \
+    && chown -R www-data:www-data /var/www/.chrome \
+    && chmod -R 755 /var/www/.chrome \
+    && chown root:root /usr/bin/google-chrome \
+    && chmod 4755 /usr/bin/google-chrome \
+    && chown -R root:root /opt/google/chrome \
+    && chmod -R 755 /opt/google/chrome \
+    && chown -R www-data:www-data /var/www
+
+# Create required directories with proper permissions
+RUN mkdir -p /tmp/chrome \
+    && chown -R www-data:www-data /tmp/chrome \
+    && chmod -R 755 /tmp/chrome
+    
 # Copy Install PHP extensions installer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
@@ -73,10 +88,10 @@ COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 WORKDIR /opt
 
 ## fetch
-RUN curl https://www.saxonica.com/download/libsaxon-HEC-linux-v${saxon}.zip --output saxon.zip
+RUN curl https://downloads.saxonica.com/SaxonC/HE/12/libsaxon-HEC-linux-x86_64-v${saxon}.zip --output saxon.zip
 RUN unzip saxon.zip -d saxon
-RUN cp saxon/libsaxon-HEC-linux-v${saxon}/libs/nix/libsaxon-hec-${saxon}.so /usr/lib/
-WORKDIR /opt/saxon/libsaxon-HEC-linux-v${saxon}/Saxon.C.API
+RUN cp saxon/libsaxon-HEC-linux-amd64-v${saxon}/libs/nix/libsaxon-hec-${saxon}.so /usr/lib/
+WORKDIR /opt/saxon/libsaxon-HEC-linux-amd64-v${saxon}/Saxon.C.API
 RUN phpize
 RUN ./configure --enable-saxon
 RUN make
