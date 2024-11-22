@@ -33,10 +33,10 @@ RUN apt-get update && apt-get install -y \
     libxrandr2 \
     xdg-utils \
     fonts-noto-cjk \
-    fonts-noto-cjk-extra \ 
-    fonts-wqy-microhei \  
-    fonts-wqy-zenhei \ 
-    xfonts-wqy \      
+    fonts-noto-cjk-extra \
+    fonts-wqy-microhei \
+    fonts-wqy-zenhei \
+    xfonts-wqy \
     wget \
     gnupg2 \
     && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
