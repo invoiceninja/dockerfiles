@@ -46,15 +46,12 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v5
         with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: debian/
-          file: Dockerfile
-          push: false
-          build-args: INVOICENINJA_VERSION=5-develop
-          platforms: linux/amd64,linux/arm64
-          tags: invoiceninja/invoiceninja-debian:cache
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          context: debian  
+          file: debian/Dockerfile  
+          load: true
+          tags: invoiceninja/invoiceninja-debian:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Move cache
         run: |
