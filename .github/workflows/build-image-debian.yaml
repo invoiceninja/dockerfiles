@@ -42,7 +42,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           builder: ${{ steps.buildx.outputs.name }}
-          context: ./debian/Dockerfile
+          context: debian/Dockerfile
           build-args: INVOICENINJA_VERSION=5-develop
           platforms: linux/amd64,linux/arm64
           tags: invoiceninja/invoiceninja-debian:cache
