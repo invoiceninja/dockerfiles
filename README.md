@@ -4,6 +4,13 @@
 [![Publish Image](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml)
 [![Build Debian Image](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-debian.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-debian.yaml)
 
+
+[![Docker Image Size (debian)](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja-debian/latest?label=debian)](https://hub.docker.com/r/invoiceninja/invoiceninja-debian)
+[![Docker Pulls](https://img.shields.io/docker/pulls/invoiceninja/invoiceninja-debian)](https://hub.docker.com/r/invoiceninja/invoiceninja-debian)
+[![Docker Stars](https://img.shields.io/docker/stars/invoiceninja/invoiceninja-debian)](https://hub.docker.com/r/invoiceninja/invoiceninja-debian)
+[![Build Status](https://github.com/invoiceninja/debian-invoice-ninja/actions/workflows/build-image-debian.yaml/badge.svg)](https://github.com/invoiceninja/debian-invoice-ninja/actions/workflows/build-image-debian.yaml)
+[![Publish Status](https://github.com/invoiceninja/debian-invoice-ninja/actions/workflows/publish-image.yaml/badge.svg)](https://github.com/invoiceninja/debian-invoice-ninja/actions/workflows/publish-image.yaml)
+
 # Debian Docker for [Invoice Ninja](https://www.invoiceninja.com/)
 
 :crown: **Features**
