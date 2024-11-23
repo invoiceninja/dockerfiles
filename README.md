@@ -1,14 +1,17 @@
 [![Docker Image Size](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja-debian?label=debian)](https://hub.docker.com/r/invoiceninja/invoiceninja-debian)
 [![Docker Pulls](https://img.shields.io/docker/pulls/invoiceninja/invoiceninja-debian)](https://hub.docker.com/r/invoiceninja/invoiceninja-debian)
-[![Build Status](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-debian.yaml/badge.svg?branch=debian)](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-debian.yaml)
-[![Publish Status](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml/badge.svg?branch=debian)](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml)
+[![Build Status](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-debian.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-debian.yaml)
+[![Publish Status](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml)
 
 # Debian Docker for [Invoice Ninja](https://www.invoiceninja.com/)
 
 :crown: **Features**
 
-:fire: NGINX webserver support [NGINX](https://nginx.org/)  
-:chrome: Built-in Chrome for PDF generation and other features
+NGINX webserver support [NGINX](https://nginx.org/)  
+Built-in Chrome for PDF generation and other features
+Saxon XLST 2 engine
+OPcache
+Multi language support
 
 ## Get started with Docker Compose
 
@@ -69,3 +72,9 @@ It is recommended to perform a backup before updating.
 ### Support
 
 If you discover a bug, please create an issue. For general queries, visit our [Forum](https://forum.invoiceninja.com/)
+
+
+### Todo
+
+This is a new image which should provide much better support for all users, however there are some items left to complete
+[] Backup script
