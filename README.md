@@ -88,6 +88,6 @@ If you discover a bug, please create an issue. For general queries, visit our [F
 
 This is a new image which should provide much better support for all users, however there are some items left to complete
 
-[] Backup script  
-[] Integrate soketi server  
-[] Add elastic search for site wide search  
+- [ ] Backup script  
+- [ ] Integrate soketi server  
+- [ ] Add elastic search for site wide search  
