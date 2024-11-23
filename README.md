@@ -19,7 +19,7 @@ This Debian-based image includes Chrome for enhanced PDF generation and other fe
 
 ```bash
 git clone https://github.com/invoiceninja/dockerfiles.git -b debian
-cd dockerfiles
+cd dockerfiles/debian
 ```
 
 Instead of defining our environment variables inside our docker-compose.yml file we now define this in the `.env` file, open this file up and insert your `APP_URL`, `APP_KEY` and update the rest of the variables as required.
@@ -41,7 +41,9 @@ Prior to starting the container for the first time, open the .env file and updat
 This will take care of the initial account setup. You can later remove these .env variables.
 
 > ⚠️ **Warning**  
-> If `IN_USER_EMAIL` and `IN_PASSWORD` is not set the default user email and password is "admin@example.com" and "changeme!" respectively. You will use this for the initial login, thereafter, you can delete these two environment variables.
+> If `IN_USER_EMAIL` and `IN_PASSWORD` are not set the default user email and password is "admin@example.com" and "changeme!" respectively. 
+
+After the container has completed the first startup you can delete these two environment variables.
 
 ### Generate a APP_KEY
 
