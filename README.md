@@ -41,7 +41,9 @@ Prior to starting the container for the first time, open the .env file and updat
 This will take care of the initial account setup. You can later remove these .env variables.
 
 > ⚠️ **Warning**  
-> If `IN_USER_EMAIL` and `IN_PASSWORD` is not set the default user email and password is "admin@example.com" and "changeme!" respectively. You will use this for the initial login, thereafter, you can delete these two environment variables.
+> If `IN_USER_EMAIL` and `IN_PASSWORD` are not set the default user email and password is "admin@example.com" and "changeme!" respectively. 
+
+After the container has completed the first startup you can delete these two environment variables.
 
 ### Generate a APP_KEY
 
