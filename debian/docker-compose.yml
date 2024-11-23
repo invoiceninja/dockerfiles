@@ -16,7 +16,8 @@ services:
       - ./.env:/var/www/html/.env  
       - app_storage:/var/www/html/storage
       - app_cache:/var/www/html/bootstrap/cache
-      - public_files:/var/www/html/public  
+      - public_storage:/var/www/html/public/storage
+    user: www-data:www-data 
 
     networks:
       - app-network
@@ -39,10 +40,9 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - type: volume
-        source: public_files
-        target: /var/www/html/public
-        read_only: true
+    volumes_from:
+      - app
+
     networks:
       - app-network
     depends_on:
@@ -103,13 +103,11 @@ networks:
 volumes:
   app_storage:
     driver: local
-  app_public:
-    driver: local
   app_cache:
     driver: local
+  public_storage:
+    driver: local  # Persistent storage for user files
   mysql_data:
     driver: local
   redis_data:
-    driver: local
-  public_files:  
     driver: local
