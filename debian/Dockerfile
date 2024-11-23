@@ -117,7 +117,7 @@ WORKDIR /var/www/html
 RUN set -eux; \ 
     DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
     grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | cut -d '"' -f 4) && \
-    curl -L "$DOWNLOAD_URL" | tar -xfvz -C /var/www/html --overwrite && \
+    curl -L "$DOWNLOAD_URL" | tar -xzf - -C /var/www/html --overwrite && \
     rm -rf /var/www/html/ui && \
     chown -R www-data:www-data /var/www/html
 
