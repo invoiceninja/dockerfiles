@@ -19,7 +19,7 @@ This Debian-based image includes Chrome for enhanced PDF generation and other fe
 
 ```bash
 git clone https://github.com/invoiceninja/dockerfiles.git -b debian
-cd dockerfiles
+cd dockerfiles/debian
 ```
 
 Instead of defining our environment variables inside our docker-compose.yml file we now define this in the `.env` file, open this file up and insert your `APP_URL`, `APP_KEY` and update the rest of the variables as required.
