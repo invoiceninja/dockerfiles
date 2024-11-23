@@ -117,18 +117,8 @@ WORKDIR /var/www/html
 RUN set -eux; \ 
     DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
     grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | cut -d '"' -f 4) && \
-    echo "Downloading from: $DOWNLOAD_URL" && \
-    # Download and save the tar
-    curl -L "$DOWNLOAD_URL" -o /tmp/ninja.tar && \
-    # Try extraction
-    cd /var/www/html && \
-    tar -xf /tmp/ninja.tar && \
-    # List what was extracted
-    rm -f /tmp/ninja.tar && \
+    curl -L "$DOWNLOAD_URL" | tar -xvz -C /var/www/html && \
     chown -R www-data:www-data /var/www/html
-
-# After setting permissions, switch to www-data for remaining operations
-USER www-data
 
 # Install dependencies
 RUN composer install --no-dev --no-scripts --no-autoloader
@@ -139,8 +129,6 @@ RUN composer dump-autoload --optimize \
     && php artisan view:cache \
     && php artisan config:cache \
     && php artisan route:cache
-
-USER root
 
 # Setup supervisor
 COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
@@ -162,7 +150,7 @@ RUN mkdir -p \
     /var/www/html/storage/framework/sessions \
     /var/www/html/storage/framework/views \
     /var/www/html/storage/logs \
-    /var/www/html/public/storage \
+    /var/www/html/public/uploads \
     /var/run \
     /var/log/supervisor 
 
@@ -170,18 +158,15 @@ RUN mkdir -p \
 RUN chown -R www-data:www-data \
     /var/www/html/storage \
     /var/www/html/bootstrap/cache \
-    /var/www/html/public/storage \
+    /var/www/html/public/uploads \
     /var/run \
     /var/log/supervisor \
     && chmod -R 775 \
-        /var/www/html/public/storage \
+        /var/www/html/public/uploads \
         /var/www/html/storage \
         /var/www/html/bootstrap/cache \
         /var/run \
         /var/log/supervisor 
-
-# Switch to www-data for runtime
-USER www-data
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
