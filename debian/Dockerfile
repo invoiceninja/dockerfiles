@@ -122,7 +122,7 @@ RUN set -eux; \
     curl -L "$DOWNLOAD_URL" -o /tmp/ninja.tar && \
     # Try extraction
     cd /var/www/html && \
-    tar --strip-components=1 -xf /tmp/ninja.tar && \
+    tar -xf /tmp/ninja.tar && \
     # List what was extracted
     rm -f /tmp/ninja.tar && \
     chown -R www-data:www-data /var/www/html
