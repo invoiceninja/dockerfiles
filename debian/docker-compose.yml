@@ -8,8 +8,7 @@ x-logging: &default-logging
 
 services:
   app:
-    # image: deb40d:latest
-    image: invoiceninja/invoiceninja-debian:latest 
+    image: invoiceninja/invoiceninja-debian:5 
     restart: unless-stopped
     env_file:
       - ./.env
@@ -36,7 +35,7 @@ services:
     image: nginx:alpine
     restart: unless-stopped
     ports:
-      - "8013:80"
+      - "80:80"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
