@@ -1,8 +1,7 @@
-[![Docker image, latest](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja-debian/latest?label=latest)](https://hub.docker.com/r/invoiceninja/invoiceninja-debian)
-[![Docker image, debian](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja-debian/debian?label=debian)](https://hub.docker.com/r/invoiceninja/invoiceninja-debian)
-[![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/invoiceninja)](https://artifacthub.io/packages/search?repo=invoiceninja)
-[![Publish Image](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml)
-[![Build Debian Image](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-debian.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-debian.yaml)
+[![Docker Image Size](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja-debian?label=debian)](https://hub.docker.com/r/invoiceninja/invoiceninja-debian)
+[![Docker Pulls](https://img.shields.io/docker/pulls/invoiceninja/invoiceninja-debian)](https://hub.docker.com/r/invoiceninja/invoiceninja-debian)
+[![Build Status](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-debian.yaml/badge.svg?branch=debian)](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-debian.yaml)
+[![Publish Status](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml/badge.svg?branch=debian)](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml)
 
 # Debian Docker for [Invoice Ninja](https://www.invoiceninja.com/)
 
