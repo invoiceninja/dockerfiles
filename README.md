@@ -1,7 +1,7 @@
 [![Docker Image Size](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja-debian?label=debian)](https://hub.docker.com/r/invoiceninja/invoiceninja-debian)
 [![Docker Pulls](https://img.shields.io/docker/pulls/invoiceninja/invoiceninja-debian)](https://hub.docker.com/r/invoiceninja/invoiceninja-debian)
-[![Build Status](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-debian.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-debian.yaml)
 [![Publish Status](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml)
+[![Build Status](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-v5.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-v5.yaml)
 
 # Debian Docker for [Invoice Ninja](https://www.invoiceninja.com/)
 
