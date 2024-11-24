@@ -159,6 +159,8 @@ RUN mkdir -p \
     /var/run \
     /var/log/supervisor 
 
+RUN cp /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html
+
 # Set permissions
 RUN chown -R www-data:www-data \
     /var/www/html/storage \
