@@ -8,7 +8,7 @@ x-logging: &default-logging
 
 services:
   app:
-    image: invoiceninja/invoiceninja-debian:latest
+    image: invoiceninja/invoiceninja-debian:latest 
     restart: unless-stopped
     env_file:
       - ./.env
@@ -16,7 +16,7 @@ services:
       - ./.env:/var/www/html/.env  
       - app_storage:/var/www/html/storage
       - app_cache:/var/www/html/bootstrap/cache
-      - public_storage:/var/www/html/public/storage
+      - app_files:/var/www/html
 
     networks:
       - app-network
@@ -39,8 +39,7 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-    volumes_from:
-      - app
+      - app_files:/var/www/html:ro
 
     networks:
       - app-network
@@ -104,9 +103,9 @@ volumes:
     driver: local
   app_cache:
     driver: local
-  public_storage:
-    driver: local  # Persistent storage for user files
   mysql_data:
     driver: local
   redis_data:
+    driver: local
+  app_files:
     driver: local
