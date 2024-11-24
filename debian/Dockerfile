@@ -128,7 +128,8 @@ RUN composer dump-autoload --optimize \
     && php artisan optimize \
     && php artisan view:cache \
     && php artisan config:cache \
-    && php artisan route:cache
+    && php artisan route:cache \
+    && php artisan storage:link
 
 # Setup supervisor
 COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
