@@ -120,6 +120,8 @@ RUN set -eux; \
     curl -L "$DOWNLOAD_URL" | tar -xvz -C /var/www/html && \
     chown -R www-data:www-data /var/www/html
 
+USER www-data
+
 # Install dependencies
 RUN composer install --no-dev --no-scripts --no-autoloader
 
@@ -130,6 +132,8 @@ RUN composer dump-autoload --optimize \
     && php artisan config:cache \
     && php artisan route:cache \
     && php artisan storage:link
+
+USER root
 
 # Setup supervisor
 COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
