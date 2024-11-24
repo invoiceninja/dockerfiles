@@ -36,20 +36,22 @@ mkdir -p \
     /var/www/html/storage/framework/sessions \
     /var/www/html/storage/framework/views \
     /var/www/html/storage/logs \
-    /var/www/html/public/uploads
+    /var/www/html/public/storage
 
 # Set directory permissions without changing ownership
 chmod -R 775 \
     /var/www/html/storage \
     /var/www/html/bootstrap/cache \
-    /var/www/html/public/uploads
+    /var/www/html/public/storage
+
+chown -R www-data:www-data /var/www/html/storage
 
 # Clear and cache config in production
 if [ "$APP_ENV" = "production" ]; then
-    php artisan config:cache
-    php artisan optimize
-    php artisan package:discover
-    php artisan migrate --force
+    gosu www-data php artisan config:cache
+    gosu www-data php artisan optimize
+    gosu www-data php artisan package:discover
+    gosu www-data php artisan migrate --force
 
     echo "Checking initialization status..."
 
