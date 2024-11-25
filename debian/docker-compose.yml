@@ -14,6 +14,8 @@ services:
       - ./.env
     volumes:
       - ./.env:/var/www/html/.env  
+      - ./php/php.ini:/usr/local/etc/php/php.ini
+      - ./supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
       - app_storage:/var/www/html/storage
       - app_cache:/var/www/html/bootstrap/cache
       - image-public:/var/www/html/public:ro 
