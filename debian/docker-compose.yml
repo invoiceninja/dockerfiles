@@ -107,5 +107,5 @@ volumes:
     driver: local
   redis_data:
     driver: local
-  image-public:  # This volume will get populated with the image's public directory
+  image-public:  
     driver: local
