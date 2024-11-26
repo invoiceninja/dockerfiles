@@ -31,7 +31,6 @@ services:
       resources:
         limits:
           memory: 512M
-          #memory: 1G # prevents swapping on pdf generation with chrome
     logging: *default-logging
 
   nginx:
