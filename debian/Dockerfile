@@ -66,7 +66,7 @@ RUN mkdir -p /tmp/chrome \
         chown -R www-data:www-data /tmp/chrome \
         && chmod -R 755 /tmp/chrome; \
     fi
-    
+
 # Copy Install PHP extensions installer
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
@@ -89,6 +89,7 @@ RUN install-php-extensions \
     @composer
 
 # Configure PHP
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY php/php.ini /usr/local/etc/php/conf.d/app.ini
 COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 
