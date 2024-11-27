@@ -3,17 +3,16 @@ ARG saxon=12.5.0
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    git \
     curl \
-    libpng-dev \
-    libonig-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    gosu \
     default-mysql-client \
-    supervisor \
     fonts-liberation \
+    fonts-noto-cjk \
+    fonts-noto-cjk-extra \
+    fonts-wqy-microhei \
+    fonts-wqy-zenhei \
+    git \
+    gnupg2 \
+    gosu \
     libasound2 \
     libatk-bridge2.0-0 \
     libatk1.0-0 \
@@ -25,20 +24,21 @@ RUN apt-get update && apt-get install -y \
     libgtk-3-0 \
     libnspr4 \
     libnss3 \
+    libonig-dev \
+    libpng-dev \
     libwayland-client0 \
     libxcomposite1 \
     libxdamage1 \
     libxfixes3 \
     libxkbcommon0 \
+    libxml2-dev \
     libxrandr2 \
-    xdg-utils \
-    fonts-noto-cjk \
-    fonts-noto-cjk-extra \
-    fonts-wqy-microhei \
-    fonts-wqy-zenhei \
-    xfonts-wqy \
+    supervisor \
+    unzip \
     wget \
-    gnupg2 \
+    xdg-utils \
+    xfonts-wqy \
+    zip \
     && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
         wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
         && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
@@ -66,45 +66,49 @@ RUN mkdir -p /tmp/chrome \
         chown -R www-data:www-data /tmp/chrome \
         && chmod -R 755 /tmp/chrome; \
     fi
-    
+
 # Copy Install PHP extensions installer
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+#COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
 # Install Required PHP extensions.
 RUN install-php-extensions \
-    pdo_mysql \
-    mysqli \     
-    mbstring \
-    exif \
-    pcntl \
     bcmath \
+    # curl \ Already installed
+    exif \
     gd \
-    opcache \
-    redis \
-    soap \
-    imagick \
-    curl \
     gmp \
+    imagick \
+    # mbstring \ Already installed
+    mysqli \     
+    opcache \
+    pcntl \
+    pdo_mysql \
+    redis \
+    # saxon \ outdated
+    soap \
     zip \
     @composer
 
 # Configure PHP
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY php/php.ini /usr/local/etc/php/conf.d/app.ini
 COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Configure Saxon
 WORKDIR /opt
-
 RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
         curl https://downloads.saxonica.com/SaxonC/HE/12/libsaxon-HEC-linux-x86_64-v${saxon}.zip --output saxon.zip \
         && unzip saxon.zip -d saxon \
-        && cp saxon/libsaxon-HEC-linux-amd64-v${saxon}/libs/nix/libsaxon-hec-${saxon}.so /usr/lib/ \
+        && rm saxon.zip \
+        && mv saxon/libsaxon-HEC-linux-amd64-v${saxon}/libs/nix/libsaxon-hec-${saxon}.so /usr/lib/ \
         && cd /opt/saxon/libsaxon-HEC-linux-amd64-v${saxon}/Saxon.C.API \
         && phpize \
         && ./configure --enable-saxon \
         && make \
         && make install \
-        && echo 'extension=saxon.so' > "/usr/local/etc/php/conf.d/app.ini"; \
+        && rm -rf /opt/saxon \
+        && echo 'extension=saxon.so' > "$PHP_INI_DIR/conf.d/saxon.ini"; \
     fi
 
 # Copy scripts
@@ -139,10 +143,7 @@ USER root
 COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Add initialization script
-COPY scripts/init.sh /usr/local/bin/init.sh
-
-# Make executable
-RUN chmod +x /usr/local/bin/init.sh
+COPY --chmod=0755 scripts/init.sh /usr/local/bin/init.sh
 
 # Configure PHP-FPM
 RUN sed -i "s/user = www-data/user = www-data/g" /usr/local/etc/php-fpm.d/www.conf \
