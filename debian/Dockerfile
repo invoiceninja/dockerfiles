@@ -40,8 +40,9 @@ RUN apt-get update && apt-get install -y \
     xfonts-wqy \
     zip \
     && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
-        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-        && echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+        mkdir -p /etc/apt/keyrings \
+        && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google.gpg \
+        && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
         && apt-get update \
         && apt-get install -y google-chrome-stable; \
     fi \
@@ -73,19 +74,18 @@ ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/relea
 
 # Install Required PHP extensions.
 RUN install-php-extensions \
+#RUN docker-php-ext-install \
     bcmath \
-    # curl \ Already installed
     exif \
     gd \
     gmp \
     imagick \
-    # mbstring \ Already installed
     mysqli \     
     opcache \
     pcntl \
     pdo_mysql \
     redis \
-    # saxon \ outdated
+    saxon-${saxon} \
     soap \
     zip \
     @composer
@@ -94,22 +94,6 @@ RUN install-php-extensions \
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY php/php.ini /usr/local/etc/php/conf.d/app.ini
 COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
-
-# Configure Saxon
-WORKDIR /opt
-RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
-        curl https://downloads.saxonica.com/SaxonC/HE/12/libsaxon-HEC-linux-x86_64-v${saxon}.zip --output saxon.zip \
-        && unzip saxon.zip -d saxon \
-        && rm saxon.zip \
-        && mv saxon/libsaxon-HEC-linux-amd64-v${saxon}/libs/nix/libsaxon-hec-${saxon}.so /usr/lib/ \
-        && cd /opt/saxon/libsaxon-HEC-linux-amd64-v${saxon}/Saxon.C.API \
-        && phpize \
-        && ./configure --enable-saxon \
-        && make \
-        && make install \
-        && rm -rf /opt/saxon \
-        && echo 'extension=saxon.so' > "$PHP_INI_DIR/conf.d/saxon.ini"; \
-    fi
 
 # Copy scripts
 COPY rootfs /
@@ -132,9 +116,6 @@ RUN composer install --no-dev --no-scripts --no-autoloader
 # Generate optimized autoloader and clear cache
 RUN composer dump-autoload --optimize \
     && php artisan optimize \
-    && php artisan view:cache \
-    && php artisan config:cache \
-    && php artisan route:cache \
     && php artisan storage:link
 
 USER root
