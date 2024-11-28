@@ -1,50 +1,51 @@
-FROM php:8.2-fpm AS base
+FROM php:8.3-fpm AS base
+
 ARG saxon=12.5.0
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
-    default-mysql-client \
-    fonts-liberation \
-    fonts-noto-cjk \
-    fonts-noto-cjk-extra \
-    fonts-wqy-microhei \
-    fonts-wqy-zenhei \
-    git \
     gnupg2 \
     gosu \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libatspi2.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libdrm2 \
-    libgbm1 \
-    libgtk-3-0 \
-    libnspr4 \
-    libnss3 \
-    libonig-dev \
-    libpng-dev \
-    libwayland-client0 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxfixes3 \
-    libxkbcommon0 \
-    libxml2-dev \
-    libxrandr2 \
     supervisor \
-    unzip \
-    wget \
-    xdg-utils \
-    xfonts-wqy \
-    zip \
     && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
         mkdir -p /etc/apt/keyrings \
         && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google.gpg \
         && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
         && apt-get update \
-        && apt-get install -y google-chrome-stable; \
+        && apt-get install -y --no-install-recommends google-chrome-stable; \
+    fi \
+    && if [ "$(dpkg --print-architecture)" = "arm64" ]; then \
+        apt-get install -y --no-install-recommends \
+            default-mysql-client \
+            fonts-liberation \
+            fonts-noto-cjk \
+            fonts-noto-cjk-extra \
+            fonts-wqy-microhei \
+            fonts-wqy-zenhei \
+            libasound2 \
+            libatk-bridge2.0-0 \
+            libatk1.0-0 \
+            libatspi2.0-0 \
+            libcups2 \
+            libdbus-1-3 \
+            libdrm2 \
+            libgbm1 \
+            libgtk-3-0 \
+            libnspr4 \
+            libnss3 \
+            libonig-dev \
+            libpng-dev \
+            libwayland-client0 \
+            libxcomposite1 \
+            libxdamage1 \
+            libxfixes3 \
+            libxkbcommon0 \
+            libxml2-dev \
+            libxrandr2 \
+            supervisor \
+            xdg-utils \
+            xfonts-wqy; \
     fi \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -69,12 +70,10 @@ RUN mkdir -p /tmp/chrome \
     fi
 
 # Copy Install PHP extensions installer
-#COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
 # Install Required PHP extensions.
 RUN install-php-extensions \
-#RUN docker-php-ext-install \
     bcmath \
     exif \
     gd \
