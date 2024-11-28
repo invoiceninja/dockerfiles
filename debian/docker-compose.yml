@@ -35,7 +35,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./nginx:/etc/nginx/nginx.conf:ro
+      - ./nginx:/etc/nginx/nginx.conf.d:ro
       - app_storage:/var/www/html/storage:ro
       - image_public:/var/www/html/public:ro
     networks:
