@@ -25,10 +25,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          memory: 512M
     logging: *default-logging
 
   nginx:
@@ -45,10 +41,6 @@ services:
       - app-network
     depends_on:
       - app
-    deploy:
-      resources:
-        limits:
-          memory: 128M
     logging: *default-logging
 
   mysql:
@@ -79,10 +71,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    deploy:
-      resources:
-        limits:
-          memory: 1G
     logging: *default-logging
 
   redis:
@@ -97,10 +85,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    deploy:
-      resources:
-        limits:
-          memory: 256M
     logging: *default-logging
 
 networks:
