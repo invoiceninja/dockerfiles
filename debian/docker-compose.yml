@@ -6,7 +6,9 @@ x-logging: &default-logging
 
 services:
   app:
-    image: invoiceninja/invoiceninja-debian:latest
+    build:
+      context: .
+    image: invoiceninja/invoiceninja-debian:${TAG:-latest}
     restart: unless-stopped
     env_file:
       - ./.env
