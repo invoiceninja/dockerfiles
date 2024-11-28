@@ -1,10 +1,10 @@
 #!/bin/sh
 set -e
 
-
 in_log() {
-        local type="$1"; shift
-        printf '%s [%s] [Entrypoint]: %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$type" "$*"
+    local type="$1"
+    shift
+    printf '%s [%s] [Entrypoint]: %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$type" "$*"
 }
 
 docker_process_init_files() {
@@ -48,7 +48,6 @@ chown -R www-data:www-data /var/www/html/storage
 
 # Clear and cache config in production
 if [ "$APP_ENV" = "production" ]; then
-    gosu www-data php artisan config:cache
     gosu www-data php artisan optimize
     gosu www-data php artisan package:discover
     gosu www-data php artisan migrate --force
