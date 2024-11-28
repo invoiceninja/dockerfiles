@@ -91,8 +91,6 @@ RUN install-php-extensions \
 
 # Configure PHP
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-COPY php/php.ini /usr/local/etc/php/conf.d/app.ini
-COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
 
 # Copy scripts
 COPY rootfs /
