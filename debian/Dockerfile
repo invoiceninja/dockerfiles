@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg2 \
     gosu \
     supervisor \
+    # Packages to be checked
     fonts-noto-cjk \
     fonts-noto-cjk-extra \
     fonts-wqy-microhei \
@@ -23,9 +24,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
         && apt-get update \
         && apt-get install -y --no-install-recommends google-chrome-stable; \
-    fi \
-    && if [ "$(dpkg --print-architecture)" = "arm64" ]; then \
+    elif [ "$(dpkg --print-architecture)" = "arm64" ]; then \
         apt-get install -y --no-install-recommends \
+            # Packages for chrome
             fonts-liberation \
             libasound2 \
             libatk-bridge2.0-0 \
@@ -44,7 +45,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
             libxfixes3 \
             libxkbcommon0 \
             libxrandr2 \
-            xdg-utils \
+            xdg-utils; \
     fi \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
