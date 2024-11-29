@@ -50,24 +50,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Set permissions for www-data to execute    
+# Configure directories and permissions for chrome 
 RUN mkdir -p /var/www/.chrome/chrome-profile \
+    mkdir -p /tmp/chrome \
     && chown -R www-data:www-data /var/www/.chrome \
     && chmod -R 755 /var/www/.chrome \
     && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
         chown root:root /usr/bin/google-chrome \
         && chmod 4755 /usr/bin/google-chrome \
         && chown -R root:root /opt/google/chrome \
-        && chmod -R 755 /opt/google/chrome; \
+        && chmod -R 755 /opt/google/chrome \
+        && chown -R www-data:www-data /tmp/chrome \
+        && chmod -R 755 /tmp/chrome; \
     fi \
     && chown -R www-data:www-data /var/www
-
-# Create required directories with proper permissions
-RUN mkdir -p /tmp/chrome \
-    && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
-        chown -R www-data:www-data /tmp/chrome \
-        && chmod -R 755 /tmp/chrome; \
-    fi
 
 # Copy Install PHP extensions installer
 ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
