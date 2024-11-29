@@ -9,11 +9,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gnupg2 \
     gosu \
     supervisor \
-    # Packages to be checked
+    # Unicode support for PDF
     fonts-noto-cjk \
     fonts-noto-cjk-extra \
     fonts-wqy-microhei \
     fonts-wqy-zenhei \
+    # Packages to be checked
     libonig-dev \
     libpng-dev \
     libxml2-dev \
@@ -50,20 +51,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Configure directories and permissions for chrome 
-RUN mkdir -p /var/www/.chrome/chrome-profile \
-    mkdir -p /tmp/chrome \
-    && chown -R www-data:www-data /var/www/.chrome \
+# Configure directories and permissions
+RUN mkdir -p \
+        /var/www/.chrome/chrome-profile \
+        /tmp/chrome \
     && chmod -R 755 /var/www/.chrome \
     && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
-        chown root:root /usr/bin/google-chrome \
+        chown -R root:root \
+            /opt/google/chrome \
+            /usr/bin/google-chrome \
         && chmod 4755 /usr/bin/google-chrome \
-        && chown -R root:root /opt/google/chrome \
-        && chmod -R 755 /opt/google/chrome \
-        && chown -R www-data:www-data /tmp/chrome \
-        && chmod -R 755 /tmp/chrome; \
+        && chmod -R 755 \
+            /opt/google/chrome \
+            /tmp/chrome; \
     fi \
-    && chown -R www-data:www-data /var/www
+    && chown -R www-data:www-data \
+        /var/www \
+        /tmp/chrome
 
 # Copy Install PHP extensions installer
 ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
