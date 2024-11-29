@@ -5,36 +5,17 @@ ARG saxon=12.5.0
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
+    default-mysql-client \
     gnupg2 \
     gosu \
     supervisor \
-    default-mysql-client \
-    fonts-liberation \
     fonts-noto-cjk \
     fonts-noto-cjk-extra \
     fonts-wqy-microhei \
     fonts-wqy-zenhei \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libatspi2.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libdrm2 \
-    libgbm1 \
-    libgtk-3-0 \
-    libnspr4 \
-    libnss3 \
     libonig-dev \
     libpng-dev \
-    libwayland-client0 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxfixes3 \
-    libxkbcommon0 \
     libxml2-dev \
-    libxrandr2 \
-    xdg-utils \
     xfonts-wqy \
     && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
         mkdir -p /etc/apt/keyrings \
@@ -42,6 +23,28 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
         && apt-get update \
         && apt-get install -y --no-install-recommends google-chrome-stable; \
+    fi \
+    && if [ "$(dpkg --print-architecture)" = "arm64" ]; then \
+        apt-get install -y --no-install-recommends \
+            fonts-liberation \
+            libasound2 \
+            libatk-bridge2.0-0 \
+            libatk1.0-0 \
+            libatspi2.0-0 \
+            libcups2 \
+            libdbus-1-3 \
+            libdrm2 \
+            libgbm1 \
+            libgtk-3-0 \
+            libnspr4 \
+            libnss3 \
+            libwayland-client0 \
+            libxcomposite1 \
+            libxdamage1 \
+            libxfixes3 \
+            libxkbcommon0 \
+            libxrandr2 \
+            xdg-utils \
     fi \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -118,10 +121,6 @@ COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Add initialization script
 COPY --chmod=0755 scripts/init.sh /usr/local/bin/init.sh
-
-# Configure PHP-FPM
-RUN sed -i "s/user = www-data/user = www-data/g" /usr/local/etc/php-fpm.d/www.conf \
-    && sed -i "s/group = www-data/group = www-data/g" /usr/local/etc/php-fpm.d/www.conf
 
 # Create volume directories
 RUN mkdir -p \
