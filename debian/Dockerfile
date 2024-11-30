@@ -136,6 +136,9 @@ RUN mkdir -p \
 
 RUN cp /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html
 
+# copy the public/ directory into a separate folder so that we can overwrite the volume later via the entrypoint
+RUN mkdir -p /image-original/public && cp -r /var/www/html/public /image-original/public
+
 # Set permissions
 RUN chown -R www-data:www-data \
     /var/www/html/storage \
