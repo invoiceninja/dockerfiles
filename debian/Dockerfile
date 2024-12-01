@@ -58,7 +58,7 @@ RUN chown www-data:www-data /var/www \
         && chmod -R 755 /var/www/.chrome; \
     fi
 
-# Copy Install PHP extensions installer
+# Install PHP extensions installer
 ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
 # Install Required PHP extensions.
@@ -84,17 +84,18 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 # Copy scripts
 COPY rootfs /
 
-# Set working directory
-WORKDIR /var/www/html
+USER www-data
 
 # Download and extract application
 RUN set -eux; \ 
     DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
     grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | cut -d '"' -f 4) && \
-    curl -L "$DOWNLOAD_URL" | tar -xvz -C /var/www/html && \
-    chown -R www-data:www-data /var/www/html
+    curl -L "$DOWNLOAD_URL" | tar -oxvz -C /var/www/html
 
-USER www-data
+RUN cp /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html
+
+# Set working directory
+WORKDIR /var/www/html
 
 # Install dependencies
 RUN composer install --no-dev --no-scripts --no-autoloader
