@@ -29,22 +29,10 @@ docker_process_init_files() {
     done
 }
 
-# Create directories if they don't exist
-mkdir -p \
-    /var/www/html/storage/app/public \
-    /var/www/html/storage/framework/cache \
-    /var/www/html/storage/framework/sessions \
-    /var/www/html/storage/framework/views \
-    /var/www/html/storage/logs \
-    /var/www/html/public/storage
-
-# Set directory permissions without changing ownership
-chmod -R 775 \
-    /var/www/html/storage \
-    /var/www/html/bootstrap/cache \
-    /var/www/html/public/storage
-
-chown -R www-data:www-data /var/www/html/storage
+# Ensure owner, file and directory permissions are correct
+chown -R www-data:www-data /var/www/html/
+find /var/www/html/ -type f -exec chmod 644 {} \;
+find /var/www/html/ -type d -exec chmod 755 {} \;
 
 # Clear and cache config in production
 if [ "$APP_ENV" = "production" ]; then
