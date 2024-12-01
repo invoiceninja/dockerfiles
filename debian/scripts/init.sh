@@ -29,10 +29,23 @@ docker_process_init_files() {
     done
 }
 
+# Workaround for application updates
+rm -rf /var/www/html/public/*
+mv /tmp/public/* /var/www/html/public/
+
+# Create upload directory
+mkdir -p /var/www/html/public/uploads
+
 # Ensure owner, file and directory permissions are correct
-chown -R www-data:www-data /var/www/html/
-find /var/www/html/ -type f -exec chmod 644 {} \;
-find /var/www/html/ -type d -exec chmod 755 {} \;
+chown -R www-data:www-data \
+    /var/www/html/storage \
+    /var/www/html/public
+find /var/www/html/storage \
+    /var/www/html/public \
+        -type f -exec chmod 644 {} \;
+find /var/www/html/storage \
+    /var/www/html/public \
+        -type d -exec chmod 755 {} \;
 
 # Clear and cache config in production
 if [ "$APP_ENV" = "production" ]; then

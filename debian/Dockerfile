@@ -58,11 +58,8 @@ RUN chown www-data:www-data /var/www \
         && chmod -R 755 /var/www/.chrome; \
     fi
 
-# Install PHP extensions installer
-ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
-
 # Install Required PHP extensions.
-RUN install-php-extensions \
+RUN ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
     bcmath \
     exif \
     gd \
@@ -86,24 +83,24 @@ COPY rootfs /
 
 USER www-data
 
-# Download and extract application
-RUN set -eux; \ 
-    DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
-    grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | cut -d '"' -f 4) && \
-    curl -L "$DOWNLOAD_URL" | tar -oxvz -C /var/www/html
-
-RUN cp /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html
-
-# Set working directory
 WORKDIR /var/www/html
 
-# Install dependencies
-RUN composer install --no-dev --no-scripts --no-autoloader
-
-# Generate optimized autoloader and clear cache
-RUN composer dump-autoload --optimize \
+# Setup InvoiceNinja
+RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
+    grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | cut -d '"' -f 4 | \
+    xargs curl -L | tar -oxvz -C /var/www/html \
+    && cp /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
+    # File permissions
+    && find /var/www/html/ -type f -exec chmod 644 {} \; \
+    # Directory permissions
+    && find /var/www/html/ -type d -exec chmod 755 {} \; \
+    # Install dependencies
+    && composer install --no-dev --no-scripts --no-autoloader \
+    && composer dump-autoload --optimize \
     && php artisan optimize \
-    && php artisan storage:link
+    && php artisan storage:link \
+    # Workaround for application updates
+    && mv /var/www/html/public /tmp/public
 
 USER root
 
@@ -112,10 +109,6 @@ COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Add initialization script
 COPY --chmod=0755 scripts/init.sh /usr/local/bin/init.sh
-
-# Create upload directories
-RUN mkdir -p /var/www/html/public/uploads \
-    && chmod -R 775 /var/www/html/public/uploads
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
