@@ -21,10 +21,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xfonts-wqy \
     && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
         mkdir -p /etc/apt/keyrings \
-        && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/keyrings/google.gpg \
+        && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | \
+            gpg --dearmor -o /etc/apt/keyrings/google.gpg \
         && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
         && apt-get update \
-        && apt-get install -y --no-install-recommends google-chrome-stable; \
+        && apt-get install -y --no-install-recommends google-chrome-stable \
+        && mkdir -p /var/www/.config/google-chrome \
+        && chown -R www-data:www-data /var/www/.config/google-chrome; \
     elif [ "$(dpkg --print-architecture)" = "arm64" ]; then \
         apt-get install -y --no-install-recommends \
             # Packages for chrome
@@ -46,17 +49,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
             libxfixes3 \
             libxkbcommon0 \
             libxrandr2 \
-            xdg-utils; \
+            xdg-utils \
+            && mkdir -p /var/www/.chrome/chrome-profile \
+            && chown -R www-data:www-data /var/www/.chrome/chrome-profile; \
     fi \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-
-# # Configure chrome
-RUN chown www-data:www-data /var/www \
-    && if [ "$(dpkg --print-architecture)" = "arm64" ]; then \
-        mkdir -p /var/www/.chrome/chrome-profile \
-        && chmod -R 755 /var/www/.chrome; \
-    fi
 
 # Install Required PHP extensions.
 RUN ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
@@ -87,8 +85,10 @@ WORKDIR /var/www/html
 
 # Setup InvoiceNinja
 RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
-    grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | cut -d '"' -f 4 | \
-    xargs curl -L | tar -oxvz -C /var/www/html \
+        grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | \
+        cut -d '"' -f 4 | \
+        xargs curl -L | \
+        tar -oxvz -C /var/www/html \
     && cp /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
     # File permissions
     && find /var/www/html/ -type f -exec chmod 644 {} \; \
