@@ -113,32 +113,9 @@ COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Add initialization script
 COPY --chmod=0755 scripts/init.sh /usr/local/bin/init.sh
 
-# Create volume directories
-RUN mkdir -p \
-    /var/www/html/storage/app/public \
-    /var/www/html/storage/framework/cache \
-    /var/www/html/storage/framework/sessions \
-    /var/www/html/storage/framework/views \
-    /var/www/html/storage/logs \
-    /var/www/html/public/uploads \
-    /var/run \
-    /var/log/supervisor 
-
-RUN cp /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html
-
-# Set permissions
-RUN chown -R www-data:www-data \
-    /var/www/html/storage \
-    /var/www/html/bootstrap/cache \
-    /var/www/html/public/uploads \
-    /var/run \
-    /var/log/supervisor \
-    && chmod -R 775 \
-        /var/www/html/public/uploads \
-        /var/www/html/storage \
-        /var/www/html/bootstrap/cache \
-        /var/run \
-        /var/log/supervisor 
+# Create upload directories
+RUN mkdir -p /var/www/html/public/uploads \
+    && chmod -R 775 /var/www/html/public/uploads
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
