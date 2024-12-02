@@ -30,8 +30,18 @@ docker_process_init_files() {
 }
 
 # Workaround for application updates
-rm -rf /var/www/html/public/*
-mv /tmp/public/* /var/www/html/public/
+if [ "$(ls -A /tmp/public)" ]; then
+    echo "Updating public folder..."
+    rm -rf /var/www/html/public/* \
+        /var/www/html/public/.htaccess \
+        /var/www/html/public/.well-known
+    mv /tmp/public/* \
+        /tmp/public/.htaccess \
+        /tmp/public/.well-known \
+        /var/www/html/public/
+else
+    echo "Public Folder is up to date"
+fi
 
 # Create upload directory
 mkdir -p /var/www/html/public/uploads
@@ -52,8 +62,6 @@ if [ "$APP_ENV" = "production" ]; then
     gosu www-data php artisan optimize
     gosu www-data php artisan package:discover
     gosu www-data php artisan migrate --force
-
-    echo "Checking initialization status..."
 
     # If first IN run, it needs to be initialized
     echo "Checking initialization status..."
