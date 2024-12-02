@@ -10,14 +10,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gosu \
     supervisor \
     # Unicode support for PDF
-    fonts-noto-cjk \
     fonts-noto-cjk-extra \
     fonts-wqy-microhei \
     fonts-wqy-zenhei \
-    # Packages to be checked
-    libonig-dev \
-    libpng-dev \
-    libxml2-dev \
     xfonts-wqy \
     && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
         mkdir -p /etc/apt/keyrings \
