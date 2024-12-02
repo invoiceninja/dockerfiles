@@ -4,7 +4,6 @@ ARG saxon=12.5.0
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl \
     default-mysql-client \
     gnupg2 \
     gosu \
