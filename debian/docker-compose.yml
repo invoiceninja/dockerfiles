@@ -19,7 +19,7 @@ services:
       - ./supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf:ro
       - app_storage:/var/www/html/storage
       - app_cache:/var/www/html/bootstrap/cache
-      - image_public:/var/www/html/public:ro
+      - image_public:/var/www/html/public
     networks:
       - app-network
     depends_on:
@@ -33,11 +33,11 @@ services:
     image: nginx:alpine
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "8012:80"
     volumes:
       - ./nginx:/etc/nginx/conf.d:ro
       - app_storage:/var/www/html/storage:ro
-      - image_public:/var/www/html/public:ro
+      - image_public:/var/www/html/public
     networks:
       - app-network
     depends_on:
