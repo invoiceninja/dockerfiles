@@ -54,13 +54,13 @@ fi
 
 # Clean the existing public/ directory but exclude .js and .css files
 if [ -d /var/www/html/public ]; then
-  echo "Cleaning up stale files in public/ directory, retaining .js and .css files..."
-  find /var/www/html/public -type f ! -name '*.js' ! -name '*.css' -exec rm -f {} \;
+  echo "Cleaning up .js and .css files in public/ directory..."
+  find /var/www/html/public -type f \( -name '*.js' -o -name '*.css' \) -exec rm -f {} \;
 fi
 
 # Copy the public/ directory from the image to the mounted volume
 echo "Copying public/ directory from image to volume..."
-cp -r /image-original/public/* /var/www/html/public/
+cp -r /image-original/public/* /var/www/html/
 
 
 # Clear and cache config in production

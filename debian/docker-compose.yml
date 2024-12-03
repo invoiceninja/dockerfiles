@@ -13,13 +13,14 @@ services:
     env_file:
       - ./.env
     volumes:
+      - ./scripts/init.sh:/usr/local/bin/init.sh
       - ./.env:/var/www/html/.env:ro
       - ./php/php.ini:/usr/local/etc/php/conf.d/zzz-php.ini:ro
       - ./php/php-fpm.conf:/usr/local/etc/php-fpm.d/zzz-php-fpm.conf:ro
       - ./supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf:ro
       - app_storage:/var/www/html/storage
       - app_cache:/var/www/html/bootstrap/cache
-      - image_public:/var/www/html/public:ro
+      - image_public:/var/www/html/public
     networks:
       - app-network
     depends_on:
@@ -37,7 +38,7 @@ services:
     volumes:
       - ./nginx:/etc/nginx/conf.d:ro
       - app_storage:/var/www/html/storage:ro
-      - image_public:/var/www/html/public:ro
+      - image_public:/var/www/html/public
     networks:
       - app-network
     depends_on:
