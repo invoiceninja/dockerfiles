@@ -13,6 +13,7 @@ services:
     env_file:
       - ./.env
     volumes:
+      - ./scripts/init.sh:/usr/local/bin/init.sh
       - ./.env:/var/www/html/.env:ro
       - ./php/php.ini:/usr/local/etc/php/conf.d/zzz-php.ini:ro
       - ./php/php-fpm.conf:/usr/local/etc/php-fpm.d/zzz-php-fpm.conf:ro
