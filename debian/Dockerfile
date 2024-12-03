@@ -5,7 +5,7 @@ ARG saxon=12.5.0
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     default-mysql-client \
-    gnupg2 \
+    gpg \
     gosu \
     supervisor \
     # Unicode support for PDF
@@ -47,6 +47,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
             && mkdir -p /var/www/.chrome/chrome-profile \
             && chown -R www-data:www-data /var/www/.chrome/chrome-profile; \
     fi \
+    && apt-get purge -y gpg \
+    && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -57,7 +59,8 @@ RUN ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/relea
     gd \
     gmp \
     imagick \
-    mysqli \     
+    intl \
+    mysqli \
     opcache \
     pcntl \
     pdo_mysql \
