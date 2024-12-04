@@ -43,9 +43,6 @@ else
     echo "Public Folder is up to date"
 fi
 
-# Create upload directory
-mkdir -p /var/www/html/public/uploads
-
 # Ensure owner, file and directory permissions are correct
 chown -R www-data:www-data \
     /var/www/html/storage \
