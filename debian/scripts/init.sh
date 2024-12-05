@@ -29,52 +29,52 @@ docker_process_init_files() {
     done
 }
 
-# Workaround for application updates
-if [ "$(ls -A /tmp/public)" ]; then
-    echo "Updating public folder..."
-    rm -rf /var/www/html/public/* \
-        /var/www/html/public/.htaccess \
-        /var/www/html/public/.well-known
-    mv /tmp/public/* \
-        /tmp/public/.htaccess \
-        /tmp/public/.well-known \
-        /var/www/html/public/
-else
+if [ "$*" = 'supervisord -n -c /etc/supervisor/conf.d/supervisord.conf' ]; then
+    # Workaround for application updates
+    if [ "$(ls -A /tmp/public)" ]; then
+        echo "Updating public folder..."
+        rm -rf /var/www/html/public/.htaccess \
+            /var/www/html/public/.well-known \
+            /var/www/html/public/*
+        mv /tmp/public/* \
+            /tmp/public/.htaccess \
+            /tmp/public/.well-known \
+            /var/www/html/public/
+    fi
     echo "Public Folder is up to date"
-fi
 
-# Ensure owner, file and directory permissions are correct
-chown -R www-data:www-data \
-    /var/www/html/storage \
-    /var/www/html/public
-find /var/www/html/storage \
-    /var/www/html/public \
+    # Ensure owner, file and directory permissions are correct
+    chown -R www-data:www-data \
+        /var/www/html/public \
+        /var/www/html/storage
+    find /var/www/html/public \
+        /var/www/html/storage \
         -type f -exec chmod 644 {} \;
-find /var/www/html/storage \
-    /var/www/html/public \
+    find /var/www/html/public \
+        /var/www/html/storage \
         -type d -exec chmod 755 {} \;
 
-# Clear and cache config in production
-if [ "$APP_ENV" = "production" ]; then
-    gosu www-data php artisan optimize
-    gosu www-data php artisan package:discover
-    gosu www-data php artisan migrate --force
+    # Clear and cache config in production
+    if [ "$APP_ENV" = "production" ]; then
+        gosu www-data php artisan optimize
+        gosu www-data php artisan package:discover
+        gosu www-data php artisan migrate --force
 
-    # If first IN run, it needs to be initialized
-    echo "Checking initialization status..."
-    IN_INIT=$(php artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')
-    echo "IN_INIT value: $IN_INIT"
+        # If first IN run, it needs to be initialized
+        echo "Checking initialization status..."
+        IN_INIT=$(php artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')
+        echo "IN_INIT value: $IN_INIT"
 
-    if [ "$IN_INIT" = "1" ]; then
-        echo "Running initialization scripts..."
-        docker_process_init_files /docker-entrypoint-init.d/*
+        if [ "$IN_INIT" = "1" ]; then
+            echo "Running initialization scripts..."
+            docker_process_init_files /docker-entrypoint-init.d/*
+        fi
+
+        echo "Production setup completed"
+        echo "IN_INIT value: $IN_INIT"
+
     fi
 
-    echo "Production setup completed"
-    echo "IN_INIT value: $IN_INIT"
-
+    echo "Starting supervisord..."
 fi
-
-echo "Starting supervisord..."
-# Start supervisord in the foreground
-exec /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+exec "$@"

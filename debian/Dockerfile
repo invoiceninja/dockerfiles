@@ -1,6 +1,9 @@
 FROM php:8.3-fpm AS base
 
-ARG saxon=12.5.0
+ARG php_require="bcmath gd pdo_mysql zip"
+ARG php_suggest="exif imagick intl pcntl soap"
+ARG php_suggest_debian="saxon-12.5.0"
+ARG php_extra="opcache"
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -53,22 +56,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Required PHP extensions.
-RUN ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
-    bcmath \
-    exif \
-    gd \
-    gmp \
-    imagick \
-    intl \
-    mysqli \
-    opcache \
-    pcntl \
-    pdo_mysql \
-    redis \
-    saxon-${saxon} \
-    soap \
-    zip \
-    @composer
+RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
+    ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
+        ${php_require} \
+        ${php_suggest} \
+        ${php_suggest_debian} \
+        ${php_extra} \
+        @composer; \
+    elif [ "$(dpkg --print-architecture)" = "arm64" ]; then \
+        ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
+        ${php_require} \
+        ${php_suggest} \
+        ${php_extra} \
+        @composer; \
+    fi
 
 # Configure PHP
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
@@ -84,8 +85,8 @@ WORKDIR /var/www/html
 RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
         grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | \
         cut -d '"' -f 4 | \
-        xargs curl -L | \
-        tar -oxvz -C /var/www/html \
+        xargs curl -sL | \
+        tar -oxz -C /var/www/html \
     && cp /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
     # File permissions
     && find /var/www/html/ -type f -exec chmod 644 {} \; \

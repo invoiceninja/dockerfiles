@@ -17,9 +17,9 @@ services:
       - ./php/php.ini:/usr/local/etc/php/conf.d/zzz-php.ini:ro
       - ./php/php-fpm.conf:/usr/local/etc/php-fpm.d/zzz-php-fpm.conf:ro
       - ./supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf:ro
-      - app_storage:/var/www/html/storage
       - app_cache:/var/www/html/bootstrap/cache
-      - image_public:/var/www/html/public
+      - app_public:/var/www/html/public
+      - app_storage:/var/www/html/storage
     networks:
       - app-network
     depends_on:
@@ -36,6 +36,7 @@ services:
       - "80:80"
     volumes:
       - ./nginx:/etc/nginx/conf.d:ro
+      - app_public:/var/www/html/public:ro
       - app_storage:/var/www/html/storage:ro
       - image_public:/var/www/html/public:ro
     networks:
@@ -84,13 +85,13 @@ networks:
     driver: bridge
 
 volumes:
-  app_storage:
-    driver: local
   app_cache:
     driver: local
+  app_public:
+    driver: local
+  app_storage:
+    driver: local  
   mysql_data:
     driver: local
   redis_data:
-    driver: local
-  image_public:
     driver: local
