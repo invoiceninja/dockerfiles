@@ -77,4 +77,5 @@ if [ "$*" = 'supervisord -n -c /etc/supervisor/conf.d/supervisord.conf' ]; then
 
     echo "Starting supervisord..."
 fi
+
 exec "$@"

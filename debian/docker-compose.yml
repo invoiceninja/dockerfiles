@@ -38,7 +38,6 @@ services:
       - ./nginx:/etc/nginx/conf.d:ro
       - app_public:/var/www/html/public:ro
       - app_storage:/var/www/html/storage:ro
-      - image_public:/var/www/html/public:ro
     networks:
       - app-network
     depends_on:
@@ -46,7 +45,7 @@ services:
     logging: *default-logging
 
   mysql:
-    image: mysql:8.0
+    image: mysql:8
     restart: unless-stopped
     env_file:
       - ./.env
