@@ -29,7 +29,7 @@ docker_process_init_files() {
     done
 }
 
-if [ "$*" = 'supervisord -n -c /etc/supervisor/conf.d/supervisord.conf' ]; then
+if [ "$*" = 'supervisord -c /etc/supervisor/conf.d/supervisord.conf' ]; then
     # Workaround for application updates
     if [ "$(ls -A /tmp/public)" ]; then
         echo "Updating public folder..."
