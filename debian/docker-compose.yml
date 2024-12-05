@@ -13,14 +13,13 @@ services:
     env_file:
       - ./.env
     volumes:
-      - ./scripts/init.sh:/usr/local/bin/init.sh
-      - ./.env:/var/www/html/.env:ro
+      - ./.env:/var/www/html/.env
       - ./php/php.ini:/usr/local/etc/php/conf.d/zzz-php.ini:ro
       - ./php/php-fpm.conf:/usr/local/etc/php-fpm.d/zzz-php-fpm.conf:ro
       - ./supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf:ro
-      - app_storage:/var/www/html/storage
       - app_cache:/var/www/html/bootstrap/cache
-      - image_public:/var/www/html/public
+      - app_public:/var/www/html/public
+      - app_storage:/var/www/html/storage
     networks:
       - app-network
     depends_on:
@@ -37,8 +36,8 @@ services:
       - "80:80"
     volumes:
       - ./nginx:/etc/nginx/conf.d:ro
+      - app_public:/var/www/html/public:ro
       - app_storage:/var/www/html/storage:ro
-      - image_public:/var/www/html/public
     networks:
       - app-network
     depends_on:
@@ -46,7 +45,7 @@ services:
     logging: *default-logging
 
   mysql:
-    image: mysql:8.0
+    image: mysql:8
     restart: unless-stopped
     env_file:
       - ./.env
@@ -60,16 +59,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test:
-        [
-          "CMD",
-          "mysqladmin",
-          "ping",
-          "-h",
-          "localhost",
-          "-u${MYSQL_USER}",
-          "-p${MYSQL_PASSWORD}",
-        ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -83,7 +73,7 @@ services:
     networks:
       - app-network
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -94,13 +84,13 @@ networks:
     driver: bridge
 
 volumes:
-  app_storage:
-    driver: local
   app_cache:
     driver: local
+  app_public:
+    driver: local
+  app_storage:
+    driver: local  
   mysql_data:
     driver: local
   redis_data:
-    driver: local
-  image_public:
     driver: local

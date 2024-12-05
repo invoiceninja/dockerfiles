@@ -1,10 +1,10 @@
 #!/bin/sh
 set -e
 
-
 in_log() {
-        local type="$1"; shift
-        printf '%s [%s] [Entrypoint]: %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$type" "$*"
+    local type="$1"
+    shift
+    printf '%s [%s] [Entrypoint]: %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$type" "$*"
 }
 
 docker_process_init_files() {
@@ -29,64 +29,53 @@ docker_process_init_files() {
     done
 }
 
-# Create directories if they don't exist
-mkdir -p \
-    /var/www/html/storage/app/public \
-    /var/www/html/storage/framework/cache \
-    /var/www/html/storage/framework/sessions \
-    /var/www/html/storage/framework/views \
-    /var/www/html/storage/logs \
-    /var/www/html/public/storage
+if [ "$*" = 'supervisord -c /etc/supervisor/conf.d/supervisord.conf' ]; then
+    # Workaround for application updates
+    if [ "$(ls -A /tmp/public)" ]; then
+        echo "Updating public folder..."
+        rm -rf /var/www/html/public/.htaccess \
+            /var/www/html/public/.well-known \
+            /var/www/html/public/*
+        mv /tmp/public/* \
+            /tmp/public/.htaccess \
+            /tmp/public/.well-known \
+            /var/www/html/public/
+    fi
+    echo "Public Folder is up to date"
 
-# Set directory permissions without changing ownership
-chmod -R 775 \
-    /var/www/html/storage \
-    /var/www/html/bootstrap/cache \
-    /var/www/html/public/storage
+    # Ensure owner, file and directory permissions are correct
+    chown -R www-data:www-data \
+        /var/www/html/public \
+        /var/www/html/storage
+    find /var/www/html/public \
+        /var/www/html/storage \
+        -type f -exec chmod 644 {} \;
+    find /var/www/html/public \
+        /var/www/html/storage \
+        -type d -exec chmod 755 {} \;
 
-chown -R www-data:www-data /var/www/html/storage
+    # Clear and cache config in production
+    if [ "$APP_ENV" = "production" ]; then
+        gosu www-data php artisan optimize
+        gosu www-data php artisan package:discover
+        gosu www-data php artisan migrate --force
 
-# Ensure symlink for storage/app/public
-if [ ! -L /var/www/html/public/storage ]; then
-  echo "Creating symlink for storage/app/public..."
-  ln -sfn /var/www/html/storage/app/public /var/www/html/public/storage
-fi
+        # If first IN run, it needs to be initialized
+        echo "Checking initialization status..."
+        IN_INIT=$(php artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')
+        echo "IN_INIT value: $IN_INIT"
 
-# Clean the existing public/ directory but exclude .js and .css files
-if [ -d /var/www/html/public ]; then
-  echo "Cleaning up .js and .css files in public/ directory..."
-  find /var/www/html/public -type f \( -name '*.js' -o -name '*.css' \) -exec rm -f {} \;
-fi
+        if [ "$IN_INIT" = "1" ]; then
+            echo "Running initialization scripts..."
+            docker_process_init_files /docker-entrypoint-init.d/*
+        fi
 
-# Copy the public/ directory from the image to the mounted volume
-echo "Copying public/ directory from image to volume..."
-cp -r /image-original/public/* /var/www/html/
+        echo "Production setup completed"
+        echo "IN_INIT value: $IN_INIT"
 
-
-# Clear and cache config in production
-if [ "$APP_ENV" = "production" ]; then
-    gosu www-data php artisan config:cache
-    gosu www-data php artisan optimize
-    gosu www-data php artisan package:discover
-    gosu www-data php artisan migrate --force
-
-    echo "Checking initialization status..."
-
-    # If first IN run, it needs to be initialized
-    echo "Checking initialization status..."
-    IN_INIT=$(php artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')
-    echo "IN_INIT value: $IN_INIT"
-
-    if [ "$IN_INIT" = "1" ]; then
-        echo "Running initialization scripts..."
-        docker_process_init_files /docker-entrypoint-init.d/*
     fi
 
-    echo "Production setup completed"
-    echo "IN_INIT value: $IN_INIT"
-
+    echo "Starting supervisord..."
 fi
 
-echo "Starting supervisord..."
-# Start supervisord in the foreground
-exec /usr/bin/supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+exec "$@"
