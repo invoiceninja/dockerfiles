@@ -15,40 +15,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-wqy-microhei \
     fonts-wqy-zenhei \
     xfonts-wqy \
+    # Install google-chrome-stable(amd64)/chromium(arm64)
     && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
         mkdir -p /etc/apt/keyrings \
         && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | \
             gpg --dearmor -o /etc/apt/keyrings/google.gpg \
         && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
         && apt-get update \
-        && apt-get install -y --no-install-recommends google-chrome-stable \
-        && mkdir -p /var/www/.config/google-chrome \
-        && chown -R www-data:www-data /var/www/.config/google-chrome; \
+        && apt-get install -y --no-install-recommends google-chrome-stable; \
     elif [ "$(dpkg --print-architecture)" = "arm64" ]; then \
         apt-get install -y --no-install-recommends \
-            # Packages for chrome
-            fonts-liberation \
-            libasound2 \
-            libatk-bridge2.0-0 \
-            libatk1.0-0 \
-            libatspi2.0-0 \
-            libcups2 \
-            libdbus-1-3 \
-            libdrm2 \
-            libgbm1 \
-            libgtk-3-0 \
-            libnspr4 \
-            libnss3 \
-            libwayland-client0 \
-            libxcomposite1 \
-            libxdamage1 \
-            libxfixes3 \
-            libxkbcommon0 \
-            libxrandr2 \
-            xdg-utils \
-            && mkdir -p /var/www/.chrome/chrome-profile \
-            && chown -R www-data:www-data /var/www/.chrome/chrome-profile; \
+        chromium; \        
     fi \
+    # Create config directory for chromium/google-chrome-stable
+    && mkdir /var/www/.config \
+    && chown www-data:www-data /var/www/.config \
+    # Cleanup
     && apt-get purge -y gpg \
     && apt-get autoremove -y \
     && apt-get clean \
