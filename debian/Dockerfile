@@ -36,21 +36,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Required PHP extensions.
-RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
-    ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
-        ${php_require} \
-        ${php_suggest} \
-        ${php_suggest_debian} \
-        ${php_extra} \
-        @composer; \
-    elif [ "$(dpkg --print-architecture)" = "arm64" ]; then \
-        ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
+# Install PHP extensions
+RUN ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
         ${php_require} \
         ${php_suggest} \
         ${php_extra} \
-        @composer; \
-    fi
+        @composer
 
 # Configure PHP
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
