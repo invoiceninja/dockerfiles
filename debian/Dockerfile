@@ -1,8 +1,7 @@
 FROM php:8.3-fpm AS base
 
 ARG php_require="bcmath gd pdo_mysql zip"
-ARG php_suggest="exif imagick intl pcntl soap"
-ARG php_suggest_debian="saxon-12.5.0"
+ARG php_suggest="exif imagick intl pcntl soap saxon-12.5.0"
 ARG php_extra="opcache"
 
 # Install system dependencies
