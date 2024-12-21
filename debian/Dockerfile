@@ -7,7 +7,7 @@ ARG php_extra="opcache"
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    default-mysql-client \
+    mariadb-client \
     gpg \
     supervisor \
     # Unicode support for PDF
