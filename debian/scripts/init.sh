@@ -56,9 +56,9 @@ if [ "$*" = 'supervisord -c /etc/supervisor/conf.d/supervisord.conf' ]; then
 
     # Clear and cache config in production
     if [ "$APP_ENV" = "production" ]; then
-        gosu www-data php artisan optimize
-        gosu www-data php artisan package:discover
-        gosu www-data php artisan migrate --force
+        runuser -u www-data -- php artisan optimize
+        runuser -u www-data -- php artisan package:discover
+        runuser -u www-data -- php artisan migrate --force
 
         # If first IN run, it needs to be initialized
         echo "Checking initialization status..."
