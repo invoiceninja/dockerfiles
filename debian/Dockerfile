@@ -9,7 +9,6 @@ ARG php_extra="opcache"
 RUN apt-get update && apt-get install -y --no-install-recommends \
     default-mysql-client \
     gpg \
-    gosu \
     supervisor \
     # Unicode support for PDF
     fonts-noto-cjk-extra \
