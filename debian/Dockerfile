@@ -84,7 +84,5 @@ COPY --chmod=0755 scripts/init.sh /usr/local/bin/init.sh
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD php -v || exit 1
 
-EXPOSE 9000
-
 ENTRYPOINT ["/usr/local/bin/init.sh"]
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
