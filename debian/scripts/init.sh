@@ -1,81 +1,42 @@
-#!/bin/sh
-set -e
+#!/bin/sh -eu
 
-in_log() {
-    local type="$1"
-    shift
-    printf '%s [%s] [Entrypoint]: %s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$type" "$*"
-}
+app_dir=${APP_DIR:-/app}
+role=${LARAVEL_ROLE:-app}
 
-docker_process_init_files() {
-    echo
-    local f
-    for f; do
-        case "$f" in
-        *.sh)
-            # https://github.com/docker-library/postgres/issues/450#issuecomment-393167936
-            # https://github.com/docker-library/postgres/pull/452
-            if [ -x "$f" ]; then
-                in_log INFO "$0: running $f"
-                "$f"
-            else
-                in_log INFO "$0: sourcing $f"
-                . "$f"
-            fi
-            ;;
-        *) in_log INFO "$0: ignoring $f" ;;
-        esac
-        echo
-    done
-}
+if [ "$*" = 'frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile' ]; then
 
-if [ "$*" = 'supervisord -c /etc/supervisor/conf.d/supervisord.conf' ]; then
-    # Workaround for application updates
-    if [ "$(ls -A /tmp/public)" ]; then
-        echo "Updating public folder..."
-        rm -rf /var/www/html/public/.htaccess \
-            /var/www/html/public/.well-known \
-            /var/www/html/public/*
-        mv /tmp/public/* \
-            /tmp/public/.htaccess \
-            /tmp/public/.well-known \
-            /var/www/html/public/
-    fi
-    echo "Public Folder is up to date"
-
-    # Ensure owner, file and directory permissions are correct
-    chown -R www-data:www-data \
-        /var/www/html/public \
-        /var/www/html/storage
-    find /var/www/html/public \
-        /var/www/html/storage \
-        -type f -exec chmod 644 {} \;
-    find /var/www/html/public \
-        /var/www/html/storage \
-        -type d -exec chmod 755 {} \;
-
-    # Clear and cache config in production
-    if [ "$APP_ENV" = "production" ]; then
-        runuser -u www-data -- php artisan optimize
-        runuser -u www-data -- php artisan package:discover
-        runuser -u www-data -- php artisan migrate --force
-
-        # If first IN run, it needs to be initialized
-        echo "Checking initialization status..."
-        IN_INIT=$(php artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')
-        echo "IN_INIT value: $IN_INIT"
-
-        if [ "$IN_INIT" = "1" ]; then
-            echo "Running initialization scripts..."
-            docker_process_init_files /docker-entrypoint-init.d/*
+    if [ "${role}" = "app" ]; then
+        if [ "$APP_ENV" = "production" ]; then
+            frankenphp php-cli "${app_dir}"/artisan optimize
         fi
 
-        echo "Production setup completed"
-        echo "IN_INIT value: $IN_INIT"
+        frankenphp php-cli "${app_dir}"/artisan package:discover
 
+        frankenphp php-cli "${app_dir}"/artisan migrate --force
+
+        # If first IN run, it needs to be initialized
+        if [ "$(frankenphp php-cli "${app_dir}"/artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')" = "1" ]; then
+            echo "Running initialization..."
+
+            frankenphp php-cli "${app_dir}"/artisan db:seed --force
+
+            if [ -n "${IN_USER_EMAIL}" ] && [ -n "${IN_PASSWORD}" ]; then
+                frankenphp php-cli "${app_dir}"/artisan ninja:create-account --email "${IN_USER_EMAIL}" --password "${IN_PASSWORD}"
+            else
+                echo "Initialization failed - Set IN_USER_EMAIL and IN_PASSWORD in .env"
+                exit 1
+            fi
+        fi
+        echo "Production setup completed"
+    elif [ "${role}" = "worker" ]; then
+        exec frankenphp php-cli "${app_dir}"/artisan queue:work -v --sleep=3 --tries=3 --max-time=3600
+    elif [ "${role}" = "scheduler" ]; then
+        exec frankenphp php-cli "${app_dir}"/artisan schedule:work -v
+    else
+        echo "Invalid role: ${role}"
+        exit 1
     fi
 
-    echo "Starting supervisord..."
 fi
 
 exec "$@"
