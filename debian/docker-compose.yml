@@ -30,10 +30,14 @@ services:
     healthcheck:
       start_period: 180s
     depends_on:
-      mariadb:
+      mysql:
         condition: service_healthy
-      valkey:
+      redis:
         condition: service_healthy
+      # mariadb:
+      #   condition: service_healthy
+      # valkey:
+      #   condition: service_healthy
     logging: *default-logging
   
   app-worker:
@@ -65,39 +69,74 @@ services:
         condition: service_healthy
     logging: *default-logging
 
-  mariadb:
-    image: mariadb:11.4
+  mysql:
+    image: mysql:8
     restart: unless-stopped
     env_file:
       - ./.env
     environment:
-      MARIADB_DATABASE: ${DB_DATABASE}
-      MARIADB_USER: ${DB_USERNAME}
-      MARIADB_PASSWORD: ${DB_PASSWORD}
-      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
-      - mariadb:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-      start_period: 60s
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     logging: *default-logging
 
-  valkey:
-    image: valkey/valkey:8
+  redis:
+    image: redis:alpine
     restart: unless-stopped
     volumes:
-      - valkey:/data
+      - redis_data:/data
     healthcheck:
-      test: [ "CMD", "valkey-cli", "ping" ]
-      start_period: 10s
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     logging: *default-logging
+
+  # mariadb:
+  #   image: mariadb:11.4
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ./.env
+  #   environment:
+  #     MARIADB_DATABASE: ${DB_DATABASE}
+  #     MARIADB_USER: ${DB_USERNAME}
+  #     MARIADB_PASSWORD: ${DB_PASSWORD}
+  #     MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+  #   volumes:
+  #     - mariadb:/var/lib/mysql
+  #   healthcheck:
+  #     test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+  #     start_period: 60s
+  #   logging: *default-logging
+
+  # valkey:
+  #   image: valkey/valkey:8
+  #   restart: unless-stopped
+  #   volumes:
+  #     - valkey:/data
+  #   healthcheck:
+  #     test: [ "CMD", "valkey-cli", "ping" ]
+  #     start_period: 10s
+  #   logging: *default-logging
 
 volumes:
   app_cache:
     driver: local
   app_storage:
     driver: local
-  mariadb:
+  mysql_data:
     driver: local
-  valkey:
+  redis_data:
     driver: local
+  # mariadb:
+  #   driver: local
+  # valkey:
+  #   driver: local
