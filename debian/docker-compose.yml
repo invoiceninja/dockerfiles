@@ -1,3 +1,5 @@
+# name: invoiceninja
+
 x-logging: &default-logging
   options:
     max-size: "10m"
@@ -17,14 +19,14 @@ services:
       context: .
     image: invoiceninja/invoiceninja-debian:${TAG:-latest}
     restart: unless-stopped
+    # php artisan help octane:frankenphp
+    command: --log-level=info
     ports:
-      - "80:80"
+      - "80:8000"
     env_file:
       - ./.env
     environment:
       LARAVEL_ROLE: app
-      # https://frankenphp.dev/docs/production/#preparing-your-app
-      SERVER_NAME: :80
     <<: *volumes
     # HEALTHCHECK from frankenphp image
     healthcheck:
@@ -43,6 +45,8 @@ services:
   app-worker:
     image: invoiceninja/invoiceninja-debian:${TAG:-latest}
     restart: unless-stopped
+    # php artisan help queue:work
+    command: --verbose --sleep=3 --tries=3 --max-time=3600
     deploy:
       mode: replicated
       replicas: 2
@@ -59,6 +63,8 @@ services:
   app-scheduler:
     image: invoiceninja/invoiceninja-debian:${TAG:-latest}
     restart: unless-stopped
+    # php artisan help schedule:work
+    command: --verbose
     env_file:
       - ./.env
     environment:
