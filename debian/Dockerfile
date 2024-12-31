@@ -14,6 +14,8 @@ RUN chmod -R a=r,u+w,a+X .
 # Install dependencies
 RUN composer install --no-dev --no-scripts --no-autoloader --ignore-platform-reqs
 
+RUN composer require laravel/octane --ignore-platform-reqs
+
 RUN composer dump-autoload --optimize
 
 RUN php artisan storage:link
