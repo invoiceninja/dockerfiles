@@ -1,8 +1,17 @@
+# name: invoiceninja
+
 x-logging: &default-logging
   options:
     max-size: "10m"
     max-file: "3"
   driver: json-file
+
+x-app-volumes: &volumes
+  volumes:
+      - ./.env:/app/.env
+      - ./php/php.ini:/usr/local/etc/php/conf.d/zzz-php.ini:ro
+      - app_cache:/var/www/html/bootstrap/cache
+      - app_storage:/app/storage
 
 services:
   app:
@@ -10,38 +19,60 @@ services:
       context: .
     image: invoiceninja/invoiceninja-debian:${TAG:-latest}
     restart: unless-stopped
+    # php artisan help octane:frankenphp
+    command: --log-level=info
+    ports:
+      - "80:8000"
     env_file:
       - ./.env
-    volumes:
-      - ./.env:/var/www/html/.env
-      - ./php/php.ini:/usr/local/etc/php/conf.d/zzz-php.ini:ro
-      - ./php/php-fpm.conf:/usr/local/etc/php-fpm.d/zzz-php-fpm.conf:ro
-      - ./supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf:ro
-      - app_cache:/var/www/html/bootstrap/cache
-      - app_public:/var/www/html/public
-      - app_storage:/var/www/html/storage
-    networks:
-      - app-network
+    environment:
+      LARAVEL_ROLE: app
+    <<: *volumes
+    # HEALTHCHECK from frankenphp image
+    healthcheck:
+      start_period: 180s
     depends_on:
       mysql:
         condition: service_healthy
       redis:
         condition: service_healthy
+      # mariadb:
+      #   condition: service_healthy
+      # valkey:
+      #   condition: service_healthy
+    logging: *default-logging
+  
+  app-worker:
+    image: invoiceninja/invoiceninja-debian:${TAG:-latest}
+    restart: unless-stopped
+    # php artisan help queue:work
+    command: --verbose --sleep=3 --tries=3 --max-time=3600
+    deploy:
+      mode: replicated
+      replicas: 2
+    env_file:
+      - ./.env
+    environment:
+      LARAVEL_ROLE: worker
+    <<: *volumes
+    depends_on:
+      app:
+        condition: service_healthy
     logging: *default-logging
 
-  nginx:
-    image: nginx:alpine
+  app-scheduler:
+    image: invoiceninja/invoiceninja-debian:${TAG:-latest}
     restart: unless-stopped
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx:/etc/nginx/conf.d:ro
-      - app_public:/var/www/html/public:ro
-      - app_storage:/var/www/html/storage:ro
-    networks:
-      - app-network
+    # php artisan help schedule:work
+    command: --verbose
+    env_file:
+      - ./.env
+    environment:
+      LARAVEL_ROLE: scheduler
+    <<: *volumes
     depends_on:
-      - app
+      app:
+        condition: service_healthy
     logging: *default-logging
 
   mysql:
@@ -56,8 +87,6 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
-    networks:
-      - app-network
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}" ]
       interval: 10s
@@ -70,8 +99,6 @@ services:
     restart: unless-stopped
     volumes:
       - redis_data:/data
-    networks:
-      - app-network
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
@@ -79,18 +106,43 @@ services:
       retries: 5
     logging: *default-logging
 
-networks:
-  app-network:
-    driver: bridge
+  # mariadb:
+  #   image: mariadb:11.4
+  #   restart: unless-stopped
+  #   env_file:
+  #     - ./.env
+  #   environment:
+  #     MARIADB_DATABASE: ${DB_DATABASE}
+  #     MARIADB_USER: ${DB_USERNAME}
+  #     MARIADB_PASSWORD: ${DB_PASSWORD}
+  #     MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+  #   volumes:
+  #     - mariadb:/var/lib/mysql
+  #   healthcheck:
+  #     test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+  #     start_period: 60s
+  #   logging: *default-logging
+
+  # valkey:
+  #   image: valkey/valkey:8
+  #   restart: unless-stopped
+  #   volumes:
+  #     - valkey:/data
+  #   healthcheck:
+  #     test: [ "CMD", "valkey-cli", "ping" ]
+  #     start_period: 10s
+  #   logging: *default-logging
 
 volumes:
   app_cache:
     driver: local
-  app_public:
-    driver: local
   app_storage:
-    driver: local  
+    driver: local
   mysql_data:
     driver: local
   redis_data:
     driver: local
+  # mariadb:
+  #   driver: local
+  # valkey:
+  #   driver: local
