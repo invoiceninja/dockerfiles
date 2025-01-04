@@ -1,4 +1,4 @@
-name: Build Debian Container Image
+name: Build Debian OctaneContainer Image
 
 on:
   pull_request:
@@ -33,6 +33,6 @@ jobs:
           context: debian  
           file: debian/Dockerfile  
           load: true
-          tags: invoiceninja/invoiceninja-debian:test
+          tags: invoiceninja/invoiceninja-octane:test
           cache-from: type=gha
           cache-to: type=gha,mode=max
