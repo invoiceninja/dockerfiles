@@ -1,4 +1,4 @@
-FROM composer:latest AS composer
+FROM dunglas/frankenphp:1-php8.3-bookworm AS prepare-app
 
 RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
     grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | \
@@ -10,13 +10,6 @@ RUN ln -s ./resources/views/react/index.blade.php ./public/index.html
 
 # Set permissions: directories 755, files 644
 RUN chmod -R a=r,u+w,a+X .
-
-# Install dependencies
-RUN composer install --no-dev --no-scripts --no-autoloader --ignore-platform-reqs
-
-RUN composer require laravel/octane --ignore-platform-reqs
-
-RUN composer dump-autoload --optimize
 
 RUN php artisan storage:link
 
@@ -95,7 +88,7 @@ ENTRYPOINT ["/usr/local/bin/init.sh"]
 CMD ["frankenphp", "php-cli", "artisan", "octane:frankenphp"]
 
 # InvoiceNinja
-COPY --from=composer --chown=${user}:${user} /app /app
+COPY --from=prepare-app --chown=${user}:${user} /app /app
 
 # Add initialization script
 COPY --chmod=0755 scripts/init.sh /usr/local/bin/init.sh
