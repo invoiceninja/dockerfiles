@@ -12,6 +12,7 @@ x-app-volumes: &volumes
       - ./php/php.ini:/usr/local/etc/php/conf.d/zzz-php.ini:ro
       - app_cache:/var/www/html/bootstrap/cache
       - app_storage:/app/storage
+      - caddy_data:/data
 
 services:
   app:
@@ -20,9 +21,12 @@ services:
     image: invoiceninja/invoiceninja-debian:${TAG:-latest}
     restart: unless-stopped
     # php artisan help octane:frankenphp
-    command: --log-level=info
+    command: --port=80 --workers=2 --log-level=info
+    # command: --host=example.com --port=443 --workers=2 --https --http-redirect --log-level=info
     ports:
-      - "80:8000"
+      - "80:80" # HTTP
+      # - "443:443" # HTTPS
+      # - "443:443/udp" # HTTP/3, causes an error for pdf preview H3_GENERAL_PROTOCOL_ERROR
     env_file:
       - ./.env
     environment:
@@ -135,14 +139,9 @@ services:
 
 volumes:
   app_cache:
-    driver: local
   app_storage:
-    driver: local
+  caddy_data:
   mysql_data:
-    driver: local
   redis_data:
-    driver: local
   # mariadb:
-  #   driver: local
   # valkey:
-  #   driver: local

@@ -4,17 +4,14 @@ RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/lat
     grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | \
     cut -d '"' -f 4 | \
     xargs curl -sL | \
-    tar -xz
-
-RUN ln -s ./resources/views/react/index.blade.php ./public/index.html
-
-# Set permissions: directories 755, files 644
-RUN chmod -R a=r,u+w,a+X .
-
-RUN php artisan storage:link
-
-# Octane
-RUN php artisan octane:install --server=frankenphp
+    tar -xz \
+    && ln -s ./resources/views/react/index.blade.php ./public/index.html \
+    # Set permissions: directories 755, files 644
+    && chmod -R a=r,u+w,a+X . \
+    # Symlink
+    && php artisan storage:link \
+    # Octane
+    && php artisan octane:install --server=frankenphp
 
 # ==================
 # InvoiceNinja image
