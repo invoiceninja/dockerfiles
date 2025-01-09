@@ -26,7 +26,7 @@ services:
     ports:
       - "80:80" # HTTP
       # - "443:443" # HTTPS
-      # - "443:443/udp" # HTTP/3, causes an error for pdf preview H3_GENERAL_PROTOCOL_ERROR
+      # - "443:443/udp" # HTTP/3, Works for chromium based browser, but causes H3_GENERAL_PROTOCOL_ERROR for pdf previews in Firefox 
     env_file:
       - ./.env
     environment:
