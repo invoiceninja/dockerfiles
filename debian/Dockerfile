@@ -6,8 +6,6 @@ RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/lat
     xargs curl -sL | \
     tar -xz \
     && ln -s ./resources/views/react/index.blade.php ./public/index.html \
-    # Set permissions: directories 755, files 644
-    && chmod -R a=r,u+w,a+X . \
     # Symlink
     && php artisan storage:link \
     # Octane
