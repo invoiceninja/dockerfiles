@@ -59,6 +59,9 @@ services:
     environment:
       LARAVEL_ROLE: worker
     <<: *volumes
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "queue:work"]
+      start_period: 10s
     depends_on:
       app:
         condition: service_healthy
@@ -74,6 +77,9 @@ services:
     environment:
       LARAVEL_ROLE: scheduler
     <<: *volumes
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "schedule:work"]
+      start_period: 10s
     depends_on:
       app:
         condition: service_healthy
