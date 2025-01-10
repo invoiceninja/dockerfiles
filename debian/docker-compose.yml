@@ -9,7 +9,6 @@ x-logging: &default-logging
 x-app-volumes: &volumes
   volumes:
       - ./.env:/app/.env
-      - ./php/php.ini:/usr/local/etc/php/conf.d/zzz-php.ini:ro
       - app_cache:/var/www/html/bootstrap/cache
       - app_storage:/app/storage
       - caddy_data:/data
