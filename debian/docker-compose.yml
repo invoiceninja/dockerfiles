@@ -9,7 +9,6 @@ x-logging: &default-logging
 x-app-volumes: &volumes
   volumes:
       - ./.env:/app/.env
-      - ./php/php.ini:/usr/local/etc/php/conf.d/zzz-php.ini:ro
       - app_cache:/var/www/html/bootstrap/cache
       - app_storage:/app/storage
       - caddy_data:/data
@@ -26,7 +25,7 @@ services:
     ports:
       - "80:80" # HTTP
       # - "443:443" # HTTPS
-      # - "443:443/udp" # HTTP/3, causes an error for pdf preview H3_GENERAL_PROTOCOL_ERROR
+      # - "443:443/udp" # HTTP/3, Works for chromium based browser, but causes H3_GENERAL_PROTOCOL_ERROR for pdf previews in Firefox 
     env_file:
       - ./.env
     environment:
@@ -59,6 +58,9 @@ services:
     environment:
       LARAVEL_ROLE: worker
     <<: *volumes
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "queue:work"]
+      start_period: 10s
     depends_on:
       app:
         condition: service_healthy
@@ -74,6 +76,9 @@ services:
     environment:
       LARAVEL_ROLE: scheduler
     <<: *volumes
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "schedule:work"]
+      start_period: 10s
     depends_on:
       app:
         condition: service_healthy

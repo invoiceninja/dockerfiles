@@ -6,8 +6,6 @@ RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/lat
     xargs curl -sL | \
     tar -xz \
     && ln -s ./resources/views/react/index.blade.php ./public/index.html \
-    # Set permissions: directories 755, files 644
-    && chmod -R a=r,u+w,a+X . \
     # Symlink
     && php artisan storage:link \
     # Octane
@@ -69,7 +67,9 @@ RUN install-php-extensions \
     ${php_extra}
 
 # Configure PHP
-RUN mv "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
+RUN ln -s "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
+
+COPY php/php.ini /usr/local/etc/php/conf.d/invoiceninja.ini
 
 # Create directory for artisan tinker (init.sh)
 RUN mkdir /config/psysh \
