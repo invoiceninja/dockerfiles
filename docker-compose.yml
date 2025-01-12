@@ -1,5 +1,5 @@
 services:
-  server:
+  nginx:
     image: nginx
     restart: always
     env_file: env
@@ -31,6 +31,7 @@ services:
       - ./docker/app/public:/var/www/app/public:rw,delegated
       - ./docker/app/storage:/var/www/app/storage:rw,delegated
       - ./config/php/php.ini:/usr/local/etc/php/conf.d/invoiceninja.ini
+      - ./config/php/php-fpm.conf:/usr/local/etc/php-fpm.d/invoiceninja.conf
 
     depends_on:
       - db
