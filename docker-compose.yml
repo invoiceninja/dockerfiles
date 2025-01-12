@@ -6,7 +6,7 @@ services:
     volumes:
       # Vhost configuration
       #- ./config/caddy/Caddyfile:/etc/caddy/Caddyfiledocker-com
-      - ./config/nginx/in-vhost.conf:/etc/nginx/conf.d/in-vhost.conf:ro
+      - ./config/nginx:/etc/nginx/conf.d:ro
       - ./docker/app/public:/var/www/app/public:ro
     depends_on:
       - app
@@ -30,11 +30,11 @@ services:
       - ./config/hosts:/etc/hosts:ro
       - ./docker/app/public:/var/www/app/public:rw,delegated
       - ./docker/app/storage:/var/www/app/storage:rw,delegated
-      - ./config/php/php.ini:/usr/local/etc/php/php.ini
-      - ./config/php/php-cli.ini:/usr/local/etc/php/php-cli.ini
+      - ./config/php/php.ini:/usr/local/etc/php/conf.d/invoiceninja.ini
 
     depends_on:
       - db
+      - valkey
     networks:
       - invoiceninja
     extra_hosts:
@@ -90,7 +90,6 @@ services:
       start_period: 10s
     networks:
       - invoiceninja
-    logging: *default-logging
 
 networks:
   invoiceninja:
