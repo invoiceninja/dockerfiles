@@ -82,6 +82,15 @@ services:
   #   networks:
   #     - invoiceninja
   #
+  valkey:
+    image: valkey/valkey:8
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "valkey-cli", "ping" ]
+      start_period: 10s
+    networks:
+      - invoiceninja
+    logging: *default-logging
 
 networks:
   invoiceninja:
