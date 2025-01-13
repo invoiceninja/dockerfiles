@@ -62,7 +62,7 @@ if [ "$*" = 'supervisord -c /etc/supervisor/conf.d/supervisord.conf' ]; then
 
         # If first IN run, it needs to be initialized
         echo "Checking initialization status..."
-        IN_INIT=$(php artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')
+        IN_INIT=$(php -d opcache.preload='' artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')
         echo "IN_INIT value: $IN_INIT"
 
         if [ "$IN_INIT" = "1" ]; then
