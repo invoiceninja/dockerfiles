@@ -1,5 +1,25 @@
-FROM php:8.3-fpm AS base
+ARG PHP=8.3
 
+FROM php:${PHP}-fpm AS prepare-app
+
+USER www-data
+
+RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
+    grep -o '"browser_download_url": "[^"]*invoiceninja.tar.gz"' | \
+    cut -d '"' -f 4 | \
+    xargs curl -sL | \
+    tar -xz --strip-components=1 -C /var/www/html \
+    && ln -s /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
+    && php -d opcache.preload='' artisan storage:link \
+    # Workaround for application updates
+    && mv /var/www/html/public /tmp/public
+
+# ==================
+# InvoiceNinja image
+# ==================
+FROM php:${PHP}-fpm
+
+# PHP modules
 ARG php_require="bcmath gd pdo_mysql zip"
 ARG php_suggest="exif imagick intl pcntl soap saxon-12.5.0"
 ARG php_extra="opcache"
@@ -16,15 +36,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xfonts-wqy \
     # Install google-chrome-stable(amd64)/chromium(arm64)
     && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
-        mkdir -p /etc/apt/keyrings \
-        && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | \
-            gpg --dearmor -o /etc/apt/keyrings/google.gpg \
-        && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-        && apt-get update \
-        && apt-get install -y --no-install-recommends google-chrome-stable; \
+    mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | \
+    gpg --dearmor -o /etc/apt/keyrings/google.gpg \
+    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends google-chrome-stable; \
     elif [ "$(dpkg --print-architecture)" = "arm64" ]; then \
-        apt-get install -y --no-install-recommends \
-        chromium; \        
+    apt-get install -y --no-install-recommends \
+    chromium; \        
     fi \
     # Create config directory for chromium/google-chrome-stable
     && mkdir /var/www/.config \
@@ -37,44 +57,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install PHP extensions
 RUN ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
-        ${php_require} \
-        ${php_suggest} \
-        ${php_extra} \
-        @composer
+    ${php_require} \
+    ${php_suggest} \
+    ${php_extra}
 
 # Configure PHP
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-# Copy scripts
-COPY rootfs /
+COPY php/php.ini /usr/local/etc/php/conf.d/invoiceninja.ini
 
-USER www-data
+COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/invoiceninja.conf
 
-WORKDIR /var/www/html
+# Setup supervisor --chown=www-data:www-data
+COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Setup InvoiceNinja
-RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
-        grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | \
-        cut -d '"' -f 4 | \
-        xargs curl -sL | \
-        tar -oxz -C /var/www/html \
-    && cp /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
-    # File permissions
-    && find /var/www/html/ -type f -exec chmod 644 {} \; \
-    # Directory permissions
-    && find /var/www/html/ -type d -exec chmod 755 {} \; \
-    # Install dependencies
-    && composer install --no-dev --no-scripts --no-autoloader \
-    && composer dump-autoload --optimize \
-    && php artisan optimize \
-    && php artisan storage:link \
-    # Workaround for application updates
-    && mv /var/www/html/public /tmp/public
-
-USER root
-
-# Setup supervisor
-COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY --from=prepare-app /var/www/html /var/www/html
+COPY --from=prepare-app /tmp/public /tmp/public
 
 # Add initialization script
 COPY --chmod=0755 scripts/init.sh /usr/local/bin/init.sh
