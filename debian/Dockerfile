@@ -16,15 +16,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xfonts-wqy \
     # Install google-chrome-stable(amd64)/chromium(arm64)
     && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
-        mkdir -p /etc/apt/keyrings \
-        && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | \
-            gpg --dearmor -o /etc/apt/keyrings/google.gpg \
-        && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-        && apt-get update \
-        && apt-get install -y --no-install-recommends google-chrome-stable; \
+    mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | \
+    gpg --dearmor -o /etc/apt/keyrings/google.gpg \
+    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends google-chrome-stable; \
     elif [ "$(dpkg --print-architecture)" = "arm64" ]; then \
-        apt-get install -y --no-install-recommends \
-        chromium; \        
+    apt-get install -y --no-install-recommends \
+    chromium; \        
     fi \
     # Create config directory for chromium/google-chrome-stable
     && mkdir /var/www/.config \
@@ -37,10 +37,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install PHP extensions
 RUN ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
-        ${php_require} \
-        ${php_suggest} \
-        ${php_extra} \
-        @composer
+    ${php_require} \
+    ${php_suggest} \
+    ${php_extra} \
+    @composer
 
 # Configure PHP
 RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
@@ -58,10 +58,10 @@ WORKDIR /var/www/html
 
 # Setup InvoiceNinja
 RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
-        grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | \
-        cut -d '"' -f 4 | \
-        xargs curl -sL | \
-        tar -oxz -C /var/www/html \
+    grep -o '"browser_download_url": "[^"]*invoiceninja.tar.gz"' | \
+    cut -d '"' -f 4 | \
+    xargs curl -sL | \
+    tar -xz --strip-components=1 -C /var/www/html \
     && cp /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
     # File permissions
     && find /var/www/html/ -type f -exec chmod 644 {} \; \
