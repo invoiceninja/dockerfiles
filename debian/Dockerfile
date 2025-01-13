@@ -47,7 +47,7 @@ RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 COPY php/php.ini /usr/local/etc/php/conf.d/invoiceninja.ini
 
-COPY php/php-fpm.ini /usr/local/etc/php-fpm.d/invoiceninja.conf
+COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/invoiceninja.conf
 
 # Copy scripts
 COPY rootfs /
