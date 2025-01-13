@@ -1,10 +1,10 @@
 FROM dunglas/frankenphp:1-php8.3-bookworm AS prepare-app
 
 RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
-    grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | \
+    grep -o '"browser_download_url": "[^"]*invoiceninja.tar.gz"' | \
     cut -d '"' -f 4 | \
     xargs curl -sL | \
-    tar -xz \
+    tar -xz --strip-components=1 \
     && ln -s ./resources/views/react/index.blade.php ./public/index.html \
     # Symlink
     && php artisan storage:link \
@@ -80,10 +80,6 @@ RUN chown -R ${user}: \
     /data/caddy \
     /config/caddy
 
-ENTRYPOINT ["/usr/local/bin/init.sh"]
-
-CMD ["frankenphp", "php-cli", "artisan", "octane:frankenphp"]
-
 # InvoiceNinja
 COPY --from=prepare-app --chown=${user}:${user} /app /app
 
@@ -91,3 +87,7 @@ COPY --from=prepare-app --chown=${user}:${user} /app /app
 COPY --chmod=0755 scripts/init.sh /usr/local/bin/init.sh
 
 USER ${user}
+
+ENTRYPOINT ["/usr/local/bin/init.sh"]
+
+CMD ["frankenphp", "php-cli", "artisan", "octane:frankenphp"]

@@ -48,7 +48,7 @@ if [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$
         frankenphp php-cli artisan migrate --force
 
         # If first IN run, it needs to be initialized
-        if [ "$(frankenphp php-cli artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')" = "1" ]; then
+        if [ "$(php -d opcache.preload='' artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')" = "1" ]; then
             echo "Running initialization..."
 
             frankenphp php-cli artisan db:seed --force
