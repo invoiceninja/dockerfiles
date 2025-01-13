@@ -11,7 +11,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - image: invoiceninja/invoiceninja-debian
+          - image: invoiceninja/invoiceninja-octane
             context: ./debian
 
     steps:
