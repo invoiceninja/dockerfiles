@@ -39,8 +39,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
     ${php_require} \
     ${php_suggest} \
-    ${php_extra} \
-    @composer
+    ${php_extra}
 
 # Configure PHP
 RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
@@ -62,14 +61,7 @@ RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/lat
     cut -d '"' -f 4 | \
     xargs curl -sL | \
     tar -xz --strip-components=1 -C /var/www/html \
-    && cp /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
-    # File permissions
-    && find /var/www/html/ -type f -exec chmod 644 {} \; \
-    # Directory permissions
-    && find /var/www/html/ -type d -exec chmod 755 {} \; \
-    # Install dependencies
-    && composer install --no-dev --no-scripts --no-autoloader \
-    && composer dump-autoload --optimize \
+    && ln -s /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
     && php artisan optimize \
     && php artisan storage:link \
     # Workaround for application updates
