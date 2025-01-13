@@ -43,7 +43,11 @@ RUN ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/relea
         @composer
 
 # Configure PHP
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
+COPY php/php.ini /usr/local/etc/php/conf.d/invoiceninja.ini
+
+COPY php/php-fpm.ini /usr/local/etc/php-fpm.d/invoiceninja.conf
 
 # Copy scripts
 COPY rootfs /
