@@ -47,6 +47,8 @@ RUN set -eux; \
     supervisor \
     mysql-client \
     chromium \
+    # font-noto-cjk-extra \
+    # font-wqy-zenhei \
     ttf-freefont \
     ttf-dejavu
 
@@ -82,8 +84,6 @@ ENV BAK_STORAGE_PATH $BAK_STORAGE_PATH
 ENV BAK_PUBLIC_PATH $BAK_PUBLIC_PATH
 COPY --from=nodebuild --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app /var/www/app
 
-RUN rm -rf /var/www/app/ui
-
 USER $UID
 WORKDIR /var/www/app
 
@@ -101,7 +101,7 @@ ARG BAK_PUBLIC_PATH
 RUN mv /var/www/app/storage $BAK_STORAGE_PATH \
     && mv /var/www/app/public $BAK_PUBLIC_PATH
 
-FROM phpbuild as prod
+FROM phpbuild AS prod
 
 COPY --from=dependencybuild --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app /var/www/app
 
