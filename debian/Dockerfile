@@ -1,5 +1,25 @@
-FROM php:8.3-fpm AS base
+ARG PHP=8.3
 
+FROM php:${PHP}-fpm AS prepare-app
+
+USER www-data
+
+RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
+    grep -o '"browser_download_url": "[^"]*invoiceninja.tar.gz"' | \
+    cut -d '"' -f 4 | \
+    xargs curl -sL | \
+    tar -xz --strip-components=1 -C /var/www/html \
+    && ln -s /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
+    && php -d opcache.preload='' artisan storage:link \
+    # Workaround for application updates
+    && mv /var/www/html/public /tmp/public
+
+# ==================
+# InvoiceNinja image
+# ==================
+FROM php:${PHP}-fpm
+
+# PHP modules
 ARG php_require="bcmath gd pdo_mysql zip"
 ARG php_suggest="exif imagick intl pcntl soap saxon-12.5.0"
 ARG php_extra="opcache"
@@ -48,29 +68,12 @@ COPY php/php.ini /usr/local/etc/php/conf.d/invoiceninja.ini
 
 COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/invoiceninja.conf
 
-# Copy scripts
-COPY rootfs /
-
-USER www-data
-
-WORKDIR /var/www/html
+# Setup supervisor --chown=www-data:www-data
+COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Setup InvoiceNinja
-RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
-    grep -o '"browser_download_url": "[^"]*invoiceninja.tar.gz"' | \
-    cut -d '"' -f 4 | \
-    xargs curl -sL | \
-    tar -xz --strip-components=1 -C /var/www/html \
-    && ln -s /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
-    && php artisan optimize \
-    && php artisan storage:link \
-    # Workaround for application updates
-    && mv /var/www/html/public /tmp/public
-
-USER root
-
-# Setup supervisor
-COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY --from=prepare-app /var/www/html /var/www/html
+COPY --from=prepare-app /tmp/public /tmp/public
 
 # Add initialization script
 COPY --chmod=0755 scripts/init.sh /usr/local/bin/init.sh
