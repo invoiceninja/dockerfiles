@@ -68,7 +68,7 @@ COPY php/php.ini /usr/local/etc/php/conf.d/invoiceninja.ini
 
 COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/invoiceninja.conf
 
-# Setup supervisor --chown=www-data:www-data
+# Setup supervisor
 COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Setup InvoiceNinja
@@ -80,7 +80,7 @@ COPY --chmod=0755 scripts/init.sh /usr/local/bin/init.sh
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-    CMD php -v || exit 1
+    CMD pgrep -f "php-fpm: master process"
 
 ENTRYPOINT ["/usr/local/bin/init.sh"]
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
