@@ -43,6 +43,7 @@ RUN set -eux; \
     font-isas-misc \
     supervisor \
     mariadb-client \
+    mariadb-connector-c \
     chromium \
     # font-noto-cjk-extra \
     # font-wqy-zenhei \
