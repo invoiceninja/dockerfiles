@@ -1,4 +1,8 @@
-FROM dunglas/frankenphp:1-php8.3-bookworm AS prepare-app
+ARG PHP_VERSION=8.3
+ARG FRANKENPHP_VERSION=1
+ARG DEBIAN_VERSION=bookworm
+
+FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}-${DEBIAN_VERSION} AS prepare-app
 
 RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
     grep -o '"browser_download_url": "[^"]*invoiceninja.tar.gz"' | \
@@ -14,7 +18,7 @@ RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/lat
 # ==================
 # InvoiceNinja image
 # ==================
-FROM dunglas/frankenphp:1-php8.3-bookworm
+FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}-${DEBIAN_VERSION}
 
 ARG user=ninja
 
