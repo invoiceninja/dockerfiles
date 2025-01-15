@@ -15,8 +15,8 @@ services:
     ports:
       - "80:80"
       #- "443:443"
-    extra_hosts:
-      - "in5.localhost:192.168.0.124 " #host and ip
+    # extra_hosts:
+    #   - "in5.localhost:192.168.0.124 " #host and ip
 
   app:
     build:
@@ -25,7 +25,7 @@ services:
     env_file: env
     restart: always
     volumes:
-      - ./config/hosts:/etc/hosts:ro
+      # - ./config/hosts:/etc/hosts:ro
       - ./docker/app/public:/var/www/app/public:rw,delegated
       - ./docker/app/storage:/var/www/app/storage:rw,delegated
       # - ./config/php/php.ini:/usr/local/etc/php/conf.d/invoiceninja.ini
@@ -34,8 +34,8 @@ services:
     depends_on:
       - db
       - valkey
-    extra_hosts:
-      - "in5.localhost:192.168.0.124 " #host and ip
+    # extra_hosts:
+    #   - "in5.localhost:192.168.0.124 " #host and ip
 
   db:
     image: mysql:8
@@ -54,8 +54,8 @@ services:
       #- ./config/mysql/backup-script:/etc/cron.daily/daily:ro
       #- ./config/mysql/backup-script:/etc/cron.weekly/weekly:ro
       #- ./config/mysql/backup-script:/etc/cron.monthly/monthly:ro
-    extra_hosts:
-      - "in5.localhost:192.168.0.124 " #host and ip
+    # extra_hosts:
+    #   - "in5.localhost:192.168.0.124 " #host and ip
 
   # THIS IS ONLY A VALID CONFIGURATION FOR IN 4. DO NOT USE FOR IN 5.
   # cron:
