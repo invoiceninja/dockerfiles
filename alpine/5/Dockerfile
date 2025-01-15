@@ -1,9 +1,10 @@
 ARG PHP_VERSION=8.3
+ARG ALPINE_VERSION=3.20
 ARG BAK_STORAGE_PATH=/var/www/app/docker-backup-storage/
 ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 
 # Get Invoice Ninja and install nodejs packages
-FROM --platform=$BUILDPLATFORM php:${PHP_VERSION}-fpm-alpine  AS nodebuild
+FROM --platform=$BUILDPLATFORM php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION}  AS nodebuild
 
 # Download Invoice Ninja
 ARG INVOICENINJA_VERSION
@@ -26,17 +27,13 @@ RUN mkdir -p /var/www/app/public/logo /var/www/app/storage
 WORKDIR /var/www/app
 
 # Prepare php image
-FROM php:${PHP_VERSION}-fpm-alpine AS phpbuild
+FROM php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} AS phpbuild
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
 ARG php_require="bcmath gd pdo_mysql zip"
 ARG php_suggest="exif imagick intl pcntl soap"
 ARG php_extra="opcache"
-
-# Adding caching_sha2_password.so
-# With this we get native support for caching_sha2_password
-RUN apk add --no-cache mariadb-connector-c
 
 RUN ln -s "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
 
@@ -45,7 +42,7 @@ RUN set -eux; \
     apk add --no-cache \
     font-isas-misc \
     supervisor \
-    mysql-client \
+    mariadb-client \
     chromium \
     # font-noto-cjk-extra \
     # font-wqy-zenhei \
