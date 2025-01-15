@@ -15,8 +15,6 @@ services:
     ports:
       - "80:80"
       #- "443:443"
-    networks:
-      - invoiceninja
     extra_hosts:
       - "in5.localhost:192.168.0.124 " #host and ip
 
@@ -36,8 +34,6 @@ services:
     depends_on:
       - db
       - valkey
-    networks:
-      - invoiceninja
     extra_hosts:
       - "in5.localhost:192.168.0.124 " #host and ip
 
@@ -58,8 +54,6 @@ services:
       #- ./config/mysql/backup-script:/etc/cron.daily/daily:ro
       #- ./config/mysql/backup-script:/etc/cron.weekly/weekly:ro
       #- ./config/mysql/backup-script:/etc/cron.monthly/monthly:ro
-    networks:
-      - invoiceninja
     extra_hosts:
       - "in5.localhost:192.168.0.124 " #host and ip
 
@@ -89,8 +83,3 @@ services:
     healthcheck:
       test: [ "CMD", "valkey-cli", "ping" ]
       start_period: 10s
-    networks:
-      - invoiceninja
-
-networks:
-  invoiceninja:
