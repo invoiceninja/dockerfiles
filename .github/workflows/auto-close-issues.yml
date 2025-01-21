@@ -1,0 +1,21 @@
+name: Close stale issues after 5 days
+
+on:
+  schedule:
+    # Run this workflow every day at midnight
+    - cron: '0 0 * * *'
+
+jobs:
+  close-stale-issues:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close stale issues
+        uses: actions/stale@v7
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          stale-issue-message: "This issue has been automatically closed due to inactivity for 5 days."
+          days-before-stale: 4  # Number of days before marking an issue as stale
+          days-before-close: 1 # Number of days after being marked stale before closing
+          stale-label: "stale" # Label to add to stale issues
+          exempt-issue-labels: "keep-open,triage,bug" # Prevents issues with this label from being closed
+          only-issues: true # Only affects issues, not pull requests
