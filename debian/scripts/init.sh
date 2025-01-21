@@ -1,43 +1,30 @@
 #!/bin/sh -eu
 
-# Fallback to app
-role=${LARAVEL_ROLE:-app}
 
-# Check for default CMD, flag(s) or empty CMD
-if [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$1" ] || [ "$#" -eq  "0" ]; then
+if [ "--help" = "$1" ]; then
+    echo [FLAGS]
+    echo The CMD defined can be extended with flags for artisan commands
+    echo
+    echo Available flags can be displaced:
+    echo docker run --rm invoiceninja/invoiceninja-debian frankenphp php-cli artisan help octane:frankenphp
+    echo docker run --rm invoiceninja/invoiceninja-debian frankenphp php-cli artisan help queue:work
+    echo docker run --rm invoiceninja/invoiceninja-debian frankenphp php-cli artisan help schedule:work
+    echo
+    echo Example:
+    echo docker run -e LARAVEL_ROLE=worker invoiceninja/invoiceninja-debian --verbose --sleep=3 --tries=3 --max-time=3600
+    echo
+    echo [Deployment]
+    echo Docker compose is recommended
+    echo
+    echo Example:
+    echo https://github.com/invoiceninja/dockerfiles/blob/octane/debian/docker-compose.yml
+    echo
+    exit 0
+fi
 
-    if [ "--help" = "$1" ]; then
-        echo [CMD]
-        echo "This image will execute specific CMDs based on the environment variable LARAVEL_ROLE"
-        echo
-        echo "LARAVEL_ROLE=app:       frankenphp php-cli artisan octane:frankenphp (default)"
-        echo "LARAVEL_ROLE=worker:    frankenphp php-cli artisan queue:work"
-        echo "LARAVEL_ROLE=scheduler: frankenphp php-cli artisan schedule:work"
-        echo
-        echo [FLAGS]
-        echo To the CMD defined by LARAVEL_ROLE can be extended with flags for artisan commands
-        echo
-        echo Available flags can be displaced:
-        echo docker run --rm invoiceninja/invoiceninja-debian frankenphp php-cli artisan help octane:frankenphp
-        echo docker run --rm invoiceninja/invoiceninja-debian frankenphp php-cli artisan queue:work
-        echo docker run --rm invoiceninja/invoiceninja-debian frankenphp php-cli artisan schedule:work
-        echo
-        echo Example:
-        echo docker run -e LARAVEL_ROLE=worker invoiceninja/invoiceninja-debian --verbose --sleep=3 --tries=3 --max-time=3600
-        echo
-        echo [Deployment]
-        echo Docker compose is recommended
-        echo
-        echo Example:
-        echo https://github.com/invoiceninja/dockerfiles/blob/octane/debian/docker-compose.yml
-        echo
-        exit 0
-    fi
-
-    # Run app
-    if [ "${role}" = "app" ]; then
-        cmd="frankenphp php-cli artisan octane:frankenphp"
-
+if [ "${LARAVEL_ROLE}" = "app" ] && { [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$1" ]; } ; then
+    cmd="frankenphp php-cli artisan octane:frankenphp"
+    
         if [ "$APP_ENV" = "production" ]; then
             frankenphp php-cli artisan optimize
         fi
@@ -60,26 +47,21 @@ if [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$
                 exit 1
             fi
         fi
+fi
 
-        echo "Production setup completed"
-    # Run worker
-    elif [ "${role}" = "worker" ]; then
-        cmd="frankenphp php-cli artisan queue:work"
-    # Run scheduler
-    elif [ "${role}" = "scheduler" ]; then
-        cmd="frankenphp php-cli artisan schedule:work"
-    # Invalid role
-    else
-        echo "Invalid role: ${role}"
-        exit 1
-    fi
+if [ "${LARAVEL_ROLE}" = "scheduler" ] && { [ "$*" = 'frankenphp php-cli artisan schedule:work' ] || [ "${1#-}" != "$1" ]; } ; then
+    cmd="frankenphp php-cli artisan schedule:work"
+fi
 
-    # Append flag(s) to role cmd
-    if [ "${1#-}" != "$1" ]; then
-        set -- ${cmd} "$@"
-    else
-        set -- ${cmd}
-    fi
+if [ "${LARAVEL_ROLE}" = "worker" ] && { [ "$*" = 'frankenphp php-cli artisan queue:work' ] || [ "${1#-}" != "$1" ]; } ; then
+    cmd="frankenphp php-cli artisan queue:work"
+fi
+
+# Append flag(s) to role cmd
+if [ "${1#-}" != "$1" ]; then
+    set -- ${cmd} "$@"
+else
+    set -- ${cmd}
 fi
 
 exec "$@"

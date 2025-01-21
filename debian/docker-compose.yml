@@ -17,9 +17,9 @@ services:
   app:
     build:
       context: .
-    image: invoiceninja/invoiceninja-debian:${TAG:-latest}
+      target: app
+    image: invoiceninja/invoiceninja-octane:${TAG:-latest}
     restart: unless-stopped
-    # php artisan help octane:frankenphp
     command: --port=80 --workers=2 --log-level=info
     # command: --host=example.com --port=443 --workers=2 --https --http-redirect --log-level=info
     ports:
@@ -28,10 +28,7 @@ services:
       # - "443:443/udp" # HTTP/3, Works for chromium based browser, but causes H3_GENERAL_PROTOCOL_ERROR for pdf previews in Firefox 
     env_file:
       - ./.env
-    environment:
-      LARAVEL_ROLE: app
     <<: *volumes
-    # HEALTHCHECK from frankenphp image
     healthcheck:
       start_period: 180s
     depends_on:
@@ -44,41 +41,36 @@ services:
       # valkey:
       #   condition: service_healthy
     logging: *default-logging
-  
-  app-worker:
-    image: invoiceninja/invoiceninja-debian:${TAG:-latest}
+    # tty: true
+
+  app-scheduler:
+    build:
+      context: .
+      target: scheduler
+    image: invoiceninja/invoiceninja-octane-scheduler:${TAG:-latest}
     restart: unless-stopped
-    # php artisan help queue:work
+    command: --verbose
+    env_file:
+      - ./.env
+    <<: *volumes
+    depends_on:
+      app:
+        condition: service_healthy
+    logging: *default-logging
+
+  app-worker:
+    build:
+      context: .
+      target: worker
+    image: invoiceninja/invoiceninja-octane-worker:${TAG:-latest}
+    restart: unless-stopped
     command: --verbose --sleep=3 --tries=3 --max-time=3600
     deploy:
       mode: replicated
       replicas: 2
     env_file:
       - ./.env
-    environment:
-      LARAVEL_ROLE: worker
     <<: *volumes
-    healthcheck:
-      test: ["CMD", "pgrep", "-f", "queue:work"]
-      start_period: 10s
-    depends_on:
-      app:
-        condition: service_healthy
-    logging: *default-logging
-
-  app-scheduler:
-    image: invoiceninja/invoiceninja-debian:${TAG:-latest}
-    restart: unless-stopped
-    # php artisan help schedule:work
-    command: --verbose
-    env_file:
-      - ./.env
-    environment:
-      LARAVEL_ROLE: scheduler
-    <<: *volumes
-    healthcheck:
-      test: ["CMD", "pgrep", "-f", "schedule:work"]
-      start_period: 10s
     depends_on:
       app:
         condition: service_healthy

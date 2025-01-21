@@ -18,7 +18,7 @@ RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/lat
 # ==================
 # InvoiceNinja image
 # ==================
-FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}-${DEBIAN_VERSION}
+FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}-${DEBIAN_VERSION} AS base
 
 ARG user=ninja
 
@@ -94,4 +94,16 @@ USER ${user}
 
 ENTRYPOINT ["/usr/local/bin/init.sh"]
 
+FROM base AS app
+ENV LARAVEL_ROLE=app
 CMD ["frankenphp", "php-cli", "artisan", "octane:frankenphp"]
+
+FROM base AS scheduler
+ENV LARAVEL_ROLE=scheduler
+HEALTHCHECK --start-period=10s CMD pgrep -f schedule:work
+CMD ["frankenphp", "php-cli", "artisan", "schedule:work"]
+
+FROM base AS worker
+ENV LARAVEL_ROLE=worker
+HEALTHCHECK --start-period=10s CMD pgrep -f queue:work
+CMD ["frankenphp", "php-cli", "artisan", "queue:work"]
