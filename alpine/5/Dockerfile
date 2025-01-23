@@ -31,7 +31,7 @@ FROM php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} AS phpbuild
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
-ARG php_require="bcmath gd pdo_mysql zip"
+ARG php_require="bcmath gd pdo_mysql zip mbstring"
 ARG php_suggest="exif imagick intl pcntl soap"
 ARG php_extra="opcache"
 
