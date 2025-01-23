@@ -20,7 +20,7 @@ RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/lat
 FROM php:${PHP}-fpm
 
 # PHP modules
-ARG php_require="bcmath gd pdo_mysql zip"
+ARG php_require="bcmath gd pdo_mysql zip mbstring"
 ARG php_suggest="exif imagick intl pcntl soap saxon-12.5.0"
 ARG php_extra="opcache"
 
