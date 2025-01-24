@@ -31,7 +31,7 @@ FROM php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} AS phpbuild
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
-ARG php_require="bcmath gd pdo_mysql zip mbstring"
+ARG php_require="bcmath gd pdo_mysql zip"
 ARG php_suggest="exif imagick intl pcntl soap"
 ARG php_extra="opcache"
 
@@ -47,27 +47,14 @@ RUN set -eux; \
     chromium \
     # font-noto-cjk-extra \
     # font-wqy-zenhei \
-    freetype \
-    libpng \
-    libjpeg-turbo \
-    freetype-dev \
-    libpng-dev \
-    libjpeg-turbo-dev \
     ttf-freefont \
     ttf-dejavu
 
-COPY --from=ghcr.io/mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-
-RUN install-php-extensions \
+# Install PHP extensions
+RUN ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
     ${php_require} \
     ${php_suggest} \
     ${php_extra}
-
-# Install PHP extensions
-# RUN ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
-#     ${php_require} \
-#     ${php_suggest} \
-#     ${php_extra}
 
 # Copy files
 COPY rootfs /
