@@ -1,4 +1,4 @@
-name: Build Debian OctaneContainer Image
+name: Build Debian Octane Container Image
 
 on:
   pull_request:
