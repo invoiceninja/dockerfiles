@@ -50,18 +50,18 @@ RUN set -eux; \
     ttf-freefont \
     ttf-dejavu
 
+COPY --from=ghcr.io/mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+
+RUN install-php-extensions \
+    ${php_require} \
+    ${php_suggest} \
+    ${php_extra}
+
 # Install PHP extensions
 # RUN ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
 #     ${php_require} \
 #     ${php_suggest} \
 #     ${php_extra}
-
-RUN wget -O /usr/local/bin/install-php-extensions https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions \
-    && chmod +x /usr/local/bin/install-php-extensions \
-    && install-php-extensions \
-    ${php_require} \
-    ${php_suggest} \
-    ${php_extra}
 
 # Copy files
 COPY rootfs /
