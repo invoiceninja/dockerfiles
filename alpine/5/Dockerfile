@@ -47,6 +47,12 @@ RUN set -eux; \
     chromium \
     # font-noto-cjk-extra \
     # font-wqy-zenhei \
+    freetype \
+    libpng \
+    libjpeg-turbo \
+    freetype-dev \
+    libpng-dev \
+    libjpeg-turbo-dev \
     ttf-freefont \
     ttf-dejavu
 
