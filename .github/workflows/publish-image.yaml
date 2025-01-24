@@ -12,11 +12,11 @@ jobs:
       matrix:
         include:
           - image: invoiceninja/invoiceninja-octane
-            context: ./debian
+            context: debian
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4  # Updated from v2
+        uses: actions/checkout@v4  
         with:
           fetch-depth: 0
 
