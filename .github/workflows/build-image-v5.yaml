@@ -21,19 +21,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Add swap space
-        run: |
-          sudo fallocate -l 4G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
-          free -h
-
-      - name: Set MAKEFLAGS for parallel make jobs
-        run: |
-          export MAKEFLAGS="-j2"
-          echo "MAKEFLAGS set to: $MAKEFLAGS"
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
         with:
@@ -66,5 +53,6 @@ jobs:
 
       - name: Move cache
         run: |
+        mkdir -p /tmp/.buildx-cache
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache

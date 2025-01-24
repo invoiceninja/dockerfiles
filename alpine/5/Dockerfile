@@ -51,7 +51,14 @@ RUN set -eux; \
     ttf-dejavu
 
 # Install PHP extensions
-RUN ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
+# RUN ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
+#     ${php_require} \
+#     ${php_suggest} \
+#     ${php_extra}
+
+RUN wget -O /usr/local/bin/install-php-extensions https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions \
+    && chmod +x /usr/local/bin/install-php-extensions \
+    && install-php-extensions \
     ${php_require} \
     ${php_suggest} \
     ${php_extra}
