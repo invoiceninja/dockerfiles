@@ -63,11 +63,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install PHP extensions
 COPY --from=ghcr.io/mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-RUN install-php-extensions \
-    ${php_require} \
-    ${php_suggest} \
-    ${php_extra}
-
+RUN install-php-extensions bcmath && \
+    install-php-extensions gd && \
+    install-php-extensions pdo_mysql && \
+    install-php-extensions zip && \
+    install-php-extensions exif && \
+    install-php-extensions imagick && \
+    install-php-extensions intl && \
+    install-php-extensions pcntl && \
+    install-php-extensions soap && \
+    install-php-extensions saxon-12.5.0 && \
+    install-php-extensions opcache
 
 # Configure PHP
 RUN ln -s "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
