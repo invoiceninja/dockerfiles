@@ -75,7 +75,6 @@ jobs:
 
       - name: Move cache
         run: |
-          mkdir -p /tmp/.buildx-cache
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
