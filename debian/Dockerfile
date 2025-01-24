@@ -23,7 +23,7 @@ FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}-${DEBIAN_VERSION
 ARG user=ninja
 
 # PHP modules
-ARG php_require="bcmath gd pdo_mysql zip"
+ARG php_require="bcmath gd mbstring pdo_mysql zip"
 ARG php_suggest="exif imagick intl pcntl soap saxon-12.5.0"
 ARG php_extra="opcache"
 
