@@ -30,7 +30,7 @@ php artisan optimize
 php artisan package:discover
 
 # Check if DB works, if not crash the app.
-DB_READY=$(php -d opcache.preload='' artisan tinker --execute='echo app()->call("App\Utils\SystemHealth@dbCheck")["success"];')
+DB_READY=$(php artisan tinker --execute='echo app()->call("App\Utils\SystemHealth@dbCheck")["success"];')
 if [ "$DB_READY" != "1" ]; then
     php artisan migrate:status # Print verbose error
     in_error "Error connecting to DB"
@@ -39,7 +39,7 @@ fi
 php artisan migrate --force
 
 # If first IN run, it needs to be initialized
-IN_INIT=$(php -d opcache.preload='' artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')
+IN_INIT=$(php artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')
 if [ "$IN_INIT" == "1" ]; then
     docker_process_init_files /docker-entrypoint-init.d/*
 fi
