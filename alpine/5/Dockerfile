@@ -1,60 +1,65 @@
-ARG PHP_VERSION=8.3
-ARG ALPINE_VERSION=3.20
+ARG PHP_VERSION=8.2
 ARG BAK_STORAGE_PATH=/var/www/app/docker-backup-storage/
 ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 
 # Get Invoice Ninja and install nodejs packages
-FROM --platform=$BUILDPLATFORM php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION}  AS nodebuild
+FROM --platform=$BUILDPLATFORM node:lts-alpine as nodebuild
 
 # Download Invoice Ninja
 ARG INVOICENINJA_VERSION
 ARG REPOSITORY=invoiceninja/invoiceninja
 ARG FILENAME=invoiceninja.tar
 
-RUN mkdir -p /var/www/app
+RUN set -eux; apk add curl unzip grep
+
+RUN DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | cut -d '"' -f 4) && \
+    curl -LJO "$DOWNLOAD_URL" && \
+    mv invoiceninja.tar /tmp/ninja.tar
 
 # Extract Invoice Ninja
-RUN apk add --no-cache curl \
-    && curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
-    grep -o '"browser_download_url": "[^"]*invoiceninja.tar.gz"' | \
-    cut -d '"' -f 4 | \
-    xargs curl -sL | \
-    tar -xz --strip-components=1 -C /var/www/app/ \
-    && apk --purge del curl
-
-RUN mkdir -p /var/www/app/public/logo /var/www/app/storage
-
+RUN mkdir -p /var/www/app \
+    && tar -xvf /tmp/ninja.tar -C /var/www/app/ \
+    && mkdir -p /var/www/app/public/logo /var/www/app/storage
+    
 WORKDIR /var/www/app
 
 # Prepare php image
-FROM php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} AS phpbuild
+FROM php:${PHP_VERSION}-fpm-alpine as phpbuild
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
-ARG php_require="bcmath gd pdo_mysql zip"
-ARG php_suggest="exif imagick intl pcntl soap"
-ARG php_extra="opcache"
+# Adding caching_sha2_password.so
+# With this we get native support for caching_sha2_password
+RUN apk add --no-cache mariadb-connector-c
 
-RUN ln -s "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
+RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+
+# Install PHP extensions
+# https://hub.docker.com/r/mlocati/php-extension-installer/tags
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
 # Install chromium
 RUN set -eux; \
     apk add --no-cache \
     font-isas-misc \
     supervisor \
-    mariadb-client \
-    mariadb-connector-c \
+    mysql-client \
     chromium \
-    # font-noto-cjk-extra \
-    # font-wqy-zenhei \
     ttf-freefont \
     ttf-dejavu
 
-# Install PHP extensions
-RUN ( curl -sSLf https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions -o - || echo 'return 1' ) | sh -s \
-    ${php_require} \
-    ${php_suggest} \
-    ${php_extra}
+RUN install-php-extensions \
+    bcmath \
+    exif \
+    gd \
+    gmp \
+    mysqli \
+    opcache \
+    pdo_mysql \
+    zip \
+    intl \
+    @composer \
+    && rm /usr/local/bin/install-php-extensions
 
 # Copy files
 COPY rootfs /
@@ -82,6 +87,8 @@ ENV BAK_STORAGE_PATH $BAK_STORAGE_PATH
 ENV BAK_PUBLIC_PATH $BAK_PUBLIC_PATH
 COPY --from=nodebuild --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app /var/www/app
 
+RUN rm -rf /var/www/app/ui
+
 USER $UID
 WORKDIR /var/www/app
 
@@ -99,7 +106,7 @@ ARG BAK_PUBLIC_PATH
 RUN mv /var/www/app/storage $BAK_STORAGE_PATH \
     && mv /var/www/app/public $BAK_PUBLIC_PATH
 
-FROM phpbuild AS prod
+FROM phpbuild as prod
 
 COPY --from=dependencybuild --chown=$INVOICENINJA_USER:$INVOICENINJA_USER /var/www/app /var/www/app
 

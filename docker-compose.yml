@@ -1,12 +1,14 @@
+version: '3.7'
+
 services:
-  nginx:
+  server:
     image: nginx
     restart: always
     env_file: env
     volumes:
       # Vhost configuration
       #- ./config/caddy/Caddyfile:/etc/caddy/Caddyfiledocker-com
-      - ./config/nginx:/etc/nginx/conf.d:ro
+      - ./config/nginx/in-vhost.conf:/etc/nginx/conf.d/in-vhost.conf:ro
       - ./docker/app/public:/var/www/app/public:ro
     depends_on:
       - app
@@ -15,27 +17,28 @@ services:
     ports:
       - "80:80"
       #- "443:443"
-    # extra_hosts:
-    #   - "in5.localhost:192.168.0.124 " #host and ip
+    networks:
+      - invoiceninja
+    extra_hosts:
+      - "in5.localhost:192.168.0.124 " #host and ip
 
   app:
-    build:
-      context: ./alpine/5
-    image: invoiceninja/invoiceninja:${TAG:-5}
+    image: invoiceninja/invoiceninja:5
     env_file: env
     restart: always
     volumes:
-      # - ./config/hosts:/etc/hosts:ro
+      - ./config/hosts:/etc/hosts:ro
       - ./docker/app/public:/var/www/app/public:rw,delegated
       - ./docker/app/storage:/var/www/app/storage:rw,delegated
-      # - ./config/php/php.ini:/usr/local/etc/php/conf.d/invoiceninja.ini
-      # - ./config/php/php-fpm.conf:/usr/local/etc/php-fpm.d/invoiceninja.conf
+      - ./config/php/php.ini:/usr/local/etc/php/php.ini
+      - ./config/php/php-cli.ini:/usr/local/etc/php/php-cli.ini
 
     depends_on:
       - db
-      - valkey
-    # extra_hosts:
-    #   - "in5.localhost:192.168.0.124 " #host and ip
+    networks:
+      - invoiceninja
+    extra_hosts:
+      - "in5.localhost:192.168.0.124 " #host and ip
 
   db:
     image: mysql:8
@@ -54,8 +57,10 @@ services:
       #- ./config/mysql/backup-script:/etc/cron.daily/daily:ro
       #- ./config/mysql/backup-script:/etc/cron.weekly/weekly:ro
       #- ./config/mysql/backup-script:/etc/cron.monthly/monthly:ro
-    # extra_hosts:
-    #   - "in5.localhost:192.168.0.124 " #host and ip
+    networks:
+      - invoiceninja
+    extra_hosts:
+      - "in5.localhost:192.168.0.124 " #host and ip
 
   # THIS IS ONLY A VALID CONFIGURATION FOR IN 4. DO NOT USE FOR IN 5.
   # cron:
@@ -77,9 +82,6 @@ services:
   #   networks:
   #     - invoiceninja
   #
-  valkey:
-    image: valkey/valkey:8
-    restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "valkey-cli", "ping" ]
-      start_period: 10s
+
+networks:
+  invoiceninja:
