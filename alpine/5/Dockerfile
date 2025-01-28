@@ -8,17 +8,17 @@ FROM --platform=$BUILDPLATFORM node:lts-alpine as nodebuild
 # Download Invoice Ninja
 ARG INVOICENINJA_VERSION
 ARG REPOSITORY=invoiceninja/invoiceninja
-ARG FILENAME=invoiceninja.tar
+ARG FILENAME=invoiceninja.tar.gz
 
 RUN set -eux; apk add curl unzip grep
 
-RUN DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | cut -d '"' -f 4) && \
+RUN DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | grep -o '"browser_download_url": "[^"]*invoiceninja.tar.gz"' | cut -d '"' -f 4) && \
     curl -LJO "$DOWNLOAD_URL" && \
-    mv invoiceninja.tar /tmp/ninja.tar
+    mv invoiceninja.tar.gz /tmp/ninja.tar.gz
 
 # Extract Invoice Ninja
 RUN mkdir -p /var/www/app \
-    && tar -xvf /tmp/ninja.tar -C /var/www/app/ \
+    && tar -xvf /tmp/ninja.tar.gz --strip-components=1 -C /var/www/app/ \
     && mkdir -p /var/www/app/public/logo /var/www/app/storage
     
 WORKDIR /var/www/app
