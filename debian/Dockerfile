@@ -4,13 +4,10 @@ FROM php:${PHP}-fpm AS prepare-app
 
 USER www-data
 
-RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
-    grep -o '"browser_download_url": "[^"]*invoiceninja.tar.gz"' | \
-    cut -d '"' -f 4 | \
-    xargs curl -sL | \
-    tar -xz --strip-components=1 -C /var/www/html \
+RUN curl -sL "https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz" | \
+    tar -xz -C /var/www/html \
     && ln -s /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
-    && php -d opcache.preload='' artisan storage:link \
+    && php artisan storage:link \
     # Workaround for application updates
     && mv /var/www/html/public /tmp/public
 
@@ -20,7 +17,7 @@ RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/lat
 FROM php:${PHP}-fpm
 
 # PHP modules
-ARG php_require="bcmath gd pdo_mysql zip mbstring"
+ARG php_require="bcmath gd mbstring pdo_mysql zip"
 ARG php_suggest="exif imagick intl pcntl soap saxon-12.5.0"
 ARG php_extra="opcache"
 
