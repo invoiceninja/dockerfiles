@@ -1,10 +1,7 @@
 FROM dunglas/frankenphp:1-php8.3-bookworm AS prepare-app
 
-RUN curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | \
-    grep -o '"browser_download_url": "[^"]*invoiceninja.tar.gz"' | \
-    cut -d '"' -f 4 | \
-    xargs curl -sL | \
-    tar -xz --strip-components=1 \
+RUN curl -sL "https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz" | \
+    tar -xz \
     && ln -s ./resources/views/react/index.blade.php ./public/index.html \
     # Symlink
     && php artisan storage:link \
@@ -19,7 +16,7 @@ FROM dunglas/frankenphp:1-php8.3-bookworm
 ARG user=ninja
 
 # PHP modules
-ARG php_require="bcmath gd pdo_mysql zip"
+ARG php_require="bcmath gd mbstring pdo_mysql zip"
 ARG php_suggest="exif imagick intl pcntl soap saxon-12.5.0"
 ARG php_extra="opcache"
 
