@@ -1,30 +1,28 @@
+ARG ALPINE_VERSION=3.20
 ARG PHP_VERSION=8.2
 ARG BAK_STORAGE_PATH=/var/www/app/docker-backup-storage/
 ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 
 # Get Invoice Ninja and install nodejs packages
-FROM --platform=$BUILDPLATFORM node:lts-alpine as nodebuild
+FROM --platform=$BUILDPLATFORM node:lts-alpine${ALPINE_VERSION} as nodebuild
 
 # Download Invoice Ninja
 ARG INVOICENINJA_VERSION
 ARG REPOSITORY=invoiceninja/invoiceninja
-ARG FILENAME=invoiceninja.tar
+ARG FILENAME=invoiceninja.tar.gz
 
 RUN set -eux; apk add curl unzip grep
 
-RUN DOWNLOAD_URL=$(curl -s "https://api.github.com/repos/invoiceninja/invoiceninja/releases/latest" | grep -o '"browser_download_url": "[^"]*invoiceninja.tar"' | cut -d '"' -f 4) && \
-    curl -LJO "$DOWNLOAD_URL" && \
-    mv invoiceninja.tar /tmp/ninja.tar
-
 # Extract Invoice Ninja
-RUN mkdir -p /var/www/app \
-    && tar -xvf /tmp/ninja.tar -C /var/www/app/ \
-    && mkdir -p /var/www/app/public/logo /var/www/app/storage
+RUN mkdir -p /var/www/app
+RUN curl -sL "https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz" | \
+    tar -xz -C /var/www/app/
+RUN mkdir -p /var/www/app/public/logo /var/www/app/storage
     
 WORKDIR /var/www/app
 
 # Prepare php image
-FROM php:${PHP_VERSION}-fpm-alpine as phpbuild
+FROM php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} as phpbuild
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
