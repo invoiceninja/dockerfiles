@@ -51,4 +51,11 @@ if [ "$*" = 'supervisord -c /etc/supervisor/conf.d/supervisord.conf' ]; then
     echo "Starting supervisord..."
 fi
 
+# Set PDF generation browser path based on architecture
+if [ "$(dpkg --print-architecture)" = "amd64" ]; then
+    export SNAPPDF_CHROMIUM_PATH=/usr/bin/google-chrome-stable
+elif [ "$(dpkg --print-architecture)" = "arm64" ]; then
+    export SNAPPDF_CHROMIUM_PATH=/usr/bin/chromium
+fi
+
 exec "$@"
