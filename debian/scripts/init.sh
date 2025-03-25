@@ -82,4 +82,11 @@ if [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$
     fi
 fi
 
+# Set PDF generation browser path based on architecture
+if [ "$(dpkg --print-architecture)" = "amd64" ]; then
+    export SNAPPDF_CHROMIUM_PATH=/usr/bin/google-chrome-stable
+elif [ "$(dpkg --print-architecture)" = "arm64" ]; then
+    export SNAPPDF_CHROMIUM_PATH=/usr/bin/chromium
+fi
+
 exec "$@"
