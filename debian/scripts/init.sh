@@ -1,6 +1,12 @@
 #!/bin/sh -eu
 
 if [ "$*" = 'supervisord -c /etc/supervisor/conf.d/supervisord.conf' ]; then
+
+    # Check for required folders and create if needed
+    [ -d /var/www/html/storage/framework/sessions ] || mkdir -p /var/www/html/storage/framework/sessions
+    [ -d /var/www/html/storage/framework/views ] || mkdir -p /var/www/html/storage/framework/views
+    [ -d /var/www/html/storage/framework/cache ] || mkdir -p /var/www/html/storage/framework/cache
+
     # Workaround for application updates
     if [ "$(ls -A /tmp/public)" ]; then
         echo "Updating public folder..."
