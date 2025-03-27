@@ -17,12 +17,15 @@ if [ "$*" = 'supervisord -c /etc/supervisor/conf.d/supervisord.conf' ]; then
     # Ensure owner, file and directory permissions are correct
     chown -R www-data:www-data \
         /var/www/html/public \
-        /var/www/html/storage
+        /var/www/html/storage \
+        /var/www/html/bootstrap/cache
     find /var/www/html/public \
         /var/www/html/storage \
+        /var/www/html/bootstrap/cache \
         -type f -exec chmod 644 {} \;
     find /var/www/html/public \
         /var/www/html/storage \
+        /var/www/html/bootstrap/cache \
         -type d -exec chmod 755 {} \;
 
     # Clear and cache config in production
