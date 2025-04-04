@@ -17,7 +17,6 @@ services:
       # - ./php/php.ini:/usr/local/etc/php/conf.d/invoiceninja.ini:ro
       # - ./php/php-fpm.conf:/usr/local/etc/php-fpm.d/invoiceninja.conf:ro
       # - ./supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf:ro
-      - app_cache:/var/www/html/bootstrap/cache
       - app_public:/var/www/html/public
       - app_storage:/var/www/html/storage
     networks:
@@ -84,8 +83,6 @@ networks:
     driver: bridge
 
 volumes:
-  app_cache:
-    driver: local
   app_public:
     driver: local
   app_storage:
