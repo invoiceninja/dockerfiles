@@ -1,9 +1,14 @@
-![Docker images](https://github.com/invoiceninja/dockerfiles/workflows/Docker%20images/badge.svg)
 [![Docker image, latest](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja/latest?label=latest)](https://hub.docker.com/r/invoiceninja/invoiceninja)
 [![Docker image, alpine](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja/alpine?label=alpine)](https://hub.docker.com/r/invoiceninja/invoiceninja)
 [![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/invoiceninja)](https://artifacthub.io/packages/search?repo=invoiceninja)
 [![Publish Image](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml)
 [![Cache v5 Image](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-v5.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-v5.yaml)
+
+# Deprecation Notice
+
+The master branch is not longer receiving active updates. We will continue to tag new releases whilst compatibility with underlying packages remains, however we will not be updating this image going forward.
+
+Instead, please use the debian branch [here](https://github.com/invoiceninja/dockerfiles/tree/debian) this image is a completely fresh start based on the debian image and allows improved package support.
 
 # Docker for [Invoice Ninja](https://www.invoiceninja.com/)
 
