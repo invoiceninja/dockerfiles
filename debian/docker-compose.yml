@@ -9,7 +9,6 @@ x-logging: &default-logging
 x-app-volumes: &volumes
   volumes:
       - ./.env:/app/.env
-      - app_cache:/var/www/html/bootstrap/cache
       - app_storage:/app/storage
       - caddy_data:/data
 
@@ -31,9 +30,6 @@ services:
     environment:
       LARAVEL_ROLE: app
     <<: *volumes
-    # HEALTHCHECK from frankenphp image
-    healthcheck:
-      start_period: 180s
     depends_on:
       mysql:
         condition: service_healthy
@@ -143,7 +139,6 @@ services:
   #   logging: *default-logging
 
 volumes:
-  app_cache:
   app_storage:
   caddy_data:
   mysql_data:
