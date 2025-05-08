@@ -85,6 +85,8 @@ COPY --chmod=0755 scripts/init.sh /usr/local/bin/init.sh
 
 USER ${user}
 
+HEALTHCHECK --start-period=10s CMD curl -f http://localhost/health
+
 ENTRYPOINT ["/usr/local/bin/init.sh"]
 
 CMD ["frankenphp", "php-cli", "artisan", "octane:frankenphp"]
