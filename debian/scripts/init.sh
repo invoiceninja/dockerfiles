@@ -3,6 +3,12 @@
 # Fallback to app
 role=${LARAVEL_ROLE:-app}
 
+# Set PDF generation browser path based on architecture
+export SNAPPDF_CHROMIUM_PATH=/usr/bin/google-chrome-stable
+if [ "$(dpkg --print-architecture)" = "arm64" ]; then
+    export SNAPPDF_CHROMIUM_PATH=/usr/bin/chromium
+fi
+
 # Check for default CMD, flag(s) or empty CMD
 if [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$1" ] || [ "$#" -eq  "0" ]; then
 
@@ -38,6 +44,12 @@ if [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$
     if [ "${role}" = "app" ]; then
         cmd="frankenphp php-cli artisan octane:frankenphp"
 
+        # Check for required folders and create if needed, relevant for bind mounts
+        # It is not possible to chown, as we are not executing this script as root
+        [ -d /var/www/html/storage/framework/sessions ] || mkdir -p /var/www/html/storage/framework/sessions
+        [ -d /var/www/html/storage/framework/views ] || mkdir -p /var/www/html/storage/framework/views
+        [ -d /var/www/html/storage/framework/cache ] || mkdir -p /var/www/html/storage/framework/cache
+
         if [ "$APP_ENV" = "production" ]; then
             frankenphp php-cli artisan optimize
         fi
@@ -48,7 +60,7 @@ if [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$
         frankenphp php-cli artisan migrate --force
 
         # If first IN run, it needs to be initialized
-        if [ "$(php -d opcache.preload='' artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')" = "1" ]; then
+        if [ "$(frankenphp php-cli artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')" = "1" ]; then
             echo "Running initialization..."
 
             frankenphp php-cli artisan db:seed --force
@@ -80,13 +92,6 @@ if [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$
     else
         set -- ${cmd}
     fi
-fi
-
-# Set PDF generation browser path based on architecture
-if [ "$(dpkg --print-architecture)" = "amd64" ]; then
-    export SNAPPDF_CHROMIUM_PATH=/usr/bin/google-chrome-stable
-elif [ "$(dpkg --print-architecture)" = "arm64" ]; then
-    export SNAPPDF_CHROMIUM_PATH=/usr/bin/chromium
 fi
 
 exec "$@"
