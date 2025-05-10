@@ -18,7 +18,7 @@ FROM php:${PHP}-fpm
 
 # PHP modules
 ARG php_require="bcmath gd mbstring pdo_mysql zip"
-ARG php_suggest="exif imagick intl pcntl soap saxon-12.5.0"
+ARG php_suggest="exif imagick intl pcntl saxon soap"
 ARG php_extra="opcache"
 
 # Install system dependencies
