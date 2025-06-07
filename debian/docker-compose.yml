@@ -6,9 +6,7 @@ x-logging: &default-logging
 
 services:
   app:
-    build:
-      context: .
-    image: invoiceninja/invoiceninja-debian:${TAG:-latest}
+    image: localhost/invoiceninja/invoiceninja-debian:${TAG:-latest}
     restart: unless-stopped
     env_file:
       - ./.env
@@ -22,14 +20,12 @@ services:
     networks:
       - app-network
     depends_on:
-      mysql:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+        - mariadb
+        - valkey
     logging: *default-logging
 
   nginx:
-    image: nginx:alpine
+    image: nginx:stable-alpine
     restart: unless-stopped
     ports:
       - "80:80"
@@ -43,8 +39,8 @@ services:
       - app
     logging: *default-logging
 
-  mysql:
-    image: mysql:8
+  mariadb:
+    image: mariadb:lts
     restart: unless-stopped
     env_file:
       - ./.env
@@ -54,7 +50,7 @@ services:
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
-      - mysql_data:/var/lib/mysql
+      - mariadb_data:/var/lib/mysql
     networks:
       - app-network
     healthcheck:
@@ -64,11 +60,11 @@ services:
       retries: 5
     logging: *default-logging
 
-  redis:
-    image: redis:alpine
+  valkey:
+    image: valkey/valkey:alpine
     restart: unless-stopped
     volumes:
-      - redis_data:/data
+      - valkey_data:/data
     networks:
       - app-network
     healthcheck:
@@ -87,7 +83,7 @@ volumes:
     driver: local
   app_storage:
     driver: local  
-  mysql_data:
+  mariadb_data:
     driver: local
-  redis_data:
+  valkey_data:
     driver: local

@@ -31,18 +31,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     fonts-wqy-microhei \
     fonts-wqy-zenhei \
     xfonts-wqy \
-    # Install google-chrome-stable(amd64)/chromium(arm64)
-    && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
-    mkdir -p /etc/apt/keyrings \
-    && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | \
-    gpg --dearmor -o /etc/apt/keyrings/google.gpg \
-    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends google-chrome-stable; \
-    elif [ "$(dpkg --print-architecture)" = "arm64" ]; then \
-    apt-get install -y --no-install-recommends \
-    chromium; \        
-    fi \
+    # Install chromium
+    chromium \
     # Create config directory for chromium/google-chrome-stable
     && mkdir /var/www/.config \
     && chown www-data:www-data /var/www/.config \
