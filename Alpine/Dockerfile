@@ -148,7 +148,7 @@ RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && cd /usr/share/fonts/misc && mkfontscale && mkfontdir \
     && fc-cache -fv
 
- # Configure PHP (Part 2)   
+# Configure PHP (Part 2)   
 COPY php/php.ini /usr/local/etc/php/conf.d/invoiceninja.ini
 COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/invoiceninja.conf
 COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
