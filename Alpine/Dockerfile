@@ -26,19 +26,23 @@ ARG REPO_LIST="main community"
 # Install PHP extensions
 COPY --from=ghcr.io/mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
 
+# Change the repositories to latest-stable for latest updates
 RUN rm -f /etc/apk/repositories && \
     for repo in $REPO_LIST; do \
         echo "http://dl-cdn.alpinelinux.org/alpine/latest-stable/$repo" >> /etc/apk/repositories; \
     done && \
+    # Update the packages for security
     apk upgrade --no-cache --available \
+    # Install PHP Extensions
+    # (Saxon has a compilation error with this script and need to be installed after with a patch)
     && install-php-extensions \
     ${php_require} \
     ${php_suggest} \
     ${php_extra} \
-# Install system dependencies, including fonts and Chromium dependencies
+    # Install system dependencies, including fonts and Chromium dependencies
     && apk add --no-cache \
+    # MariaDB-client replace mysql-client and execute the same functions 
     mariadb-client \
-    supervisor \
     # Install chromium 
     chromium \
     # Unicode support for PDF
@@ -53,6 +57,7 @@ RUN rm -f /etc/apk/repositories && \
     util-linux \
     linux-pam \
     shadow \
+    supervisor \
     # Build dependencies for Saxon PHP Extension - add virtual package for easy removal
     make \
     g++ \
@@ -68,6 +73,7 @@ RUN rm -f /etc/apk/repositories && \
 # --- SaxonC Installation ---
 WORKDIR /tmp/saxon
 # Combined RUN instruction for downloading, patching, compiling, and installing SaxonC
+# Detect and download the latest version of SaxonCHE (Open Source) according to the system architecture
 RUN UNAME_ARCH=$(uname -m); DOWNLOAD_ARCH_COMPONENT=""; \
     case "$UNAME_ARCH" in \
         x86_64) DOWNLOAD_ARCH_COMPONENT="linux-x86_64";; \
@@ -135,13 +141,14 @@ WORKDIR /var/www/html
 COPY fonts/*.ttf /usr/share/fonts/truetype/
 COPY fonts/*.pcf /usr/share/fonts/misc/
 
-# Configure PHP
+# Configure PHP (Part 1)
 RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
-# Generate font indexes and update cache
+    # Generate font indexes and update cache
     && cd /usr/share/fonts/truetype && mkfontscale && mkfontdir \
     && cd /usr/share/fonts/misc && mkfontscale && mkfontdir \
     && fc-cache -fv
 
+ # Configure PHP (Part 2)   
 COPY php/php.ini /usr/local/etc/php/conf.d/invoiceninja.ini
 COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/invoiceninja.conf
 COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
