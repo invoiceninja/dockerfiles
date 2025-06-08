@@ -124,6 +124,7 @@ RUN UNAME_ARCH=$(uname -m); DOWNLOAD_ARCH_COMPONENT=""; \
     ./configure --with-saxon=/usr/local/SaxonCHE LDFLAGS="-L/usr/local/SaxonCHE/lib" && \
     make && \
     make install && \
+    # Move the modules to the specific modules folder of PHP 8.3
     mv /tmp/saxon/src/modules/* /usr/local/lib/php/extensions/no-debug-non-zts-20230831/; \
     \
     # 5. NOW, after the PHP extension is compiled, move the core SaxonC shared libraries
