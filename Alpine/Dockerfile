@@ -75,6 +75,7 @@ RUN rm -f /etc/apk/repositories && \
 WORKDIR /tmp/saxon
 # Combined RUN instruction for downloading, patching, compiling, and installing SaxonC
 # Detect and download the latest version of SaxonCHE (Open Source) according to the system architecture
+# x86_64 (amd64) && aarm64 only as they are the only provided architectures from Saxonica
 RUN UNAME_ARCH=$(uname -m); DOWNLOAD_ARCH_COMPONENT=""; \
     case "$UNAME_ARCH" in \
         x86_64) DOWNLOAD_ARCH_COMPONENT="linux-x86_64";; \
@@ -124,8 +125,8 @@ RUN UNAME_ARCH=$(uname -m); DOWNLOAD_ARCH_COMPONENT=""; \
     ./configure --with-saxon=/usr/local/SaxonCHE LDFLAGS="-L/usr/local/SaxonCHE/lib" && \
     make && \
     make install && \
-    # Move the modules to the specific modules folder of PHP 8.3
-    mv /tmp/saxon/src/modules/* /usr/local/lib/php/extensions/no-debug-non-zts-20230831/; \
+    # Move the modules to the specific modules folder of PHP
+    mv /tmp/saxon/src/modules/* $(php-config --extension-dir)/; \
     \
     # 5. NOW, after the PHP extension is compiled, move the core SaxonC shared libraries
     #    to a default linker path for runtime discovery.
