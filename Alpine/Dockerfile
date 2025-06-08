@@ -23,7 +23,7 @@ ARG php_extra="opcache"
 # Set up repositories and update/upgradeapk packages in one go
 ARG REPO_LIST="main community"
 
-# Install PHP extensions
+# Install PHP extensions installer
 COPY --from=ghcr.io/mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
 
 # Change the repositories to latest-stable for latest updates
@@ -68,7 +68,8 @@ RUN rm -f /etc/apk/repositories && \
     # Prepare font directories
     && mkdir -p /usr/share/fonts/custom /usr/share/fonts/truetype /usr/share/fonts/misc \
     # Create config directory for chromium
-    &&mkdir -p /var/www/.config && chown www-data:www-data /var/www/.config
+    && mkdir -p /var/www/.config \
+    && chown www-data:www-data /var/www/.config
 
 # --- SaxonC Installation ---
 WORKDIR /tmp/saxon
@@ -115,8 +116,9 @@ RUN UNAME_ARCH=$(uname -m); DOWNLOAD_ARCH_COMPONENT=""; \
     rm -rf "SaxonCHE-${DOWNLOAD_ARCH_COMPONENT}-${FORMATTED_VER}"; \
     \
     # 4. Apply patch and compile Saxon PHP extension
-    #    The configure script will now find libsaxonc-core-he.so.12.7.0 at /usr/local/SaxonCHE/lib/
+    #    The configure script will now find libsaxonc-core-he.so at /usr/local/SaxonCHE/lib/
     cd /tmp/saxon/src && \
+    # Patch to compile SaxonC correctly on Alpine
     sed -i 's/Z_TYPE_P(val) != NULL/Z_TYPE_P(val) != IS_NULL/g' php8_XsltExecutable.cpp && \
     phpize && \
     ./configure --with-saxon=/usr/local/SaxonCHE LDFLAGS="-L/usr/local/SaxonCHE/lib" && \
@@ -137,7 +139,7 @@ RUN UNAME_ARCH=$(uname -m); DOWNLOAD_ARCH_COMPONENT=""; \
 
 WORKDIR /var/www/html
 
-# Copy custom fonts
+# Copy custom fonts (fonts-wqy-microhei & xfonts-wqy)
 COPY fonts/*.ttf /usr/share/fonts/truetype/
 COPY fonts/*.pcf /usr/share/fonts/misc/
 

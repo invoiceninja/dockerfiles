@@ -21,10 +21,19 @@ ARG php_require="bcmath gd mbstring pdo_mysql zip"
 ARG php_suggest="exif imagick intl pcntl saxon soap"
 ARG php_extra="opcache"
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Install PHP extensions installer
+COPY --from=ghcr.io/mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+
+# Update the packages for security
+RUN apt-get update \
+    # Install PHP Extensions
+    && install-php-extensions \
+    ${php_require} \
+    ${php_suggest} \
+    ${php_extra} \
+    # Install system dependencies
+    && apt-get install -y --no-install-recommends \
     mariadb-client \
-    gpg \
     supervisor \
     # Unicode support for PDF
     fonts-noto-cjk-extra \
@@ -33,28 +42,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xfonts-wqy \
     # Install chromium
     chromium \
-    # Create config directory for chromium/google-chrome-stable
+    # Create config directory for chromium
     && mkdir /var/www/.config \
     && chown www-data:www-data /var/www/.config \
     # Cleanup
-    && apt-get purge -y gpg \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
-COPY --from=ghcr.io/mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
-
-RUN install-php-extensions \
-    ${php_require} \
-    ${php_suggest} \
-    ${php_extra}
-
 # Configure PHP
 RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-
 COPY php/php.ini /usr/local/etc/php/conf.d/invoiceninja.ini
-
 COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/invoiceninja.conf
 
 # Setup supervisor
