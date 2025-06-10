@@ -8,7 +8,7 @@ services:
   app:
     build:
       context: .
-    image: localhost/invoiceninja/invoiceninja-debian:${TAG:-latest}
+    image: invoiceninja/invoiceninja-debian:${TAG:-latest}
     restart: unless-stopped
     env_file:
       - ./.env
@@ -22,8 +22,10 @@ services:
     networks:
       - app-network
     depends_on:
-        - mariadb
-        - valkey
+      mariadb:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
     logging: *default-logging
 
   nginx:
