@@ -14,5 +14,5 @@ charts/**/charts/
 /docker
 
 BAK files
-*.bak
-*.bak2
+*/*.bak
+*/*.bak2
