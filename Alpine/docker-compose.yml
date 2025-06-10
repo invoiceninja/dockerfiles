@@ -41,6 +41,7 @@ services:
       - app
     logging: *default-logging
 
+# Replace mysql with mariadb for fully open source
   mariadb:
     image: mariadb:lts
     restart: unless-stopped
@@ -62,6 +63,7 @@ services:
       retries: 5
     logging: *default-logging
 
+# Replace Redis with Vakley for fully open source
   valkey:
     image: valkey/valkey:alpine
     restart: unless-stopped

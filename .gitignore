@@ -12,3 +12,7 @@ charts/**/charts/
 
 # Compose filesystem
 /docker
+
+BAK files
+*.bak
+*.bak2

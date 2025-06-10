@@ -40,7 +40,7 @@ RUN apt-get update \
     fonts-wqy-microhei \
     fonts-wqy-zenhei \
     xfonts-wqy \
-    # Install chromium
+    # Install chromium instead of google chrome for fully open source
     chromium \
     # Create config directory for chromium
     && mkdir /var/www/.config \

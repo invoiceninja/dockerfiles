@@ -6,6 +6,8 @@ x-logging: &default-logging
 
 services:
   app:
+    build:
+      context: .
     image: localhost/invoiceninja/invoiceninja-debian:${TAG:-latest}
     restart: unless-stopped
     env_file:
@@ -39,6 +41,7 @@ services:
       - app
     logging: *default-logging
 
+# Replace MySQL with MariaDB for fully open source
   mariadb:
     image: mariadb:lts
     restart: unless-stopped
@@ -60,6 +63,7 @@ services:
       retries: 5
     logging: *default-logging
 
+# Replace Redis with Valkey for fully open source
   valkey:
     image: valkey/valkey:alpine
     restart: unless-stopped

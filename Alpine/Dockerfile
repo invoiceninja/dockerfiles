@@ -41,9 +41,9 @@ RUN rm -f /etc/apk/repositories && \
     ${php_extra} \
     # Install system dependencies, including fonts and Chromium dependencies
     && apk add --no-cache \
-    # MariaDB-client replace mysql-client and execute the same functions 
+    # mariadb-client replace mysql-client and execute the same functions 
     mariadb-client \
-    # Install chromium 
+    # Install chromium instead of google chrome for fully open source
     chromium \
     # Unicode support for PDF
     ttf-freefont \
