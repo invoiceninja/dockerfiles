@@ -25,11 +25,13 @@ services:
       - app-network
     depends_on:
       # If you choose to use maridb instead of mysql juste comment "mysql:" and uncomment "mariadb:"
-      mysql:
+      - mysql
+      - valkey
+      #mysql:
       # mariadb:
-        condition: service_healthy
-      valkey:
-        condition: service_healthy
+        #condition: service_healthy
+      #valkey:
+        #condition: service_healthy
     logging: *default-logging
 
   nginx:
