@@ -18,19 +18,21 @@ FROM php:${PHP}-fpm
 
 # PHP modules
 ARG php_require="bcmath gd mbstring pdo_mysql zip"
-ARG php_suggest="exif imagick intl pcntl saxon soap"
+ARG php_suggest="exif imagick intl pcntl soap"
 ARG php_extra="opcache"
 
 # Install PHP extensions installer
 COPY --from=ghcr.io/mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-# Update the packages for security
-RUN apt-get update \
+# Install the latest available version of SaxonCHE (Open Source)
+RUN ( curl -f -sSL https://raw.githubusercontent.com/charlesgek/SaxonCHE-PHP/refs/heads/main/Debian/saxon-install.sh || echo 'echo "Failed to download saxon-install.sh"; exit 1' ) | sh -s \
     # Install PHP Extensions
     && install-php-extensions \
     ${php_require} \
     ${php_suggest} \
     ${php_extra} \
+    # Update the packages for security
+    && apt-get update -y  \
     # Install system dependencies
     && apt-get install -y --no-install-recommends \
     mariadb-client \

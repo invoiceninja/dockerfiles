@@ -13,6 +13,9 @@ charts/**/charts/
 # Compose filesystem
 /docker
 
-BAK files
+# BAK files
 */*.bak
 */*.bak2
+
+# Alpine Folder
+/Alpine

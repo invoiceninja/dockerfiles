@@ -22,10 +22,12 @@ services:
     networks:
       - app-network
     depends_on:
-      mariadb:
-        condition: service_healthy
-      valkey:
-        condition: service_healthy
+#      mariadb:
+#        condition: service_healthy
+#      valkey:
+#        condition: service_healthy
+      - mariadb
+      - valkey
     logging: *default-logging
 
   nginx:
