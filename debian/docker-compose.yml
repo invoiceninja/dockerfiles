@@ -24,12 +24,12 @@ services:
     networks:
       - app-network
     depends_on:
-#      mariadb:
-#        condition: service_healthy
-#      valkey:
-#        condition: service_healthy
-      - mariadb
-      - valkey
+      # If you choose to use maridb instead of mysql juste comment "mysql:" and uncomment "mariadb:"
+      mysql:
+      # mariadb:
+        condition: service_healthy
+      valkey:
+        condition: service_healthy
     logging: *default-logging
 
   nginx:
@@ -49,12 +49,8 @@ services:
       - app
     logging: *default-logging
 
-  # Replace MySQL with MariaDB for fully open source
-  mariadb:
-    # LTS Image for stability
-    image: mariadb:lts
-    # Name container to avoid breaking changes in the future
-    container_name: debian_mysql_1
+  mysql:
+    image: mysql:8
     restart: unless-stopped
     env_file:
       - ./.env
@@ -63,7 +59,6 @@ services:
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-    # Keep the same volume name as mysql previously to avoid breaking changes
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -74,6 +69,35 @@ services:
       timeout: 5s
       retries: 5
     logging: *default-logging
+
+
+# Comment section mysql and uncomment mariadb section to switch
+
+#  # Replace MySQL with MariaDB for fully open source
+#  mariadb:
+#    # LTS Image for stability
+#    image: mariadb:lts
+#    # Name container to avoid breaking changes in the future
+#    container_name: debian_mysql_1
+#    restart: unless-stopped
+#    env_file:
+#      - ./.env
+#    environment:
+#      MYSQL_DATABASE: ${DB_DATABASE}
+#      MYSQL_USER: ${DB_USERNAME}
+#      MYSQL_PASSWORD: ${DB_PASSWORD}
+#      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+#    # Keep the same volume name as mysql previously to avoid breaking changes
+#    volumes:
+#      - mysql_data:/var/lib/mysql
+#    networks:
+#      - app-network
+#    healthcheck:
+#      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#    logging: *default-logging
 
   # Replace Redis with Valkey for fully open source and higher performances
   valkey:

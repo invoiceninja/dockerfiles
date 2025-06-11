@@ -21,39 +21,50 @@ ARG php_require="bcmath gd mbstring pdo_mysql zip"
 ARG php_suggest="exif imagick intl pcntl soap"
 ARG php_extra="opcache"
 
-# Install PHP extensions installer
+# Download script to install PHP extensions
 COPY --from=ghcr.io/mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
 # Install the latest available version of SaxonCHE (Open Source) PHP Extension
 RUN ( curl -f -sSL https://raw.githubusercontent.com/charlesgek/SaxonCHE-PHP/refs/heads/main/Debian/saxon-install.sh || echo 'echo "Failed to download saxon-install.sh"; exit 1' ) | sh -s \
-    # Install other PHP Extensions
+    # Install other PHP extensions
     && install-php-extensions \
     ${php_require} \
     ${php_suggest} \
     ${php_extra} \
-    # Update the packages for security
-    && apt-get update -y  \
     # Install system dependencies
-    && apt-get install -y --no-install-recommends \
+    && apt-get update && apt-get install -y --no-install-recommends \
     mariadb-client \
+    gpg \
     supervisor \
     # Unicode support for PDF
     fonts-noto-cjk-extra \
     fonts-wqy-microhei \
     fonts-wqy-zenhei \
     xfonts-wqy \
-    # Install chromium instead of google chrome for fully open source
-    chromium \
-    # Create config directory for chromium
+    # Install google-chrome-stable(amd64)/chromium(arm64)
+    && if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
+    mkdir -p /etc/apt/keyrings \
+    && curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | \
+    gpg --dearmor -o /etc/apt/keyrings/google.gpg \
+    && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends google-chrome-stable; \
+    elif [ "$(dpkg --print-architecture)" = "arm64" ]; then \
+    apt-get install -y --no-install-recommends \
+    chromium; \        
+    fi \
+    # Create config directory for chromium/google-chrome-stable
     && mkdir /var/www/.config \
     && chown www-data:www-data /var/www/.config \
     # Cleanup
+    && apt-get purge -y gpg \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+    # Configure PHP (Part 1)
+    && ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-# Configure PHP
-RUN ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+# Configure PHP (Part 2)
 COPY php/php.ini /usr/local/etc/php/conf.d/invoiceninja.ini
 COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/invoiceninja.conf
 
