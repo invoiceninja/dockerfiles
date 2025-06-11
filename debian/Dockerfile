@@ -60,7 +60,7 @@ RUN ( curl -f -sSL https://raw.githubusercontent.com/charlesgek/SaxonCHE-PHP/ref
     && apt-get purge -y gpg \
     && apt-get autoremove -y \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
     # Configure PHP (Part 1)
     && ln -s "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
