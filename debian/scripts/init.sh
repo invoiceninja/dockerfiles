@@ -46,9 +46,9 @@ if [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$
 
         # Check for required folders and create if needed, relevant for bind mounts
         # It is not possible to chown, as we are not executing this script as root
-        [ -d /var/www/html/storage/framework/sessions ] || mkdir -p /var/www/html/storage/framework/sessions
-        [ -d /var/www/html/storage/framework/views ] || mkdir -p /var/www/html/storage/framework/views
-        [ -d /var/www/html/storage/framework/cache ] || mkdir -p /var/www/html/storage/framework/cache
+        [ -d /app/storage/framework/sessions ] || mkdir -p /app/storage/framework/sessions
+        [ -d /app/storage/framework/views ] || mkdir -p /app/storage/framework/views
+        [ -d /app/storage/framework/cache ] || mkdir -p /app/storage/framework/cache
 
         if [ "$APP_ENV" = "production" ]; then
             frankenphp php-cli artisan optimize
