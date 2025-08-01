@@ -7,7 +7,7 @@ elif [ "$(dpkg --print-architecture)" = "arm64" ]; then
     export SNAPPDF_CHROMIUM_PATH=/usr/bin/chromium
 fi
 
-if [ "$*" = 'supervisord -c /etc/supervisor/conf.d/supervisord.conf' ]; then
+if [ "$*" = 'supervisord -c /etc/supervisor/supervisord.conf' ]; then
 
     # Check for required folders and create if needed
     [ -d /var/www/html/storage/framework/sessions ] || mkdir -p /var/www/html/storage/framework/sessions

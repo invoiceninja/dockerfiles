@@ -41,7 +41,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get install -y --no-install-recommends google-chrome-stable; \
     elif [ "$(dpkg --print-architecture)" = "arm64" ]; then \
     apt-get install -y --no-install-recommends \
-    chromium; \        
+    chromium; \
     fi \
     # Create config directory for chromium/google-chrome-stable
     && mkdir /var/www/.config \
@@ -82,4 +82,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD pgrep -f "php-fpm: master process"
 
 ENTRYPOINT ["/usr/local/bin/init.sh"]
-CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
