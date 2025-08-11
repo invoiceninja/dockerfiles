@@ -49,6 +49,7 @@ if [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$
         [ -d /app/storage/framework/sessions ] || mkdir -p /app/storage/framework/sessions
         [ -d /app/storage/framework/views ] || mkdir -p /app/storage/framework/views
         [ -d /app/storage/framework/cache ] || mkdir -p /app/storage/framework/cache
+        [ -d /app/storage/storage ] || mkdir -p /app/storage/storage
 
         if [ "$APP_ENV" = "production" ]; then
             frankenphp php-cli artisan optimize
