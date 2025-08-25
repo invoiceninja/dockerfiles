@@ -22,7 +22,7 @@ git clone https://github.com/invoiceninja/dockerfiles.git -b debian
 cd dockerfiles/debian
 ```
 
-Instead of defining our environment variables inside our docker-compose.yml file we now define this in the `.env` file, open this file up and insert your `APP_URL`, `APP_KEY` and update the rest of the variables as required.
+Instead of defining our environment variables inside our docker-compose.yml file we now define this in the `.env` file, copy the `.env.example` file to `.env`, open this file up and insert your `APP_URL`, `APP_KEY` and update the rest of the variables as required.
 
 ```
 APP_URL=http://in.localhost:8003/
@@ -80,6 +80,10 @@ docker compose up
 ```
 
 It is recommended to perform a backup before updating.
+
+### Using mariadb instead of mysql
+
+To use MariaDB instead of MySQL, we use `docker-compose.override.yml`, open this file up and uncomment the mariadb configuration as required.
 
 ### Support
 
