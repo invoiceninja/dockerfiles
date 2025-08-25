@@ -83,7 +83,7 @@ It is recommended to perform a backup before updating.
 
 ### Using mariadb instead of mysql
 
-To use MariaDB instead of MySQL, we use `docker-compose.override.yml`, open this file up and uncomment the mariadb configuration as required.
+To use MariaDB instead of MySQL, copy the `docker-compose.override.yml.example` file to `docker-compose.override.yml`.
 
 ### Support
 

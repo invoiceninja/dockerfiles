@@ -15,3 +15,4 @@ charts/**/charts/
 
 # Environment file
 debian/.env
+debian/docker-compose.override.yml
