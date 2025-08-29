@@ -38,6 +38,10 @@ if [ "$*" = 'supervisord -c /etc/supervisor/supervisord.conf' ]; then
         /var/www/html/storage \
         -type d -exec chmod 755 {} \;
 
+    # Fix mariadb-client connection to mysql
+    echo "[client]\nskip-ssl = true" > /var/www/.my.cnf
+    chown www-data:www-data /var/www/.my.cnf    
+
     # Clear and cache config in production
     if [ "$APP_ENV" = "production" ]; then
         runuser -u www-data -- php artisan optimize
