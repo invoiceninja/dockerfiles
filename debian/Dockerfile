@@ -23,6 +23,7 @@ ARG php_extra="opcache"
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    libfcgi-bin \
     mariadb-client \
     gpg \
     supervisor \
@@ -78,8 +79,8 @@ COPY --from=prepare-app /tmp/public /tmp/public
 COPY --chmod=0755 scripts/init.sh /usr/local/bin/init.sh
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-    CMD pgrep -f "php-fpm: master process"
+HEALTHCHECK --start-period=10s \
+    CMD REMOTE_ADDR=127.0.0.1 REQUEST_URI=/health REQUEST_METHOD=GET SCRIPT_FILENAME=/var/www/html/public/index.php cgi-fcgi -bind -connect 127.0.0.1:9000 | grep '{"status":"ok","message":"API is healthy"}'
 
 ENTRYPOINT ["/usr/local/bin/init.sh"]
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf"]
