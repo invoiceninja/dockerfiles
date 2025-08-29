@@ -1,4 +1,4 @@
-ARG PHP=8.3
+ARG PHP=8.4
 
 FROM php:${PHP}-fpm AS prepare-app
 
