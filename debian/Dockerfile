@@ -68,6 +68,9 @@ COPY php/php.ini /usr/local/etc/php/conf.d/invoiceninja.ini
 
 COPY php/php-fpm.conf /usr/local/etc/php-fpm.d/invoiceninja.conf
 
+# Workaround: Disable SSL for mariadb-client for compatibility with MySQL
+RUN echo "skip-ssl = true" >> /etc/mysql/mariadb.conf.d/50-client.cnf
+
 # Setup supervisor
 COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
