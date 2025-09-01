@@ -72,6 +72,9 @@ RUN ln -s "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
 
 COPY php/php.ini /usr/local/etc/php/conf.d/invoiceninja.ini
 
+# Workaround: Disable SSL for mariadb-client for compatibility with MySQL
+RUN echo "skip-ssl = true" >> /etc/mysql/mariadb.conf.d/50-client.cnf
+
 # Create directory for artisan tinker (init.sh)
 RUN mkdir /config/psysh \
     && chown ${user}: /config/psysh
