@@ -16,7 +16,7 @@ services:
   app:
     build:
       context: .
-    image: invoiceninja/invoiceninja-debian:${TAG:-latest}
+    image: invoiceninja/invoiceninja-octane:${TAG:-latest}
     restart: unless-stopped
     # php artisan help octane:frankenphp
     command: --port=80 --workers=2 --log-level=info
@@ -42,7 +42,7 @@ services:
     logging: *default-logging
   
   app-worker:
-    image: invoiceninja/invoiceninja-debian:${TAG:-latest}
+    image: invoiceninja/invoiceninja-octane:${TAG:-latest}
     restart: unless-stopped
     # php artisan help queue:work
     command: --verbose --sleep=3 --tries=3 --max-time=3600
@@ -63,7 +63,7 @@ services:
     logging: *default-logging
 
   app-scheduler:
-    image: invoiceninja/invoiceninja-debian:${TAG:-latest}
+    image: invoiceninja/invoiceninja-octane:${TAG:-latest}
     restart: unless-stopped
     # php artisan help schedule:work
     command: --verbose
