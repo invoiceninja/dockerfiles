@@ -1,15 +1,15 @@
 dependencies:
 - name: common
-  repository: https://charts.bitnami.com/bitnami
-  version: 2.2.2
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 2.31.4
 - name: nginx
-  repository: https://charts.bitnami.com/bitnami
-  version: 13.2.20
+  repository: oci://registry-1.docker.io/cloudpirates
+  version: 0.1.6
 - name: mariadb
-  repository: https://charts.bitnami.com/bitnami
-  version: 11.4.2
+  repository: oci://registry-1.docker.io/cloudpirates
+  version: 0.2.7
 - name: redis
-  repository: https://charts.bitnami.com/bitnami
-  version: 16.13.2
-digest: sha256:da0dca54f32ca0465f89744d6247421ad13c907f09cd40fb21985c81888aaef1
-generated: "2022-12-23T12:54:52.476889+08:00"
+  repository: oci://registry-1.docker.io/cloudpirates
+  version: 0.3.1
+digest: sha256:ffedcf11e93d40ad43815159cbb4f1f1c86c89f14f4c68c94be084ac39e9599c
+generated: "2025-09-18T00:52:29.103017792+02:00"
