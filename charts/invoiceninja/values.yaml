@@ -592,8 +592,12 @@ redis:
   sentinel:
     enabled: true
     quorum: 1
+    image:
+      repository: bitnamilegacy/redis-sentinel
   replica:
     replicaCount: 1
+  image:
+    repository: bitnamilegacy/redis
 
 ## External Redis Configuration
 ##

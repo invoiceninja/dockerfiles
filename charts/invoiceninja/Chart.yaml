@@ -40,8 +40,8 @@ dependencies:
     version: 0.x.x
   - condition: redis.enabled
     name: redis
-    repository: oci://registry-1.docker.io/cloudpirates
-    version: 0.x.x
+    repository: oci://registry-1.docker.io/bitnamicharts
+    version: 22.x.x
 maintainers:
   - email: lwj5@hotmail.com
     name: lwj5

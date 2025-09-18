@@ -9,7 +9,7 @@ dependencies:
   repository: oci://registry-1.docker.io/cloudpirates
   version: 0.2.7
 - name: redis
-  repository: oci://registry-1.docker.io/cloudpirates
-  version: 0.3.1
-digest: sha256:ffedcf11e93d40ad43815159cbb4f1f1c86c89f14f4c68c94be084ac39e9599c
-generated: "2025-09-18T00:52:29.103017792+02:00"
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 22.0.7
+digest: sha256:442207db8901307185820ac37d085ed5e9314eca3478ee4d61639a602ad42c26
+generated: "2025-09-18T02:58:04.182571204+02:00"
