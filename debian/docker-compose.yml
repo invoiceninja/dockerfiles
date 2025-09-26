@@ -40,7 +40,8 @@ services:
     networks:
       - app-network
     depends_on:
-      - app
+      app:
+        condition: service_healthy
     logging: *default-logging
 
   mysql:
