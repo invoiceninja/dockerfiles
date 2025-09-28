@@ -41,24 +41,26 @@ if [ "$*" = 'supervisord -c /etc/supervisor/supervisord.conf' ]; then
 
     # Clear and cache config in production
     if [ "$APP_ENV" = "production" ]; then
-        runuser -u www-data -- php artisan optimize
         runuser -u www-data -- php artisan package:discover
-        runuser -u www-data -- php artisan migrate --force
+        runuser -u www-data -- php artisan migrate --force       
+        runuser -u www-data -- php artisan cache:clear # Clear after the migration
+        runuser -u www-data -- php artisan ninja:design-update
+        runuser -u www-data -- php artisan optimize
 
         # If first IN run, it needs to be initialized
-        if [ "$(php -d opcache.preload='' artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')" = "1" ]; then
+        if [ "$(runuser -u www-data -- php artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')" = "1" ]; then
             echo "Running initialization..."
-
-            php artisan db:seed --force
+            
+            runuser -u www-data -- php artisan db:seed --force
 
             if [ -n "${IN_USER_EMAIL}" ] && [ -n "${IN_PASSWORD}" ]; then
-                php artisan ninja:create-account --email "${IN_USER_EMAIL}" --password "${IN_PASSWORD}"
+                runuser -u www-data -- php artisan ninja:create-account --email "${IN_USER_EMAIL}" --password "${IN_PASSWORD}"
             else
                 echo "Initialization failed - Set IN_USER_EMAIL and IN_PASSWORD in .env"
                 exit 1
             fi
-        fi
 
+        fi
         echo "Production setup completed"
     fi
 
