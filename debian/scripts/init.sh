@@ -53,25 +53,24 @@ if [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$
         [ -d /app/storage/logs ] || mkdir -p /app/storage/logs
 
         if [ "$APP_ENV" = "production" ]; then
+            frankenphp php-cli artisan package:discover
+            frankenphp php-cli artisan migrate --force
+            frankenphp php-cli artisan cache:clear # Clear after the migration
+            frankenphp php-cli artisan ninja:design-update
             frankenphp php-cli artisan optimize
-        fi
 
-        frankenphp php-cli artisan package:discover
+            # If first IN run, it needs to be initialized
+            if [ "$(frankenphp php-cli artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')" = "1" ]; then
+                echo "Running initialization..."
 
-        # Run migrations (if any)
-        frankenphp php-cli artisan migrate --force
+                frankenphp php-cli artisan db:seed --force
 
-        # If first IN run, it needs to be initialized
-        if [ "$(frankenphp php-cli artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')" = "1" ]; then
-            echo "Running initialization..."
-
-            frankenphp php-cli artisan db:seed --force
-
-            if [ -n "${IN_USER_EMAIL}" ] && [ -n "${IN_PASSWORD}" ]; then
-                frankenphp php-cli artisan ninja:create-account --email "${IN_USER_EMAIL}" --password "${IN_PASSWORD}"
-            else
-                echo "Initialization failed - Set IN_USER_EMAIL and IN_PASSWORD in .env"
-                exit 1
+                if [ -n "${IN_USER_EMAIL}" ] && [ -n "${IN_PASSWORD}" ]; then
+                    frankenphp php-cli artisan ninja:create-account --email "${IN_USER_EMAIL}" --password "${IN_PASSWORD}"
+                else
+                    echo "Initialization failed - Set IN_USER_EMAIL and IN_PASSWORD in .env"
+                    exit 1
+                fi
             fi
         fi
 
