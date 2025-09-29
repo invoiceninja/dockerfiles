@@ -74,9 +74,8 @@ docker compose up -d
 To upgrade to a newer release image, update your docker-compose.yml first by running:
 
 ```bash
-docker compose down
 docker compose pull
-docker compose up
+docker compose up -d
 ```
 
 It is recommended to perform a backup before updating.

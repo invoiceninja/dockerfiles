@@ -41,7 +41,6 @@ if [ "$*" = 'supervisord -c /etc/supervisor/supervisord.conf' ]; then
 
     # Clear and cache config in production
     if [ "$APP_ENV" = "production" ]; then
-        runuser -u www-data -- php artisan package:discover
         runuser -u www-data -- php artisan migrate --force       
         runuser -u www-data -- php artisan cache:clear # Clear after the migration
         runuser -u www-data -- php artisan ninja:design-update
