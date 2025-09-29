@@ -53,7 +53,6 @@ if [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$
         [ -d /app/storage/logs ] || mkdir -p /app/storage/logs
 
         if [ "$APP_ENV" = "production" ]; then
-            frankenphp php-cli artisan package:discover
             frankenphp php-cli artisan migrate --force
             frankenphp php-cli artisan cache:clear # Clear after the migration
             frankenphp php-cli artisan ninja:design-update
