@@ -12,15 +12,14 @@ on:
 
 jobs:
   docker:
-    runs-on: ubuntu-22.04
+    runs-on: ${{ startsWith(matrix.platforms, 'linux/arm') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ["linux/amd64", "linux/arm64"]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: all
+        uses: actions/checkout@v5
 
       - name: Set up Docker Buildx
         id: buildx
@@ -28,10 +27,9 @@ jobs:
 
       - name: Build
         id: docker_build
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: debian  
-          file: debian/Dockerfile  
           load: true
           tags: invoiceninja/invoiceninja-octane:test
           cache-from: type=gha
