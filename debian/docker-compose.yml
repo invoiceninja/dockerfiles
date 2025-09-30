@@ -82,8 +82,6 @@ services:
   mysql:
     image: mysql:8
     restart: unless-stopped
-    env_file:
-      - ./.env
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
@@ -113,8 +111,6 @@ services:
   # mariadb:
   #   image: mariadb:11.4
   #   restart: unless-stopped
-  #   env_file:
-  #     - ./.env
   #   environment:
   #     MARIADB_DATABASE: ${DB_DATABASE}
   #     MARIADB_USER: ${DB_USERNAME}
