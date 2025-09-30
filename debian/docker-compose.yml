@@ -8,7 +8,6 @@ x-logging: &default-logging
 
 x-app-volumes: &volumes
   volumes:
-      - ./.env:/app/.env
       - app_storage:/app/storage
       - caddy_data:/data
 
