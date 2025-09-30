@@ -13,7 +13,6 @@ services:
     env_file:
       - ./.env
     volumes:
-      - ./.env:/var/www/html/.env
       # - ./php/php.ini:/usr/local/etc/php/conf.d/invoiceninja.ini:ro
       # - ./php/php-fpm.conf:/usr/local/etc/php-fpm.d/invoiceninja.conf:ro
       # - ./supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf:ro
