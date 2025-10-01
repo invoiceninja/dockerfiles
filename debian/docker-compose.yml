@@ -1,16 +1,9 @@
 # name: invoiceninja
 
-x-logging: &default-logging
-  options:
-    max-size: "10m"
-    max-file: "3"
-  driver: json-file
-
 x-app-volumes: &volumes
   volumes:
-      - ./.env:/app/.env
-      - app_storage:/app/storage
-      - caddy_data:/data
+    - app_storage:/app/storage
+    - caddy_data:/data
 
 services:
   app:
@@ -19,12 +12,12 @@ services:
     image: invoiceninja/invoiceninja-octane:${TAG:-latest}
     restart: unless-stopped
     # php artisan help octane:frankenphp
-    command: --port=80 --workers=2 --log-level=info
+    command: --port=80 --workers=2
     # command: --host=example.com --port=443 --workers=2 --https --http-redirect --log-level=info
     ports:
       - "80:80" # HTTP
       # - "443:443" # HTTPS
-      # - "443:443/udp" # HTTP/3, Works for chromium based browser, but causes H3_GENERAL_PROTOCOL_ERROR for pdf previews in Firefox 
+      # - "443:443/udp" # HTTP/3, Works for chromium based browser, but causes H3_GENERAL_PROTOCOL_ERROR for pdf previews in Firefox
     env_file:
       - ./.env
     environment:
@@ -39,8 +32,7 @@ services:
       #   condition: service_healthy
       # valkey:
       #   condition: service_healthy
-    logging: *default-logging
-  
+
   app-worker:
     image: invoiceninja/invoiceninja-octane:${TAG:-latest}
     restart: unless-stopped
@@ -56,11 +48,9 @@ services:
     <<: *volumes
     healthcheck:
       test: ["CMD", "pgrep", "-f", "queue:work"]
-      start_period: 10s
     depends_on:
       app:
         condition: service_healthy
-    logging: *default-logging
 
   app-scheduler:
     image: invoiceninja/invoiceninja-octane:${TAG:-latest}
@@ -74,17 +64,13 @@ services:
     <<: *volumes
     healthcheck:
       test: ["CMD", "pgrep", "-f", "schedule:work"]
-      start_period: 10s
     depends_on:
       app:
         condition: service_healthy
-    logging: *default-logging
 
   mysql:
     image: mysql:8
     restart: unless-stopped
-    env_file:
-      - ./.env
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
@@ -93,11 +79,16 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    logging: *default-logging
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u${MYSQL_USER}",
+          "-p${MYSQL_PASSWORD}",
+        ]
 
   redis:
     image: redis:alpine
@@ -105,17 +96,11 @@ services:
     volumes:
       - redis_data:/data
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    logging: *default-logging
+      test: ["CMD", "redis-cli", "ping"]
 
   # mariadb:
-  #   image: mariadb:11.4
+  #   image: mariadb:11.8
   #   restart: unless-stopped
-  #   env_file:
-  #     - ./.env
   #   environment:
   #     MARIADB_DATABASE: ${DB_DATABASE}
   #     MARIADB_USER: ${DB_USERNAME}
@@ -125,8 +110,6 @@ services:
   #     - mariadb:/var/lib/mysql
   #   healthcheck:
   #     test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-  #     start_period: 60s
-  #   logging: *default-logging
 
   # valkey:
   #   image: valkey/valkey:8
@@ -135,8 +118,7 @@ services:
   #     - valkey:/data
   #   healthcheck:
   #     test: [ "CMD", "valkey-cli", "ping" ]
-  #     start_period: 10s
-  #   logging: *default-logging
+
 
 volumes:
   app_storage:
