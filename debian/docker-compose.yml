@@ -1,11 +1,5 @@
 # name: invoiceninja
 
-x-logging: &default-logging
-  options:
-    max-size: "10m"
-    max-file: "3"
-  driver: json-file
-
 x-app-volumes: &volumes
   volumes:
       - app_storage:/app/storage
@@ -38,7 +32,6 @@ services:
       #   condition: service_healthy
       # valkey:
       #   condition: service_healthy
-    logging: *default-logging
   
   app-worker:
     image: invoiceninja/invoiceninja-octane:${TAG:-latest}
@@ -59,7 +52,6 @@ services:
     depends_on:
       app:
         condition: service_healthy
-    logging: *default-logging
 
   app-scheduler:
     image: invoiceninja/invoiceninja-octane:${TAG:-latest}
@@ -77,7 +69,6 @@ services:
     depends_on:
       app:
         condition: service_healthy
-    logging: *default-logging
 
   mysql:
     image: mysql:8
@@ -94,7 +85,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    logging: *default-logging
 
   redis:
     image: redis:alpine
@@ -106,7 +96,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    logging: *default-logging
 
   # mariadb:
   #   image: mariadb:11.4
@@ -121,7 +110,6 @@ services:
   #   healthcheck:
   #     test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
   #     start_period: 60s
-  #   logging: *default-logging
 
   # valkey:
   #   image: valkey/valkey:8
@@ -131,7 +119,6 @@ services:
   #   healthcheck:
   #     test: [ "CMD", "valkey-cli", "ping" ]
   #     start_period: 10s
-  #   logging: *default-logging
 
 volumes:
   app_storage:
