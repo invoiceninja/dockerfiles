@@ -48,7 +48,6 @@ services:
     <<: *volumes
     healthcheck:
       test: ["CMD", "pgrep", "-f", "queue:work"]
-      start_period: 10s
     depends_on:
       app:
         condition: service_healthy
@@ -65,7 +64,6 @@ services:
     <<: *volumes
     healthcheck:
       test: ["CMD", "pgrep", "-f", "schedule:work"]
-      start_period: 10s
     depends_on:
       app:
         condition: service_healthy
@@ -91,9 +89,6 @@ services:
           "-u${MYSQL_USER}",
           "-p${MYSQL_PASSWORD}",
         ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   redis:
     image: redis:alpine
@@ -102,12 +97,9 @@ services:
       - redis_data:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   # mariadb:
-  #   image: mariadb:11.4
+  #   image: mariadb:11.8
   #   restart: unless-stopped
   #   environment:
   #     MARIADB_DATABASE: ${DB_DATABASE}
@@ -118,7 +110,6 @@ services:
   #     - mariadb:/var/lib/mysql
   #   healthcheck:
   #     test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-  #     start_period: 60s
 
   # valkey:
   #   image: valkey/valkey:8
@@ -127,7 +118,7 @@ services:
   #     - valkey:/data
   #   healthcheck:
   #     test: [ "CMD", "valkey-cli", "ping" ]
-  #     start_period: 10s
+
 
 volumes:
   app_storage:
