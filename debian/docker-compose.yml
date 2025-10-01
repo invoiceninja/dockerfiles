@@ -2,8 +2,8 @@
 
 x-app-volumes: &volumes
   volumes:
-      - app_storage:/app/storage
-      - caddy_data:/data
+    - app_storage:/app/storage
+    - caddy_data:/data
 
 services:
   app:
@@ -12,12 +12,12 @@ services:
     image: invoiceninja/invoiceninja-octane:${TAG:-latest}
     restart: unless-stopped
     # php artisan help octane:frankenphp
-    command: --port=80 --workers=2 --log-level=info
+    command: --port=80 --workers=2
     # command: --host=example.com --port=443 --workers=2 --https --http-redirect --log-level=info
     ports:
       - "80:80" # HTTP
       # - "443:443" # HTTPS
-      # - "443:443/udp" # HTTP/3, Works for chromium based browser, but causes H3_GENERAL_PROTOCOL_ERROR for pdf previews in Firefox 
+      # - "443:443/udp" # HTTP/3, Works for chromium based browser, but causes H3_GENERAL_PROTOCOL_ERROR for pdf previews in Firefox
     env_file:
       - ./.env
     environment:
@@ -32,7 +32,7 @@ services:
       #   condition: service_healthy
       # valkey:
       #   condition: service_healthy
-  
+
   app-worker:
     image: invoiceninja/invoiceninja-octane:${TAG:-latest}
     restart: unless-stopped
@@ -81,7 +81,16 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}" ]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u${MYSQL_USER}",
+          "-p${MYSQL_PASSWORD}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -92,7 +101,7 @@ services:
     volumes:
       - redis_data:/data
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
