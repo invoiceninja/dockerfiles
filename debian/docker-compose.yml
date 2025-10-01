@@ -1,9 +1,3 @@
-x-logging: &default-logging
-  options:
-    max-size: "10m"
-    max-file: "3"
-  driver: json-file
-
 services:
   app:
     build:
@@ -13,20 +7,16 @@ services:
     env_file:
       - ./.env
     volumes:
-      - ./.env:/var/www/html/.env
       # - ./php/php.ini:/usr/local/etc/php/conf.d/invoiceninja.ini:ro
       # - ./php/php-fpm.conf:/usr/local/etc/php-fpm.d/invoiceninja.conf:ro
       # - ./supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf:ro
       - app_public:/var/www/html/public
       - app_storage:/var/www/html/storage
-    networks:
-      - app-network
     depends_on:
       mysql:
         condition: service_healthy
       redis:
         condition: service_healthy
-    logging: *default-logging
 
   nginx:
     image: nginx:alpine
@@ -37,18 +27,13 @@ services:
       - ./nginx:/etc/nginx/conf.d:ro
       - app_public:/var/www/html/public:ro
       - app_storage:/var/www/html/storage:ro
-    networks:
-      - app-network
     depends_on:
       app:
         condition: service_healthy
-    logging: *default-logging
 
   mysql:
     image: mysql:8
     restart: unless-stopped
-    env_file:
-      - ./.env
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_USER: ${DB_USERNAME}
@@ -56,38 +41,31 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
-    networks:
-      - app-network
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    logging: *default-logging
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u${MYSQL_USER}",
+          "-p${MYSQL_PASSWORD}",
+        ]
 
   redis:
     image: redis:alpine
     restart: unless-stopped
     volumes:
       - redis_data:/data
-    networks:
-      - app-network
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    logging: *default-logging
-
-networks:
-  app-network:
-    driver: bridge
+      test: ["CMD", "redis-cli", "ping"]
 
 volumes:
   app_public:
     driver: local
   app_storage:
-    driver: local  
+    driver: local
   mysql_data:
     driver: local
   redis_data:
