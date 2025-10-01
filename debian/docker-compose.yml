@@ -12,8 +12,6 @@ services:
       # - ./supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf:ro
       - app_public:/var/www/html/public
       - app_storage:/var/www/html/storage
-    networks:
-      - app-network
     depends_on:
       mysql:
         condition: service_healthy
@@ -29,8 +27,6 @@ services:
       - ./nginx:/etc/nginx/conf.d:ro
       - app_public:/var/www/html/public:ro
       - app_storage:/var/www/html/storage:ro
-    networks:
-      - app-network
     depends_on:
       app:
         condition: service_healthy
@@ -45,8 +41,6 @@ services:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
-    networks:
-      - app-network
     healthcheck:
       test:
         [
@@ -67,17 +61,11 @@ services:
     restart: unless-stopped
     volumes:
       - redis_data:/data
-    networks:
-      - app-network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
-
-networks:
-  app-network:
-    driver: bridge
 
 volumes:
   app_public:
