@@ -53,8 +53,23 @@ jobs:
           context: debian
           load: true
           tags: ${{ env.REGISTRY_IMAGE }}:test
+          outputs: type=image,push-by-digest=true,name-canonical=true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Export digest
+        run: |
+          mkdir -p ${{ runner.temp }}/digests
+          digest="${{ steps.build.outputs.digest }}"
+          touch "${{ runner.temp }}/digests/${digest#sha256:}"
+
+      - name: Upload digest
+        uses: actions/upload-artifact@v4
+        with:
+          name: digests-${{ env.PLATFORM_PAIR }}
+          path: ${{ runner.temp }}/digests/*
+          if-no-files-found: error
+          retention-days: 1
 
   merge:
     runs-on: ubuntu-latest
