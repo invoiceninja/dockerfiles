@@ -9,10 +9,35 @@ env:
   REGISTRY_IMAGE: invoiceninja/invoiceninja-debian
 
 jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      major: ${{ steps.version.outputs.major }}
+      minor: ${{ steps.version.outputs.minor }}
+    steps:
+      - id: version
+        run: |
+
+          VERSION=edge
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          fi
+          MAJOR="$(echo "${VERSION}" | cut -d. -f1)"
+          MINOR="$(echo "${VERSION}" | cut -d. -f2)"
+
+          # Debug output
+          echo "Current version: ${VERSION}"
+          echo "Version pattern check: $([[ $VERSION =~ ^5\.[0-9]{1,3}\.[0-9]{1,3}$ ]] && echo "matches" || echo "doesn't match")"
+
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "major=${MAJOR}" >> $GITHUB_OUTPUT
+          echo "minor=${MINOR}" >> $GITHUB_OUTPUT
+
   build:
     runs-on: ${{ startsWith(matrix.platform, 'linux/arm') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
-    outputs:
-      tags: ${{ steps.prep.outputs.tags }}
+    needs:
+      - version
     strategy:
       fail-fast: false
       matrix:
@@ -28,21 +53,6 @@ jobs:
         run: |
           platform=${{ matrix.platform }}
           echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
-
-          VERSION=edge
-          if [[ $GITHUB_REF == refs/tags/* ]]; then
-            VERSION=${GITHUB_REF#refs/tags/}
-          fi
-          MAJOR="$(echo "${VERSION}" | cut -d. -f1)"
-          MINOR="$(echo "${VERSION}" | cut -d. -f2)"
-          TAGS="${VERSION},${MAJOR},${MAJOR}.${MINOR},latest"
-
-          # Debug output
-          echo "Current version: ${VERSION}"
-          echo "Version pattern check: $([[ $VERSION =~ ^5\.[0-9]{1,3}\.[0-9]{1,3}$ ]] && echo "matches" || echo "doesn't match")"
-
-          echo "tags=${TAGS}" >> $GITHUB_OUTPUT
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
 
       - name: Docker meta
         id: meta
@@ -65,7 +75,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: debian
-          build-args: INVOICENINJA_VERSION=${{ steps.prep.outputs.version }}
+          build-args: INVOICENINJA_VERSION=${{ needs.version.outputs.version }}
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ env.REGISTRY_IMAGE }}
@@ -90,6 +100,7 @@ jobs:
   merge:
     runs-on: ubuntu-latest
     needs:
+      - version
       - build
     steps:
       - name: Download digests
@@ -114,7 +125,10 @@ jobs:
         with:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: |
-            ${{ needs.build.outputs.tags }}
+            ${{ needs.version.outputs.version }}
+            ${{ needs.version.outputs.major }}
+            ${{ needs.version.outputs.major }}${{ needs.version.outputs.minor }}
+            latest
 
       - name: Create manifest list and push
         working-directory: ${{ runner.temp }}/digests
