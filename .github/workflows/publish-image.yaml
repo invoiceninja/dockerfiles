@@ -127,7 +127,7 @@ jobs:
           tags: |
             ${{ needs.version.outputs.version }}
             ${{ needs.version.outputs.major }}
-            ${{ needs.version.outputs.major }}${{ needs.version.outputs.minor }}
+            ${{ needs.version.outputs.major }}.${{ needs.version.outputs.minor }}
             latest
 
       - name: Create manifest list and push
