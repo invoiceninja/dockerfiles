@@ -2,9 +2,13 @@ ARG PHP=8.4
 
 FROM php:${PHP}-fpm AS prepare-app
 
+# Download and extract as root
+ADD https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz /tmp/invoiceninja.tar.gz
+# Set correct permissions
+RUN chown -R www-data:www-data /tmp/invoiceninja.tar.gz
+
 USER www-data
 
-ADD https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz /tmp/invoiceninja.tar.gz
 RUN tar -xzf /tmp/invoiceninja.tar.gz -C /var/www/html --strip-components=1 \
     && rm /tmp/invoiceninja.tar.gz \
     && ln -s /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
