@@ -2,10 +2,8 @@ ARG PHP=8.4
 
 FROM php:${PHP}-fpm AS prepare-app
 
-# Download and extract as root
-ADD https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz /tmp/invoiceninja.tar.gz
-# Set correct permissions
-RUN chown www-data:www-data /tmp/invoiceninja.tar.gz
+# ADD is always executed as root, so we use --chown
+ADD --chown=www-data:www-data https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz /tmp/invoiceninja.tar.gz
 
 USER www-data
 
