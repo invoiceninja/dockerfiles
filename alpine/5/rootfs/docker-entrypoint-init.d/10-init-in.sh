@@ -1,6 +1,7 @@
 #!/bin/sh
 
 php artisan db:seed --force
+php artisan cache:clear
 
 # Build up array of arguments...
 if [[ ! -z "${IN_USER_EMAIL}" ]]; then
