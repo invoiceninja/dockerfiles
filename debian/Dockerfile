@@ -9,7 +9,7 @@ RUN chown www-data:www-data /tmp/invoiceninja.tar.gz
 
 USER www-data
 
-RUN tar -xzf /tmp/invoiceninja.tar.gz -C /var/www/html --strip-components=1 \
+RUN tar -xzf /tmp/invoiceninja.tar.gz -C /var/www/html \
     && rm /tmp/invoiceninja.tar.gz \
     && ln -s /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
     && php artisan storage:link \
