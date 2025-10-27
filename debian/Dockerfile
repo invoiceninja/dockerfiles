@@ -4,8 +4,9 @@ FROM php:${PHP}-fpm AS prepare-app
 
 USER www-data
 
-RUN curl -sL "https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz" | \
-    tar -xz -C /var/www/html \
+ADD https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz /tmp/invoiceninja.tar.gz
+RUN tar -xzf /tmp/invoiceninja.tar.gz -C /var/www/html --strip-components=1 \
+    && rm /tmp/invoiceninja.tar.gz \
     && ln -s /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
     && php artisan storage:link \
     # Workaround for application updates
