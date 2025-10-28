@@ -8,7 +8,7 @@ on:
   push:
     paths:
       - ".github/**"
-      - "octanes/**"
+      - "octane/**"
 
 env:
   REGISTRY_IMAGE: invoiceninja/invoiceninja-octane
