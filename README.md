@@ -1,7 +1,7 @@
-[![Docker Image Size](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja-octane?label=debian)](https://hub.docker.com/r/invoiceninja/invoiceninja-octane)
+[![Docker Image Size](https://img.shields.io/docker/image-size/invoiceninja/invoiceninja-octane?label=octane)](https://hub.docker.com/r/invoiceninja/invoiceninja-octane)
 [![Docker Pulls](https://img.shields.io/docker/pulls/invoiceninja/invoiceninja-octane)](https://hub.docker.com/r/invoiceninja/invoiceninja-octane)
-[![Publish Status](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image.yaml)
-[![Build Status](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-v5.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-v5.yaml)
+[![Publish Status](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image-octane.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/publish-image-octane.yaml)
+[![Build Status](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-octane.yaml/badge.svg)](https://github.com/invoiceninja/dockerfiles/actions/workflows/build-image-octane.yaml)
 
 # Octane Docker for [Invoice Ninja](https://www.invoiceninja.com/)
 
