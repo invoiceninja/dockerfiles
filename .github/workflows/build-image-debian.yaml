@@ -1,36 +1,48 @@
-name: Build Debian Octane Container Image
+name: Build Octane Container Image
 
 on:
   pull_request:
     paths:
+      - ".github/**"
       - "debian/**"
   push:
     paths:
+      - ".github/**"
       - "debian/**"
-    branches:
-      - master
+
+env:
+  REGISTRY_IMAGE: invoiceninja/invoiceninja-octane
 
 jobs:
-  docker:
-    runs-on: ${{ startsWith(matrix.platforms, 'linux/arm') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+  build:
+    runs-on: ${{ startsWith(matrix.platform, 'linux/arm') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     strategy:
       fail-fast: false
       matrix:
-        platform: ["linux/amd64", "linux/arm64"]
+        platform:
+          - linux/amd64
+          - linux/arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
 
       - name: Set up Docker Buildx
         id: buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Build
-        id: docker_build
+        id: build
         uses: docker/build-push-action@v6
         with:
-          context: debian  
-          load: true
-          tags: invoiceninja/invoiceninja-octane:test
+          context: debian
+          platforms: ${{ matrix.platform }}
+          tags: ${{ env.REGISTRY_IMAGE }}
+          outputs: type=image,push-by-digest=true,name-canonical=true
           cache-from: type=gha
           cache-to: type=gha,mode=max
