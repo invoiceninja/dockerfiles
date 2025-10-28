@@ -2,13 +2,11 @@ ARG PHP=8.4
 
 FROM php:${PHP}-fpm AS prepare-app
 
-# ADD is always executed as root, so we use --chown
-ADD --chown=www-data:www-data https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz /tmp/invoiceninja.tar.gz
+ADD https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz /tmp/invoiceninja.tar.gz
 
 USER www-data
 
 RUN tar -xzf /tmp/invoiceninja.tar.gz -C /var/www/html \
-    && rm /tmp/invoiceninja.tar.gz \
     && ln -s /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
     && php artisan storage:link \
     # Workaround for application updates
