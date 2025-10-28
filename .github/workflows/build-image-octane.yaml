@@ -40,7 +40,7 @@ jobs:
         id: build
         uses: docker/build-push-action@v6
         with:
-          context: debian
+          context: octane
           platforms: ${{ matrix.platform }}
           tags: ${{ env.REGISTRY_IMAGE }}
           outputs: type=image,push-by-digest=true,name-canonical=true

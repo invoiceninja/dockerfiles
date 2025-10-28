@@ -74,7 +74,7 @@ jobs:
         id: build
         uses: docker/build-push-action@v6
         with:
-          context: debian
+          context: octane
           build-args: INVOICENINJA_VERSION=${{ needs.version.outputs.version }}
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
