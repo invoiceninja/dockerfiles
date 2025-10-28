@@ -1,0 +1,48 @@
+name: Build Octane Container Image
+
+on:
+  pull_request:
+    paths:
+      - ".github/**"
+      - "octane/**"
+  push:
+    paths:
+      - ".github/**"
+      - "octane/**"
+
+env:
+  REGISTRY_IMAGE: invoiceninja/invoiceninja-octane
+
+jobs:
+  build:
+    runs-on: ${{ startsWith(matrix.platform, 'linux/arm') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: octane
+          platforms: ${{ matrix.platform }}
+          tags: ${{ env.REGISTRY_IMAGE }}
+          outputs: type=image,push-by-digest=true,name-canonical=true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
