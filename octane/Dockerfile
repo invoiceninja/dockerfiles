@@ -6,7 +6,7 @@ FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}-${DEBIAN_VERSION
 
 ADD https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz /tmp/invoiceninja.tar.gz
 
-RUN tar -xz /tmp/invoiceninja.tar.gz \
+RUN tar -xf /tmp/invoiceninja.tar.gz \
     && ln -s ./resources/views/react/index.blade.php ./public/index.html \
     # Symlink
     && php artisan storage:link \
