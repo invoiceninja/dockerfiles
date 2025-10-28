@@ -3,12 +3,12 @@ name: Build Debian Container Image
 on:
   pull_request:
     paths:
+      - ".github/**"
       - "debian/**"
   push:
     paths:
+      - ".github/**"
       - "debian/**"
-    branches:
-      - master
 
 env:
   REGISTRY_IMAGE: invoiceninja/invoiceninja-debian
