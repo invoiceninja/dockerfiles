@@ -15,6 +15,7 @@ jobs:
       version: ${{ steps.version.outputs.version }}
       major: ${{ steps.version.outputs.major }}
       minor: ${{ steps.version.outputs.minor }}
+      url: ${{ steps.version.outputs.url }}
     steps:
       - id: version
         run: |
@@ -25,6 +26,7 @@ jobs:
           fi
           MAJOR="$(echo "${VERSION}" | cut -d. -f1)"
           MINOR="$(echo "${VERSION}" | cut -d. -f2)"
+          URL=https://github.com/invoiceninja/invoiceninja/releases/download/v${VERSION}/invoiceninja.tar.gz
 
           # Debug output
           echo "Current version: ${VERSION}"
@@ -33,6 +35,7 @@ jobs:
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "major=${MAJOR}" >> $GITHUB_OUTPUT
           echo "minor=${MINOR}" >> $GITHUB_OUTPUT
+          echo "url=${URL}" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ${{ startsWith(matrix.platform, 'linux/arm') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
@@ -75,7 +78,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: octane
-          build-args: INVOICENINJA_VERSION=${{ needs.version.outputs.version }}
+          build-args: URL=${{ needs.version.outputs.url }}
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           tags: ${{ env.REGISTRY_IMAGE }}
