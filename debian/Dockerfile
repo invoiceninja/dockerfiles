@@ -2,7 +2,7 @@ ARG PHP=8.4
 
 FROM php:${PHP}-fpm AS prepare-app
 
-ADD https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz /tmp/invoiceninja.tar.gz
+ADD --chown=www-data:www-data https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz /tmp/invoiceninja.tar.gz
 
 USER www-data
 
