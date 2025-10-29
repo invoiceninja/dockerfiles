@@ -4,9 +4,7 @@ FROM php:${PHP}-fpm AS prepare-app
 
 ARG URL=https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz
 
-ADD --chown=www-data:www-data ${URL} /tmp/invoiceninja.tar.gz
-
-USER www-data
+ADD ${URL} /tmp/invoiceninja.tar.gz
 
 RUN tar -xzf /tmp/invoiceninja.tar.gz -C /var/www/html \
     && ln -s /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
@@ -78,8 +76,8 @@ RUN echo "skip-ssl = true" >> /etc/mysql/mariadb.conf.d/50-client.cnf
 COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Setup InvoiceNinja
-COPY --from=prepare-app /var/www/html /var/www/html
-COPY --from=prepare-app /tmp/public /tmp/public
+COPY --from=prepare-app --chown=www-data:www-data /var/www/html /var/www/html
+COPY --from=prepare-app --chown=www-data:www-data /tmp/public /tmp/public
 
 # Add initialization script
 COPY --chmod=0755 scripts/init.sh /usr/local/bin/init.sh
