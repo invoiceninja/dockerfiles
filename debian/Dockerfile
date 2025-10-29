@@ -2,10 +2,11 @@ ARG PHP=8.4
 
 FROM php:${PHP}-fpm AS prepare-app
 
+ADD https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz /tmp/invoiceninja.tar.gz
+
 USER www-data
 
-RUN curl -sL "https://github.com/invoiceninja/invoiceninja/releases/latest/download/invoiceninja.tar.gz" | \
-    tar -xz -C /var/www/html \
+RUN tar -xzf /tmp/invoiceninja.tar.gz -C /var/www/html \
     && ln -s /var/www/html/resources/views/react/index.blade.php /var/www/html/public/index.html \
     && php artisan storage:link \
     # Workaround for application updates
