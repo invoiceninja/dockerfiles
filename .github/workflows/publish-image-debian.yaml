@@ -23,6 +23,8 @@ jobs:
           VERSION=edge
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             VERSION=${GITHUB_REF#refs/tags/}
+            # Remove -o or -d suffix if present
+            VERSION=${VERSION%-*}
           fi
           MAJOR="$(echo "${VERSION}" | cut -d. -f1)"
           MINOR="$(echo "${VERSION}" | cut -d. -f2)"
