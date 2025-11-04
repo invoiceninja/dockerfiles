@@ -5,7 +5,7 @@
 
 # Debian Docker for [Invoice Ninja](https://www.invoiceninja.com/)
 
-:crown: **Features**
+👑 **Features**
 
 NGINX webserver support [NGINX](https://nginx.org/)  
 Built-in Chrome for PDF generation and other features  
