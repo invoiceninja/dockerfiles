@@ -5,7 +5,7 @@
 
 # Octane Docker for [Invoice Ninja](https://www.invoiceninja.com/)
 
-:crown: **Features**
+👑 **Features**
 
 [FRANKENPHP](https://frankenphp.dev/)  
 Built-in Chrome for PDF generation and other features  
