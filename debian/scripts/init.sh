@@ -25,7 +25,7 @@ if [ "$*" = 'supervisord -c /etc/supervisor/supervisord.conf' ]; then
             /tmp/public/.htaccess \
             /tmp/public/.well-known \
             /var/www/html/public/ && \
-            rm -rf /tmp/public/
+            rm -rf /tmp/public/*
     fi
     echo "Public Folder is up to date"
 
