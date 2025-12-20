@@ -21,6 +21,7 @@ if [ "$*" = 'supervisord -c /etc/supervisor/supervisord.conf' ]; then
         rm -rf /var/www/html/public/.htaccess \
             /var/www/html/public/.well-known \
             /var/www/html/public/*
+        mkdir -p /var/www/html/public
         cp -r /tmp/public/* \
             /tmp/public/.htaccess \
             /tmp/public/.well-known \
