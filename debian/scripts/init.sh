@@ -10,6 +10,7 @@ fi
 if [ "$*" = 'supervisord -c /etc/supervisor/supervisord.conf' ]; then
 
     # Check for required folders and create if needed
+    [ -d /var/www/html/public] || mkdir -p /var/www/html/public
     [ -d /var/www/html/storage/app/public ] || mkdir -p /var/www/html/storage/app/public
     [ -d /var/www/html/storage/framework/sessions ] || mkdir -p /var/www/html/storage/framework/sessions
     [ -d /var/www/html/storage/framework/views ] || mkdir -p /var/www/html/storage/framework/views
@@ -21,7 +22,6 @@ if [ "$*" = 'supervisord -c /etc/supervisor/supervisord.conf' ]; then
         rm -rf /var/www/html/public/.htaccess \
             /var/www/html/public/.well-known \
             /var/www/html/public/*
-        mkdir -p /var/www/html/public
         cp -r /tmp/public/* \
             /tmp/public/.htaccess \
             /tmp/public/.well-known \
