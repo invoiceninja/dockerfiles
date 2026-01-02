@@ -10,7 +10,7 @@ fi
 if [ "$*" = 'supervisord -c /etc/supervisor/supervisord.conf' ]; then
 
     # Check for required folders and create if needed
-    [ -d /var/www/html/public] || mkdir -p /var/www/html/public
+    [ -d /var/www/html/public ] || mkdir -p /var/www/html/public
     [ -d /var/www/html/storage/app/public ] || mkdir -p /var/www/html/storage/app/public
     [ -d /var/www/html/storage/framework/sessions ] || mkdir -p /var/www/html/storage/framework/sessions
     [ -d /var/www/html/storage/framework/views ] || mkdir -p /var/www/html/storage/framework/views
@@ -43,7 +43,7 @@ if [ "$*" = 'supervisord -c /etc/supervisor/supervisord.conf' ]; then
 
     # Clear and cache config in production
     if [ "$APP_ENV" = "production" ]; then
-        runuser -u www-data -- php artisan migrate --force       
+        runuser -u www-data -- php artisan migrate --force
         runuser -u www-data -- php artisan cache:clear # Clear after the migration
         runuser -u www-data -- php artisan ninja:design-update
         runuser -u www-data -- php artisan optimize
