@@ -25,8 +25,11 @@ if [ "$*" = 'supervisord -c /etc/supervisor/supervisord.conf' ]; then
         cp -r /tmp/public/* \
             /tmp/public/.htaccess \
             /tmp/public/.well-known \
-            /var/www/html/public/ && \
-            rm -rf /tmp/public/*
+            /var/www/html/public/ &&
+            rm -rf /tmp/public/.htaccess \
+                /tmp/public/.well-known \
+                /tmp/public/*
+
     fi
     echo "Public Folder is up to date"
 
@@ -51,7 +54,7 @@ if [ "$*" = 'supervisord -c /etc/supervisor/supervisord.conf' ]; then
         # If first IN run, it needs to be initialized
         if [ "$(runuser -u www-data -- php artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')" = "1" ]; then
             echo "Running initialization..."
-            
+
             runuser -u www-data -- php artisan db:seed --force
 
             if [ -n "${IN_USER_EMAIL}" ] && [ -n "${IN_PASSWORD}" ]; then
