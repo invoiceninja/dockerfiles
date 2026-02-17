@@ -16,22 +16,10 @@ if [ "$*" = 'supervisord -c /etc/supervisor/supervisord.conf' ]; then
     [ -d /var/www/html/storage/framework/views ] || mkdir -p /var/www/html/storage/framework/views
     [ -d /var/www/html/storage/framework/cache ] || mkdir -p /var/www/html/storage/framework/cache
 
-    # Workaround for application updates
-    if [ "$(ls -A /tmp/public)" ]; then
-        echo "Updating public folder..."
-        rm -rf /var/www/html/public/.htaccess \
-            /var/www/html/public/.well-known \
-            /var/www/html/public/*
-        cp -r /tmp/public/* \
-            /tmp/public/.htaccess \
-            /tmp/public/.well-known \
-            /var/www/html/public/ &&
-            rm -rf /tmp/public/.htaccess \
-                /tmp/public/.well-known \
-                /tmp/public/*
-
-    fi
-    echo "Public Folder is up to date"
+    # Sync public folder from image to volume
+    echo "Updating public folder..."
+    rsync -a --delete /tmp/public/ /var/www/html/public/
+    echo "Public folder is up to date"
 
     # Ensure owner, file and directory permissions are correct
     chown -R www-data:www-data \

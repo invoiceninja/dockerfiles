@@ -27,6 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfcgi-bin \
     mariadb-client \
     gpg \
+    rsync \
     supervisor \
     # Unicode support for PDF
     fonts-noto-cjk-extra \
