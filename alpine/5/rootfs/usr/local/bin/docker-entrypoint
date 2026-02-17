@@ -67,24 +67,26 @@ fi
 
 # create public volume
 if [ -d "$BAK_PUBLIC_PATH" ]; then
-    if [ ! -d /var/www/app/public ]; then
-        mv "$BAK_PUBLIC_PATH" /var/www/app/public
-    elif [ ! -f /var/www/app/public/version ] || [ "$INVOICENINJA_VERSION" != "$(cat /var/www/app/public/version)" ]; then
-        # version mismatch, update all
-        cp -au "$BAK_PUBLIC_PATH/"* /var/www/app/public
-        echo "$INVOICENINJA_VERSION" >/var/www/app/public/version
-    elif [ ! -d /var/www/app/public/logo ] && [ -d "$BAK_PUBLIC_PATH/logo" ]; then
-        # missing logo folder only, copy folder
-        cp -a "$BAK_PUBLIC_PATH/logo" /var/www/app/public/logo
-    elif [ -d "$BAK_PUBLIC_PATH/logo" ]; then
-        # copy missing folders in logo
-        IN_LOGO_BACKUP="$(ls "$BAK_PUBLIC_PATH/logo")"
-        for path in $IN_LOGO_BACKUP; do
-            if [ ! -e "/var/www/app/public/logo/$path" ]; then
-                cp -a "$BAK_PUBLIC_PATH/logo/$path" "/var/www/app/public/logo/"
-            fi
-        done
-    fi
+    [ -d /var/www/app/public ] || mkdir -p /var/www/app/public
+    rsync -a "$BAK_PUBLIC_PATH/" /var/www/app/public/
+    # if [ ! -d /var/www/app/public ]; then
+    #     mv "$BAK_PUBLIC_PATH" /var/www/app/public
+    # elif [ ! -f /var/www/app/public/version ] || [ "$INVOICENINJA_VERSION" != "$(cat /var/www/app/public/version)" ]; then
+    #     # version mismatch, update all
+    #     cp -au "$BAK_PUBLIC_PATH/"* /var/www/app/public
+    #     echo "$INVOICENINJA_VERSION" >/var/www/app/public/version
+    # elif [ ! -d /var/www/app/public/logo ] && [ -d "$BAK_PUBLIC_PATH/logo" ]; then
+    #     # missing logo folder only, copy folder
+    #     cp -a "$BAK_PUBLIC_PATH/logo" /var/www/app/public/logo
+    # elif [ -d "$BAK_PUBLIC_PATH/logo" ]; then
+    #     # copy missing folders in logo
+    #     IN_LOGO_BACKUP="$(ls "$BAK_PUBLIC_PATH/logo")"
+    #     for path in $IN_LOGO_BACKUP; do
+    #         if [ ! -e "/var/www/app/public/logo/$path" ]; then
+    #             cp -a "$BAK_PUBLIC_PATH/logo/$path" "/var/www/app/public/logo/"
+    #         fi
+    #     done
+    # fi
     rm -rf "$BAK_PUBLIC_PATH"
 fi
 
