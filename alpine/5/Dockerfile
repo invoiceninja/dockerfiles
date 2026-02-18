@@ -42,7 +42,6 @@ RUN set -eux; \
     font-isas-misc \
     supervisor \
     mysql-client \
-    rsync \
     chromium \
     ttf-freefont \
     ttf-dejavu
