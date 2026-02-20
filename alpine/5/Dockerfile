@@ -51,11 +51,12 @@ RUN install-php-extensions \
     exif \
     gd \
     gmp \
+    intl \
     mysqli \
     opcache \
     pdo_mysql \
+    saxon \
     zip \
-    intl \
     @composer \
     && rm /usr/local/bin/install-php-extensions
 
