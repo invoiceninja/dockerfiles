@@ -1,0 +1,167 @@
+nameOverride: ""
+fullnameOverride: ""
+
+app:
+  image:
+    repository: invoiceninja/invoiceninja-debian
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  resources: {}
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop:
+        - ALL
+
+nginx:
+  image:
+    repository: nginx
+    tag: alpine
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 80
+  resources: {}
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      add:
+        - CHOWN
+      drop:
+        - ALL
+  initSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+
+mysql:
+  image:
+    repository: mysql
+    tag: "8"
+    pullPolicy: IfNotPresent
+  service:
+    port: 3306
+  resources: {}
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: true
+    capabilities:
+      drop:
+        - NET_RAW
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+
+redis:
+  image:
+    repository: redis
+    tag: alpine
+    pullPolicy: IfNotPresent
+  service:
+    port: 6379
+  resources: {}
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+
+persistence:
+  appPublic:
+    enabled: false
+    accessModes:
+      - ReadWriteOnce
+    size: 1Gi
+    storageClassName: ""
+  appStorage:
+    enabled: false
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+    storageClassName: ""
+  mysqlData:
+    enabled: false
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+    storageClassName: ""
+  redisData:
+    enabled: false
+    accessModes:
+      - ReadWriteOnce
+    size: 1Gi
+    storageClassName: ""
+
+serviceAccount:
+  create: false
+  name: ""
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: invoiceninja.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+secret:
+  appKey: ""
+  dbPassword: ninja
+  dbRootPassword: ninjaAdm1nPassword
+  redisPassword: ""
+  inUserEmail: admin@example.com
+  inPassword: changeme!
+
+env:
+  appUrl: http://localhost
+  appEnv: production
+  appDebug: "true"
+  requireHttps: "false"
+  phantomjsPdfGeneration: "false"
+  pdfGenerator: snappdf
+  trustedProxies: "*"
+  cacheDriver: redis
+  queueConnection: redis
+  sessionDriver: redis
+  redisPort: "6379"
+  filesystemDisk: debian_docker
+  dbPort: "3306"
+  dbDatabase: ninja
+  dbUsername: ninja
+  dbConnection: mysql
+  mailMailer: log
+  mailHost: smtp.mailtrap.io
+  mailPort: "2525"
+  mailUsername: "null"
+  mailPassword: "null"
+  mailEncryption: "null"
+  mailFromAddress: user@example.com
+  mailFromName: Self Hosted User
+  mysqlDatabase: ninja
+  mysqlUser: ninja
+  nordigenSecretId: ""
+  nordigenSecretKey: ""
+  isDocker: "true"
+  scoutDriver: "null"
+
+tolerations: []
+affinity: {}
+nodeSelector: {}

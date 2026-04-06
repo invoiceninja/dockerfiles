@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "invoiceninja.mysqlServiceName" . }}
+  labels:
+    {{- include "invoiceninja.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "invoiceninja.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: mysql
+  template:
+    metadata:
+      labels:
+        {{- include "invoiceninja.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: mysql
+    spec:
+      securityContext:
+        {{- toYaml .Values.mysql.podSecurityContext | nindent 8 }}
+      containers:
+        - name: mysql
+          image: "{{ .Values.mysql.image.repository }}:{{ .Values.mysql.image.tag }}"
+          imagePullPolicy: {{ .Values.mysql.image.pullPolicy }}
+          ports:
+            - name: mysql
+              containerPort: 3306
+              protocol: TCP
+          env:
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "invoiceninja.fullname" . }}-config
+                  key: MYSQL_DATABASE
+            - name: MYSQL_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "invoiceninja.fullname" . }}-config
+                  key: MYSQL_USER
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "invoiceninja.fullname" . }}-secret
+                  key: MYSQL_PASSWORD
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "invoiceninja.fullname" . }}-secret
+                  key: MYSQL_ROOT_PASSWORD
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - 'mysqladmin ping -h localhost -u$MYSQL_USER -p$MYSQL_PASSWORD'
+            initialDelaySeconds: 30
+            timeoutSeconds: 10
+            periodSeconds: 20
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - 'mysqladmin ping -h localhost -u$MYSQL_USER -p$MYSQL_PASSWORD'
+            initialDelaySeconds: 20
+            timeoutSeconds: 10
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.mysql.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.mysql.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-data
+          {{- if .Values.persistence.mysqlData.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "invoiceninja.fullname" . }}-mysql-data
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      nodeSelector:
+        {{- toYaml .Values.mysql.nodeSelector | nindent 8 }}
+      affinity:
+        {{- toYaml .Values.mysql.affinity | nindent 8 }}
+      tolerations:
+        {{- toYaml .Values.mysql.tolerations | nindent 8 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "invoiceninja.mysqlServiceName" . }}
+  labels:
+    {{- include "invoiceninja.labels" . | nindent 4 }}
+    app.kubernetes.io/component: mysql
+spec:
+  type: ClusterIP
+  ports:
+    - name: mysql
+      port: {{ .Values.mysql.service.port }}
+      targetPort: mysql
+      protocol: TCP
+  selector:
+    {{- include "invoiceninja.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: mysql
