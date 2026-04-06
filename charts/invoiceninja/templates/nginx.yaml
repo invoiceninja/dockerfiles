@@ -1,0 +1,106 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "invoiceninja.fullname" . }}-nginx
+  labels:
+    {{- include "invoiceninja.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx
+spec:
+  replicas: {{ .Values.nginx.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "invoiceninja.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: nginx
+  template:
+    metadata:
+      labels:
+        {{- include "invoiceninja.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: nginx
+    spec:
+      securityContext:
+        {{- toYaml .Values.nginx.podSecurityContext | nindent 8 }}
+      {{- if not .Values.persistence.appPublic.enabled }}
+      initContainers:
+        - name: seed-public-dir
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.nginx.initSecurityContext | nindent 12 }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mkdir -p /var/www/html/public
+              cp -r /tmp/public/. /var/www/html/public/ 2>/dev/null || true
+          volumeMounts:
+            - name: app-public
+              mountPath: /var/www/html/public
+      {{- end }}
+      containers:
+        - name: nginx
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag }}"
+          imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.nginx.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.nginx.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: app-public
+              mountPath: /var/www/html/public
+              readOnly: true
+            - name: app-storage
+              mountPath: /var/www/html/storage
+              readOnly: true
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+              readOnly: true
+      volumes:
+        - name: app-public
+          {{- if .Values.persistence.appPublic.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "invoiceninja.fullname" . }}-app-public
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: app-storage
+          {{- if .Values.persistence.appStorage.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "invoiceninja.fullname" . }}-app-storage
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: nginx-config
+          configMap:
+            name: {{ include "invoiceninja.fullname" . }}-nginx
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "invoiceninja.fullname" . }}-nginx
+  labels:
+    {{- include "invoiceninja.labels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx
+spec:
+  type: {{ .Values.nginx.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.nginx.service.port }}
+      targetPort: http
+      protocol: TCP
+  selector:
+    {{- include "invoiceninja.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: nginx

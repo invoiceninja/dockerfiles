@@ -1,0 +1,71 @@
+{{- if .Values.persistence.appPublic.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "invoiceninja.fullname" . }}-app-public
+  labels:
+    {{- include "invoiceninja.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    {{- toYaml .Values.persistence.appPublic.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.appPublic.size }}
+  {{- if .Values.persistence.appPublic.storageClassName }}
+  storageClassName: {{ .Values.persistence.appPublic.storageClassName | quote }}
+  {{- end }}
+---
+{{- end }}
+{{- if .Values.persistence.appStorage.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "invoiceninja.fullname" . }}-app-storage
+  labels:
+    {{- include "invoiceninja.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    {{- toYaml .Values.persistence.appStorage.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.appStorage.size }}
+  {{- if .Values.persistence.appStorage.storageClassName }}
+  storageClassName: {{ .Values.persistence.appStorage.storageClassName | quote }}
+  {{- end }}
+---
+{{- end }}
+{{- if .Values.persistence.mysqlData.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "invoiceninja.fullname" . }}-mysql-data
+  labels:
+    {{- include "invoiceninja.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    {{- toYaml .Values.persistence.mysqlData.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.mysqlData.size }}
+  {{- if .Values.persistence.mysqlData.storageClassName }}
+  storageClassName: {{ .Values.persistence.mysqlData.storageClassName | quote }}
+  {{- end }}
+---
+{{- end }}
+{{- if .Values.persistence.redisData.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "invoiceninja.fullname" . }}-redis-data
+  labels:
+    {{- include "invoiceninja.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    {{- toYaml .Values.persistence.redisData.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.redisData.size }}
+  {{- if .Values.persistence.redisData.storageClassName }}
+  storageClassName: {{ .Values.persistence.redisData.storageClassName | quote }}
+  {{- end }}
+{{- end }}

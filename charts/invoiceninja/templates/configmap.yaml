@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "invoiceninja.fullname" . }}-config
+  labels:
+    {{- include "invoiceninja.labels" . | nindent 4 }}
+data:
+  APP_URL: {{ .Values.env.appUrl | quote }}
+  APP_ENV: {{ .Values.env.appEnv | quote }}
+  APP_DEBUG: {{ .Values.env.appDebug | quote }}
+  REQUIRE_HTTPS: {{ .Values.env.requireHttps | quote }}
+  PHANTOMJS_PDF_GENERATION: {{ .Values.env.phantomjsPdfGeneration | quote }}
+  PDF_GENERATOR: {{ .Values.env.pdfGenerator | quote }}
+  TRUSTED_PROXIES: {{ .Values.env.trustedProxies | quote }}
+  CACHE_DRIVER: {{ .Values.env.cacheDriver | quote }}
+  QUEUE_CONNECTION: {{ .Values.env.queueConnection | quote }}
+  SESSION_DRIVER: {{ .Values.env.sessionDriver | quote }}
+  REDIS_HOST: {{ include "invoiceninja.redisServiceName" . | quote }}
+  REDIS_PORT: {{ .Values.env.redisPort | quote }}
+  FILESYSTEM_DISK: {{ .Values.env.filesystemDisk | quote }}
+  DB_HOST: {{ include "invoiceninja.mysqlServiceName" . | quote }}
+  DB_PORT: {{ .Values.env.dbPort | quote }}
+  DB_DATABASE: {{ .Values.env.dbDatabase | quote }}
+  DB_USERNAME: {{ .Values.env.dbUsername | quote }}
+  DB_CONNECTION: {{ .Values.env.dbConnection | quote }}
+  MAIL_MAILER: {{ .Values.env.mailMailer | quote }}
+  MAIL_HOST: {{ .Values.env.mailHost | quote }}
+  MAIL_PORT: {{ .Values.env.mailPort | quote }}
+  MAIL_USERNAME: {{ .Values.env.mailUsername | quote }}
+  MAIL_PASSWORD: {{ .Values.env.mailPassword | quote }}
+  MAIL_ENCRYPTION: {{ .Values.env.mailEncryption | quote }}
+  MAIL_FROM_ADDRESS: {{ .Values.env.mailFromAddress | quote }}
+  MAIL_FROM_NAME: {{ .Values.env.mailFromName | quote }}
+  MYSQL_DATABASE: {{ .Values.env.mysqlDatabase | quote }}
+  MYSQL_USER: {{ .Values.env.mysqlUser | quote }}
+  NORDIGEN_SECRET_ID: {{ .Values.env.nordigenSecretId | quote }}
+  NORDIGEN_SECRET_KEY: {{ .Values.env.nordigenSecretKey | quote }}
+  IS_DOCKER: {{ .Values.env.isDocker | quote }}
+  SCOUT_DRIVER: {{ .Values.env.scoutDriver | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "invoiceninja.fullname" . }}-nginx
+  labels:
+    {{- include "invoiceninja.labels" . | nindent 4 }}
+data:
+  invoiceninja.conf: |
+    client_max_body_size 10M;
+    client_body_buffer_size 10M;
+    server_tokens off;
+    fastcgi_buffers 32 16K;
+    gzip on;
+    gzip_comp_level 2;
+    gzip_min_length 1M;
+    gzip_proxied any;
+    gzip_types *;
+  laravel.conf: |
+    server {
+        listen 80 default_server;
+        server_name _;
+        root /var/www/html/public;
+
+        add_header X-Frame-Options "SAMEORIGIN";
+        add_header X-Content-Type-Options "nosniff";
+
+        index index.php;
+        charset utf-8;
+
+        location / {
+            try_files $uri $uri/ /index.php?$query_string;
+        }
+
+        location = /favicon.ico { access_log off; log_not_found off; }
+        location = /robots.txt  { access_log off; log_not_found off; }
+
+        error_page 404 /index.php;
+
+        location ~ \.php$ {
+            fastcgi_pass {{ include "invoiceninja.appServiceName" . }}:9000;
+            fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+            include fastcgi_params;
+        }
+
+        location ~ /\.(?!well-known).* {
+            deny all;
+        }
+    }
