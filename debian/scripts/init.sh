@@ -19,6 +19,17 @@ if [ "$*" = 'supervisord -c /etc/supervisor/supervisord.conf' ]; then
     # Workaround for application updates
     if [ "$(ls -A /tmp/public)" ]; then
         echo "Updating public folder..."
+
+        # Migration: Alpine images stored uploads in public/storage as a real directory
+        # (not a symlink) because storage:link was never called and FILESYSTEM_DISK
+        # defaulted to 'public'. Move those files to storage/app/public before wiping
+        # the public volume so migrating users don't lose their uploaded documents.
+        if [ -d /var/www/html/public/storage ] && [ ! -L /var/www/html/public/storage ]; then
+            echo "Detected Alpine-era uploads in public/storage (real directory). Migrating to storage/app/public..."
+            cp -a /var/www/html/public/storage/. /var/www/html/storage/app/public/
+            echo "Alpine document migration complete."
+        fi
+
         rm -rf /var/www/html/public/.htaccess \
             /var/www/html/public/.well-known \
             /var/www/html/public/*
