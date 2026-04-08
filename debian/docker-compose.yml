@@ -10,8 +10,12 @@ services:
       # - ./php/php.ini:/usr/local/etc/php/conf.d/invoiceninja.ini:ro
       # - ./php/php-fpm.conf:/usr/local/etc/php-fpm.d/invoiceninja.conf:ro
       # - ./supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf:ro
+      # - ./scripts/backup.sh:/usr/local/bin/backup.sh:ro
       - app_public:/var/www/html/public
       - app_storage:/var/www/html/storage
+      # Backups – use a bind mount to access from the host:
+      # - ./backups:/backups
+      - app_backups:/backups
     depends_on:
       mysql:
         condition: service_healthy
@@ -69,4 +73,6 @@ volumes:
   mysql_data:
     driver: local
   redis_data:
+    driver: local
+  app_backups:
     driver: local

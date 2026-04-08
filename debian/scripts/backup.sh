@@ -2,98 +2,83 @@
 set -eu
 
 # Invoice Ninja Docker – Backup Script
-# Backs up the MySQL database and the storage volume.
-# Run from the debian/ directory (where docker-compose.yml lives).
 #
-# Usage:
-#   ./scripts/backup.sh              # backup with defaults
-#   BACKUP_DIR=/mnt/nas ./scripts/backup.sh
+# When symlinked into /etc/cron.daily, /etc/cron.weekly, or /etc/cron.monthly
+# the script uses its invocation name to set the backup frequency and retention.
+# It can also be run manually: /usr/local/bin/backup.sh
 #
-# Environment variables (all optional):
-#   BACKUP_DIR             – where to store backups     (default: ./backups)
-#   BACKUP_RETENTION_DAYS  – delete backups older than  (default: 30, 0 = keep all)
-#   COMPOSE_PROJECT        – docker compose project     (default: auto-detected)
+# Retention defaults:
+#   daily   –  7 days
+#   weekly  – 30 days
+#   monthly – 120 days
+#   manual  – 30 days
 
-BACKUP_DIR="${BACKUP_DIR:-./backups}"
-BACKUP_RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-30}"
-TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
-BACKUP_NAME="invoiceninja-${TIMESTAMP}"
+FREQUENCY="$(basename "$0")"
+
+case "${FREQUENCY}" in
+    daily)   RETENTION_DAYS=7   ;;
+    weekly)  RETENTION_DAYS=30  ;;
+    monthly) RETENTION_DAYS=120 ;;
+    *)       FREQUENCY="manual"; RETENTION_DAYS="${BACKUP_RETENTION_DAYS:-30}" ;;
+esac
+
+BACKUP_DIR="${BACKUP_DIR:-/backups}"
+STORAGE_PATH="${STORAGE_PATH:-/var/www/html/storage}"
+TIMESTAMP="$(date +%Y-%m-%d)"
+BACKUP_NAME="${TIMESTAMP}-${FREQUENCY}"
 BACKUP_PATH="${BACKUP_DIR}/${BACKUP_NAME}"
 
-COMPOSE_CMD="docker compose"
-if [ -n "${COMPOSE_PROJECT:-}" ]; then
-    COMPOSE_CMD="docker compose -p ${COMPOSE_PROJECT}"
-fi
+DB_HOST="${DB_HOST:-mysql}"
+DB_PORT="${DB_PORT:-3306}"
+DB_DATABASE="${DB_DATABASE:?DB_DATABASE is not set}"
+DB_USERNAME="${DB_USERNAME:?DB_USERNAME is not set}"
+DB_PASSWORD="${DB_PASSWORD:?DB_PASSWORD is not set}"
 
 die() { printf 'ERROR: %s\n' "$1" >&2; exit 1; }
 
 # ---------------------------------------------------------------------------
-# Preflight checks
+# Preflight
 # ---------------------------------------------------------------------------
-command -v docker >/dev/null 2>&1 || die "docker is not installed or not in PATH"
+command -v mysqldump >/dev/null 2>&1 || die "mysqldump is not installed"
+[ -d "${STORAGE_PATH}" ] || die "${STORAGE_PATH} does not exist"
+mkdir -p "${BACKUP_DIR}"
 
-# Verify the containers we need are running
-for svc in mysql app; do
-    ${COMPOSE_CMD} ps --status running --format '{{.Service}}' 2>/dev/null \
-        | grep -qx "${svc}" \
-        || die "'${svc}' service is not running. Start the stack first: docker compose up -d"
-done
-
-# Read DB credentials from the .env file next to docker-compose.yml
-ENV_FILE="$(dirname "$(dirname "$0")")/.env"
-if [ -f "${ENV_FILE}" ]; then
-    DB_DATABASE="$(grep -E '^DB_DATABASE=' "${ENV_FILE}" | cut -d= -f2-)"
-    DB_USERNAME="$(grep -E '^DB_USERNAME=' "${ENV_FILE}" | cut -d= -f2-)"
-    DB_PASSWORD="$(grep -E '^DB_PASSWORD=' "${ENV_FILE}" | cut -d= -f2-)"
-fi
-
-DB_DATABASE="${DB_DATABASE:?DB_DATABASE is not set – check .env}"
-DB_USERNAME="${DB_USERNAME:?DB_USERNAME is not set – check .env}"
-DB_PASSWORD="${DB_PASSWORD:?DB_PASSWORD is not set – check .env}"
-
-# ---------------------------------------------------------------------------
-# Create backup directory
-# ---------------------------------------------------------------------------
-mkdir -p "${BACKUP_PATH}"
-
-echo "Starting backup → ${BACKUP_PATH}"
+echo "[backup] Starting ${FREQUENCY} backup → ${BACKUP_PATH}"
 
 # ---------------------------------------------------------------------------
 # 1. Database dump
 # ---------------------------------------------------------------------------
-echo "  Dumping database '${DB_DATABASE}'..."
-${COMPOSE_CMD} exec -T mysql \
-    mysqldump -u"${DB_USERNAME}" -p"${DB_PASSWORD}" \
-    --single-transaction --routines --triggers \
+mkdir -p "${BACKUP_PATH}"
+
+echo "[backup] Dumping database '${DB_DATABASE}'..."
+mysqldump -h"${DB_HOST}" -P"${DB_PORT}" \
+    -u"${DB_USERNAME}" -p"${DB_PASSWORD}" \
+    --single-transaction --no-tablespaces --routines --triggers \
     "${DB_DATABASE}" \
     | gzip > "${BACKUP_PATH}/db.sql.gz"
-echo "  Database dump complete."
 
 # ---------------------------------------------------------------------------
 # 2. Storage volume
 # ---------------------------------------------------------------------------
-echo "  Archiving storage volume..."
-${COMPOSE_CMD} exec -T app \
-    tar czf - -C /var/www/html storage \
-    > "${BACKUP_PATH}/storage.tar.gz"
-echo "  Storage archive complete."
+echo "[backup] Archiving storage volume..."
+tar czf "${BACKUP_PATH}/storage.tar.gz" -C "$(dirname "${STORAGE_PATH}")" "$(basename "${STORAGE_PATH}")"
 
 # ---------------------------------------------------------------------------
-# 3. Bundle into a single archive and clean up the temp directory
+# 3. Bundle into a single archive
 # ---------------------------------------------------------------------------
 tar czf "${BACKUP_DIR}/${BACKUP_NAME}.tar.gz" -C "${BACKUP_DIR}" "${BACKUP_NAME}"
 rm -rf "${BACKUP_PATH}"
-echo "Backup saved to ${BACKUP_DIR}/${BACKUP_NAME}.tar.gz"
+echo "[backup] Saved ${BACKUP_DIR}/${BACKUP_NAME}.tar.gz"
 
 # ---------------------------------------------------------------------------
-# 4. Retention – remove old backups
+# 4. Retention – remove old backups of the same frequency
 # ---------------------------------------------------------------------------
-if [ "${BACKUP_RETENTION_DAYS}" -gt 0 ] 2>/dev/null; then
-    DELETED=$(find "${BACKUP_DIR}" -maxdepth 1 -name 'invoiceninja-*.tar.gz' \
-        -type f -mtime +"${BACKUP_RETENTION_DAYS}" -print -delete | wc -l)
+if [ "${RETENTION_DAYS}" -gt 0 ] 2>/dev/null; then
+    DELETED=$(find "${BACKUP_DIR}" -maxdepth 1 -name "*-${FREQUENCY}.tar.gz" \
+        -type f -mtime +"${RETENTION_DAYS}" -print -delete | wc -l)
     if [ "${DELETED}" -gt 0 ]; then
-        echo "Cleaned up ${DELETED} backup(s) older than ${BACKUP_RETENTION_DAYS} days."
+        echo "[backup] Cleaned up ${DELETED} ${FREQUENCY} backup(s) older than ${RETENTION_DAYS} days."
     fi
 fi
 
-echo "Done."
+echo "[backup] Done."

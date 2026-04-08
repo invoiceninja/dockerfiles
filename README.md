@@ -82,40 +82,51 @@ It is recommended to perform a backup before updating.
 
 ### Backup and Restore
 
-A backup script is included at `scripts/backup.sh`. It dumps the MySQL database and archives the storage volume into a single timestamped `.tar.gz` file.
+Automatic backups run inside the `app` container via cron. The backup script dumps the MySQL database and archives the storage volume into timestamped `.tar.gz` files saved to `/backups` inside the container.
 
-**Run from the `debian/` directory** (where `docker-compose.yml` lives):
+**Schedule and retention:**
 
-```bash
-./scripts/backup.sh
+| Frequency | Retention |
+|---|---|
+| Daily | 7 days |
+| Weekly | 30 days |
+| Monthly | 120 days |
+
+Backups are stored in the `app_backups` volume by default. To access them from the host, swap the volume for a bind mount in `docker-compose.yml`:
+
+```yaml
+# - app_backups:/backups
+- ./backups:/backups
 ```
 
-Backups are saved to `./backups/` by default. You can customise the behaviour with environment variables:
-
-| Variable | Default | Description |
-|---|---|---|
-| `BACKUP_DIR` | `./backups` | Directory to store backup archives |
-| `BACKUP_RETENTION_DAYS` | `30` | Auto-delete backups older than N days (0 = keep all) |
-
-**Schedule automatic backups** with cron (e.g. daily at 2 AM):
+**Run a manual backup** (or override the built-in script via volume mount):
 
 ```bash
-0 2 * * * cd /path/to/dockerfiles/debian && ./scripts/backup.sh >> /var/log/invoiceninja-backup.log 2>&1
+docker compose exec app /usr/local/bin/backup.sh
+```
+
+To use a custom or modified backup script, uncomment the volume mount in `docker-compose.yml`:
+
+```yaml
+- ./scripts/backup.sh:/usr/local/bin/backup.sh:ro
 ```
 
 **Restore** from a backup archive:
 
 ```bash
+# Copy the backup from the container (or from the bind mount)
+docker compose cp app:/backups/2025-01-01-daily.tar.gz ./
+
 # Extract the archive
-tar xzf backups/invoiceninja-20250101-020000.tar.gz -C /tmp
+tar xzf 2025-01-01-daily.tar.gz -C /tmp
 
 # Restore the database
-gunzip -c /tmp/invoiceninja-20250101-020000/db.sql.gz \
+gunzip -c /tmp/2025-01-01-daily/db.sql.gz \
   | docker compose exec -T mysql mysql -uninja -pninja ninja
 
 # Restore the storage volume
 docker compose exec -T app tar xzf - -C /var/www/html \
-  < /tmp/invoiceninja-20250101-020000/storage.tar.gz
+  < /tmp/2025-01-01-daily/storage.tar.gz
 ```
 
 ### Support
