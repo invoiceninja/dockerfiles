@@ -6,9 +6,13 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+.env
 
 # Helm
 charts/**/charts/
 
 # Compose filesystem
 /docker
+
+# Backups
+debian/backups/

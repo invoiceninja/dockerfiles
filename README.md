@@ -80,6 +80,44 @@ docker compose up -d
 
 It is recommended to perform a backup before updating.
 
+### Backup and Restore
+
+A backup script is included at `scripts/backup.sh`. It dumps the MySQL database and archives the storage volume into a single timestamped `.tar.gz` file.
+
+**Run from the `debian/` directory** (where `docker-compose.yml` lives):
+
+```bash
+./scripts/backup.sh
+```
+
+Backups are saved to `./backups/` by default. You can customise the behaviour with environment variables:
+
+| Variable | Default | Description |
+|---|---|---|
+| `BACKUP_DIR` | `./backups` | Directory to store backup archives |
+| `BACKUP_RETENTION_DAYS` | `30` | Auto-delete backups older than N days (0 = keep all) |
+
+**Schedule automatic backups** with cron (e.g. daily at 2 AM):
+
+```bash
+0 2 * * * cd /path/to/dockerfiles/debian && ./scripts/backup.sh >> /var/log/invoiceninja-backup.log 2>&1
+```
+
+**Restore** from a backup archive:
+
+```bash
+# Extract the archive
+tar xzf backups/invoiceninja-20250101-020000.tar.gz -C /tmp
+
+# Restore the database
+gunzip -c /tmp/invoiceninja-20250101-020000/db.sql.gz \
+  | docker compose exec -T mysql mysql -uninja -pninja ninja
+
+# Restore the storage volume
+docker compose exec -T app tar xzf - -C /var/www/html \
+  < /tmp/invoiceninja-20250101-020000/storage.tar.gz
+```
+
 ### Support
 
 If you discover a bug, please create an issue. For general queries, visit our [Forum](https://forum.invoiceninja.com/)
@@ -89,6 +127,6 @@ If you discover a bug, please create an issue. For general queries, visit our [F
 
 This is a new image which should provide much better support for all users, however there are some items left to complete
 
-- [ ] Backup script  
+- [x] Backup script  
 - [ ] Integrate soketi server  
 - [ ] Add elastic search for site wide search  
