@@ -987,6 +987,18 @@ entries:
     - https://github.com/invoiceninja/dockerfiles/releases/download/invoiceninja-0.2.0/invoiceninja-0.2.0.tgz
     version: 0.2.0
   - apiVersion: v2
+    appVersion: "5"
+    created: "2026-06-13T11:07:19.962554093Z"
+    description: Helm chart for Invoice Ninja Debian stack (app, nginx, mysql, redis)
+    digest: 64c105ebb4e2e004f5f10ac7cd205091fa715099f6c8e83da9f2ba69c1042b73
+    maintainers:
+    - name: eburgueno
+    name: invoiceninja
+    type: application
+    urls:
+    - https://github.com/invoiceninja/dockerfiles/releases/download/invoiceninja-0.1.1/invoiceninja-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
     appVersion: 5.1.30
     created: "2021-03-24T02:12:50.353854743Z"
     dependencies:
@@ -1018,4 +1030,4 @@ entries:
     urls:
     - https://github.com/invoiceninja/dockerfiles/releases/download/invoiceninja-0.1.0/invoiceninja-0.1.0.tgz
     version: 0.1.0
-generated: "2023-08-29T14:07:54.059647074Z"
+generated: "2026-06-13T11:07:19.962800976Z"
