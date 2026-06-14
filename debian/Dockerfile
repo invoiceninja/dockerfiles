@@ -28,6 +28,7 @@ ARG php_amd64="saxon-12.5.0"
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    cron \
     libfcgi-bin \
     mariadb-client \
     gpg \
@@ -87,6 +88,12 @@ COPY supervisor/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # Setup InvoiceNinja
 COPY --from=prepare-app --chown=www-data:www-data /var/www/html /var/www/html
 COPY --from=prepare-app --chown=www-data:www-data /tmp/public /tmp/public
+
+# Add backup script with cron symlinks for daily/weekly/monthly
+COPY --chmod=0755 scripts/backup.sh /usr/local/bin/backup.sh
+RUN ln -s /usr/local/bin/backup.sh /etc/cron.daily/daily \
+ && ln -s /usr/local/bin/backup.sh /etc/cron.weekly/weekly \
+ && ln -s /usr/local/bin/backup.sh /etc/cron.monthly/monthly
 
 # Add initialization script
 COPY --chmod=0755 scripts/init.sh /usr/local/bin/init.sh

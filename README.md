@@ -80,6 +80,55 @@ docker compose up -d
 
 It is recommended to perform a backup before updating.
 
+### Backup and Restore
+
+Automatic backups run inside the `app` container via cron. The backup script dumps the MySQL database and archives the storage volume into timestamped `.tar.gz` files saved to `/backups` inside the container.
+
+**Schedule and retention:**
+
+| Frequency | Retention |
+|---|---|
+| Daily | 7 days |
+| Weekly | 30 days |
+| Monthly | 120 days |
+
+Backups are stored in the `app_backups` volume by default. To access them from the host, swap the volume for a bind mount in `docker-compose.yml`:
+
+```yaml
+# - app_backups:/backups
+- ./backups:/backups
+```
+
+**Run a manual backup** (or override the built-in script via volume mount):
+
+```bash
+docker compose exec app /usr/local/bin/backup.sh
+```
+
+To use a custom or modified backup script, uncomment the volume mount in `docker-compose.yml`:
+
+```yaml
+- ./scripts/backup.sh:/usr/local/bin/backup.sh:ro
+```
+
+**Restore** from a backup archive:
+
+```bash
+# Copy the backup from the container (or from the bind mount)
+docker compose cp app:/backups/2025-01-01-daily.tar.gz ./
+
+# Extract the archive
+tar xzf 2025-01-01-daily.tar.gz -C /tmp
+
+# Restore the database
+gunzip -c /tmp/2025-01-01-daily/db.sql.gz \
+  | docker compose exec -T mysql mysql -uninja -pninja ninja
+
+# Restore the storage volume
+docker compose exec -T app tar xzf - -C /var/www/html \
+  < /tmp/2025-01-01-daily/storage.tar.gz
+```
+
 ### Support
 
 If you discover a bug, please create an issue. For general queries, visit our [Forum](https://forum.invoiceninja.com/)
@@ -89,6 +138,6 @@ If you discover a bug, please create an issue. For general queries, visit our [F
 
 This is a new image which should provide much better support for all users, however there are some items left to complete
 
-- [ ] Backup script  
+- [x] Backup script  
 - [ ] Integrate soketi server  
 - [ ] Add elastic search for site wide search  

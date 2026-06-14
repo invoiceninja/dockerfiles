@@ -10,6 +10,7 @@ fi
 if [ "$*" = 'supervisord -c /etc/supervisor/supervisord.conf' ]; then
 
     # Check for required folders and create if needed
+    [ -d /backups ] || mkdir -p /backups
     [ -d /var/www/html/public ] || mkdir -p /var/www/html/public
     [ -d /var/www/html/storage/app/public ] || mkdir -p /var/www/html/storage/app/public
     [ -d /var/www/html/storage/framework/sessions ] || mkdir -p /var/www/html/storage/framework/sessions
