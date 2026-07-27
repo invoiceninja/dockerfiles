@@ -34,14 +34,18 @@ spec:
             - /bin/sh
             - -c
             - |
+              {{- if .Values.mysql.enabled }}
               until nc -z {{ include "invoiceninja.mysqlServiceName" . }} {{ .Values.mysql.service.port }}; do
                 echo "waiting for mysql";
                 sleep 2;
               done
+              {{- end }}
+              {{- if .Values.redis.enabled }}
               until nc -z {{ include "invoiceninja.redisServiceName" . }} {{ .Values.redis.service.port }}; do
                 echo "waiting for redis";
                 sleep 2;
               done
+              {{- end }}
       containers:
         - name: app
           image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
@@ -57,27 +61,27 @@ spec:
             - name: APP_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "invoiceninja.fullname" . }}-secret
+                  name: {{ include "invoiceninja.secretName" . }}
                   key: APP_KEY
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "invoiceninja.fullname" . }}-secret
+                  name: {{ include "invoiceninja.secretName" . }}
                   key: DB_PASSWORD
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "invoiceninja.fullname" . }}-secret
+                  name: {{ include "invoiceninja.secretName" . }}
                   key: REDIS_PASSWORD
             - name: IN_USER_EMAIL
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "invoiceninja.fullname" . }}-secret
+                  name: {{ include "invoiceninja.secretName" . }}
                   key: IN_USER_EMAIL
             - name: IN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "invoiceninja.fullname" . }}-secret
+                  name: {{ include "invoiceninja.secretName" . }}
                   key: IN_PASSWORD
           livenessProbe:
             exec:
