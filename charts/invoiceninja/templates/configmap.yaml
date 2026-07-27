@@ -15,14 +15,22 @@ data:
   CACHE_DRIVER: {{ .Values.env.cacheDriver | quote }}
   QUEUE_CONNECTION: {{ .Values.env.queueConnection | quote }}
   SESSION_DRIVER: {{ .Values.env.sessionDriver | quote }}
-  REDIS_HOST: {{ include "invoiceninja.redisServiceName" . | quote }}
+  {{- if or .Values.redis.enabled .Values.env.redisHost }}
+  REDIS_HOST: {{ .Values.env.redisHost | default (include "invoiceninja.redisServiceName" .) | quote }}
   REDIS_PORT: {{ .Values.env.redisPort | quote }}
+  {{- end }}
   FILESYSTEM_DISK: {{ .Values.env.filesystemDisk | quote }}
-  DB_HOST: {{ include "invoiceninja.mysqlServiceName" . | quote }}
+  {{- if or .Values.mysql.enabled .Values.env.dbHost }}
+  DB_HOST: {{ .Values.env.dbHost | default (include "invoiceninja.mysqlServiceName" .) | quote }}
   DB_PORT: {{ .Values.env.dbPort | quote }}
+  {{- end }}
   DB_DATABASE: {{ .Values.env.dbDatabase | quote }}
   DB_USERNAME: {{ .Values.env.dbUsername | quote }}
   DB_CONNECTION: {{ .Values.env.dbConnection | quote }}
+  {{- if .Values.mysql.enabled }}
+  MYSQL_DATABASE: {{ .Values.env.dbDatabase | quote }}
+  MYSQL_USER: {{ .Values.env.dbUsername | quote }}
+  {{- end }}
   MAIL_MAILER: {{ .Values.env.mailMailer | quote }}
   MAIL_HOST: {{ .Values.env.mailHost | quote }}
   MAIL_PORT: {{ .Values.env.mailPort | quote }}
@@ -31,8 +39,6 @@ data:
   MAIL_ENCRYPTION: {{ .Values.env.mailEncryption | quote }}
   MAIL_FROM_ADDRESS: {{ .Values.env.mailFromAddress | quote }}
   MAIL_FROM_NAME: {{ .Values.env.mailFromName | quote }}
-  MYSQL_DATABASE: {{ .Values.env.dbDatabase | quote }}
-  MYSQL_USER: {{ .Values.env.dbUsername | quote }}
   NORDIGEN_SECRET_ID: {{ .Values.env.nordigenSecretId | quote }}
   NORDIGEN_SECRET_KEY: {{ .Values.env.nordigenSecretKey | quote }}
   IS_DOCKER: {{ .Values.env.isDocker | quote }}
