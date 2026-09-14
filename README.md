@@ -22,8 +22,7 @@ git clone https://github.com/invoiceninja/dockerfiles.git -b debian
 cd dockerfiles/debian
 ```
 
-Instead of defining our environment variables inside our docker-compose.yml file we now define this in the `.env` file, open this file up and insert your `APP_URL`, `APP_KEY` and update the rest of the variables as required.
-
+Rather than defining environment variables inside `docker-compose.yml`, they are now defined in a `.env` file. Copy `.env.example` to `.env`, then open the new file and set `APP_URL` and `APP_KEY`, updating the remaining variables as required.
 ```
 APP_URL=http://in.localhost:8003/
 APP_KEY=<insert your generated key in here>
