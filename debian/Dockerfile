@@ -1,4 +1,4 @@
-ARG PHP=8.4
+ARG PHP=8.5
 
 FROM php:${PHP}-fpm AS prepare-app
 
@@ -24,7 +24,7 @@ ARG php_extra="opcache"
 # SaxonC HE is installed on amd64 only: install-php-extensions builds a
 # linux-arm64 download URL for the 12.x line, but Saxonica ships those builds
 # as linux-aarch64, so there is no working arm64 install path (the arm64 URL 404s).
-ARG php_amd64="saxon-12.5.0"
+ARG php_amd64="saxon"
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
