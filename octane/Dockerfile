@@ -58,9 +58,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gpg --dearmor -o /etc/apt/keyrings/google.gpg \
     && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update \
-    && apt-get install -y --no-install-recommends google-chrome-stable \
+    && apt-get install -y --no-install-recommends google-chrome-stable; \
     elif [ "$(dpkg --print-architecture)" = "arm64" ]; then \
     apt-get install -y --no-install-recommends \
+    chromium; \
     fi \
     # Cleanup
     && apt-get purge -y gpg \
