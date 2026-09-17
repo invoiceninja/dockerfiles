@@ -1,4 +1,4 @@
-ARG PHP_VERSION=8.4
+ARG PHP_VERSION=8.5
 ARG FRANKENPHP_VERSION=1
 ARG DEBIAN_VERSION=trixie
 
@@ -29,10 +29,15 @@ ARG php_extra="opcache"
 # SaxonC HE is installed on amd64 only: install-php-extensions builds a
 # linux-arm64 download URL for the 12.x line, but Saxonica ships those builds
 # as linux-aarch64, so there is no working arm64 install path (the arm64 URL 404s).
-ARG php_amd64="saxon-12.5.0"
+ARG php_amd64="saxon"
 
 # Create a system user UID/GID=999
-RUN	useradd -r ${user}
+RUN groupadd -g 999 ${user} && \
+    useradd -u 999 -g ${user} -r ${user}
+
+RUN chown -R ${user}: \
+    /data/caddy \
+    /config
 
 # Allow to bind to privileged ports
 RUN setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp
@@ -53,14 +58,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gpg --dearmor -o /etc/apt/keyrings/google.gpg \
     && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/google.gpg] https://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update \
-    && apt-get install -y --no-install-recommends google-chrome-stable \
-    && mkdir /config/google-chrome \
-    && chown ${user}: /config/google-chrome; \
+    && apt-get install -y --no-install-recommends google-chrome-stable; \
     elif [ "$(dpkg --print-architecture)" = "arm64" ]; then \
     apt-get install -y --no-install-recommends \
-    chromium \
-    && mkdir /config/chromium \
-    && chown ${user}: /config/chromium; \
+    chromium; \
     fi \
     # Cleanup
     && apt-get purge -y gpg \
@@ -85,15 +86,6 @@ COPY php/php.ini /usr/local/etc/php/conf.d/invoiceninja.ini
 
 # Workaround: Disable SSL for mariadb-client for compatibility with MySQL
 RUN echo "skip-ssl = true" >> /etc/mysql/mariadb.conf.d/50-client.cnf
-
-# Create directory for artisan tinker (init.sh)
-RUN mkdir /config/psysh \
-    && chown ${user}: /config/psysh
-
-# Change owner for caddy directories
-RUN chown -R ${user}: \
-    /data/caddy \
-    /config/caddy
 
 # InvoiceNinja
 COPY --from=prepare-app --chown=${user}:${user} /app /app
