@@ -1,3 +1,4 @@
+{{- if .Values.mysql.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -41,12 +42,12 @@ spec:
             - name: MYSQL_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "invoiceninja.fullname" . }}-secret
+                  name: {{ include "invoiceninja.secretName" . }}
                   key: MYSQL_PASSWORD
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "invoiceninja.fullname" . }}-secret
+                  name: {{ include "invoiceninja.secretName" . }}
                   key: MYSQL_ROOT_PASSWORD
           livenessProbe:
             exec:
@@ -105,3 +106,4 @@ spec:
   selector:
     {{- include "invoiceninja.selectorLabels" . | nindent 4 }}
     app.kubernetes.io/component: mysql
+{{- end }}

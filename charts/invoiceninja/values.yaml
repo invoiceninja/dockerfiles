@@ -79,6 +79,7 @@ nginx:
         - ALL
 
 mysql:
+  enabled: true
   image:
     repository: mariadb
     tag: "lts"
@@ -101,6 +102,7 @@ mysql:
   tolerations: []
 
 redis:
+  enabled: true
   image:
     repository: redis
     tag: alpine
@@ -164,6 +166,11 @@ secret:
   # REQUIRED: generate with `php artisan key:generate --show` or
   # openssl rand -base64 32 | sed 's/^/base64:/'
   appKey: ""
+  # Use an externally-managed Secret instead of templating these values.
+  # The Secret must provide keys: APP_KEY, DB_PASSWORD, REDIS_PASSWORD,
+  # IN_USER_EMAIL, IN_PASSWORD. When mysql.enabled=true also add:
+  # DB_ROOT_PASSWORD, MYSQL_PASSWORD, MYSQL_ROOT_PASSWORD.
+  existingSecret: ""
   dbPassword: ninja
   dbRootPassword: ninjaAdm1nPassword
   redisPassword: ""
@@ -184,8 +191,12 @@ env:
   queueConnection: redis
   sessionDriver: redis
   redisPort: "6379"
+  # redisHost: override when using an external Redis. Defaults to the internal service.
+  redisHost: ""
   filesystemDisk: debian_docker
   dbPort: "3306"
+  # dbHost: override when using an external MySQL/MariaDB. Defaults to the internal service.
+  dbHost: ""
   # dbDatabase and dbUsername are shared by both the app and the MySQL container.
   # Change both env.dbDatabase/dbUsername and secret.dbPassword together.
   dbDatabase: ninja

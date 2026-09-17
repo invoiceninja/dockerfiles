@@ -43,3 +43,11 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- define "invoiceninja.redisServiceName" -}}
 {{- printf "%s-redis" (include "invoiceninja.fullname" .) -}}
 {{- end -}}
+
+{{- define "invoiceninja.secretName" -}}
+{{- if .Values.secret.existingSecret -}}
+{{- .Values.secret.existingSecret -}}
+{{- else -}}
+{{- printf "%s-secret" (include "invoiceninja.fullname" .) -}}
+{{- end -}}
+{{- end -}}
