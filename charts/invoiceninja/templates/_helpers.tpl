@@ -43,3 +43,19 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- define "invoiceninja.redisServiceName" -}}
 {{- printf "%s-redis" (include "invoiceninja.fullname" .) -}}
 {{- end -}}
+
+{{- define "invoiceninja.secretName" -}}
+{{- if .Values.secret.existingSecret -}}
+{{- .Values.secret.existingSecret -}}
+{{- else -}}
+{{- printf "%s-secret" (include "invoiceninja.fullname" .) -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "invoiceninja.dbHost" -}}
+{{- .Values.env.dbHost | default (ternary (include "invoiceninja.mysqlServiceName" .) "" .Values.mysql.enabled) | required "env.dbHost is required when mysql.enabled is false" -}}
+{{- end -}}
+
+{{- define "invoiceninja.redisHost" -}}
+{{- .Values.env.redisHost | default (ternary (include "invoiceninja.redisServiceName" .) "" .Values.redis.enabled) | required "env.redisHost is required when redis.enabled is false" -}}
+{{- end -}}

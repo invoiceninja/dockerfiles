@@ -34,11 +34,11 @@ spec:
             - /bin/sh
             - -c
             - |
-              until nc -z {{ include "invoiceninja.mysqlServiceName" . }} {{ .Values.mysql.service.port }}; do
+              until nc -z {{ include "invoiceninja.dbHost" . }} {{ .Values.env.dbPort }}; do
                 echo "waiting for mysql";
                 sleep 2;
               done
-              until nc -z {{ include "invoiceninja.redisServiceName" . }} {{ .Values.redis.service.port }}; do
+              until nc -z {{ include "invoiceninja.redisHost" . }} {{ .Values.env.redisPort }}; do
                 echo "waiting for redis";
                 sleep 2;
               done
@@ -57,27 +57,27 @@ spec:
             - name: APP_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "invoiceninja.fullname" . }}-secret
+                  name: {{ include "invoiceninja.secretName" . }}
                   key: APP_KEY
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "invoiceninja.fullname" . }}-secret
+                  name: {{ include "invoiceninja.secretName" . }}
                   key: DB_PASSWORD
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "invoiceninja.fullname" . }}-secret
+                  name: {{ include "invoiceninja.secretName" . }}
                   key: REDIS_PASSWORD
             - name: IN_USER_EMAIL
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "invoiceninja.fullname" . }}-secret
+                  name: {{ include "invoiceninja.secretName" . }}
                   key: IN_USER_EMAIL
             - name: IN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "invoiceninja.fullname" . }}-secret
+                  name: {{ include "invoiceninja.secretName" . }}
                   key: IN_PASSWORD
           livenessProbe:
             exec:

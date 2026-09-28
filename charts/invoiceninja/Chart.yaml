@@ -2,7 +2,7 @@ apiVersion: v2
 name: invoiceninja
 description: Helm chart for Invoice Ninja Debian stack (app, nginx, mysql, redis)
 type: application
-version: 0.1.1
+version: 0.1.2
 appVersion: "5"
 maintainers:
   - name: eburgueno
