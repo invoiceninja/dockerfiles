@@ -26,10 +26,7 @@ ARG user=ninja
 ARG php_require="bcmath gd mbstring pdo_mysql zip"
 ARG php_suggest="exif imagick intl pcntl soap"
 ARG php_extra="opcache"
-# SaxonC HE is installed on amd64 only: install-php-extensions builds a
-# linux-arm64 download URL for the 12.x line, but Saxonica ships those builds
-# as linux-aarch64, so there is no working arm64 install path (the arm64 URL 404s).
-ARG php_amd64="saxon"
+ARG php_saxon="saxon"
 
 # Create a system user UID/GID=999
 RUN groupadd -g 999 ${user} && \
@@ -72,12 +69,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install PHP extensions
 # IPE_SAXON_EDITION=HE: install the free Home Edition (XSLT 3.0 is enough for
 # e-invoice transforms); the installer otherwise defaults to the commercial EE,
-# whose distribution layout breaks the configure step. saxon is amd64-only (see above).
-RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
-    IPE_SAXON_EDITION=HE install-php-extensions ${php_require} ${php_suggest} ${php_amd64} ${php_extra}; \
-    else \
-    install-php-extensions ${php_require} ${php_suggest} ${php_extra}; \
-    fi
+# whose distribution layout breaks the configure step.
+RUN IPE_SAXON_EDITION=HE install-php-extensions ${php_require} ${php_suggest} ${php_saxon} ${php_extra}
 
 # Configure PHP
 RUN ln -s "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
