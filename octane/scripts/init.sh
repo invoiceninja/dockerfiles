@@ -10,23 +10,23 @@ if [ "$(dpkg --print-architecture)" = "arm64" ]; then
 fi
 
 # Check for default CMD, flag(s) or empty CMD
-if [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$1" ] || [ "$#" -eq  "0" ]; then
+if [ "$*" = 'php artisan octane:frankenphp' ] || [ "${1#-}" != "$1" ] || [ "$#" -eq  "0" ]; then
 
     if [ "--help" = "$1" ]; then
         echo [CMD]
         echo "This image will execute specific CMDs based on the environment variable LARAVEL_ROLE"
         echo
-        echo "LARAVEL_ROLE=app:       frankenphp php-cli artisan octane:frankenphp (default)"
-        echo "LARAVEL_ROLE=worker:    frankenphp php-cli artisan queue:work"
-        echo "LARAVEL_ROLE=scheduler: frankenphp php-cli artisan schedule:work"
+        echo "LARAVEL_ROLE=app:       php artisan octane:frankenphp (default)"
+        echo "LARAVEL_ROLE=worker:    php artisan queue:work"
+        echo "LARAVEL_ROLE=scheduler: php artisan schedule:work"
         echo
         echo [FLAGS]
         echo To the CMD defined by LARAVEL_ROLE can be extended with flags for artisan commands
         echo
         echo Available flags can be displaced:
-        echo docker run --rm invoiceninja/invoiceninja-debian frankenphp php-cli artisan help octane:frankenphp
-        echo docker run --rm invoiceninja/invoiceninja-debian frankenphp php-cli artisan queue:work
-        echo docker run --rm invoiceninja/invoiceninja-debian frankenphp php-cli artisan schedule:work
+        echo docker run --rm invoiceninja/invoiceninja-debian php artisan help octane:frankenphp
+        echo docker run --rm invoiceninja/invoiceninja-debian php artisan queue:work
+        echo docker run --rm invoiceninja/invoiceninja-debian php artisan schedule:work
         echo
         echo Example:
         echo docker run -e LARAVEL_ROLE=worker invoiceninja/invoiceninja-debian --verbose --sleep=3 --tries=3 --max-time=3600
@@ -42,7 +42,7 @@ if [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$
 
     # Run app
     if [ "${role}" = "app" ]; then
-        cmd="frankenphp php-cli artisan octane:frankenphp"
+        cmd="php artisan octane:frankenphp"
 
         # Check for required folders and create if needed, relevant for bind mounts
         # It is not possible to chown, as we are not executing this script as root
@@ -53,19 +53,19 @@ if [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$
         [ -d /app/storage/logs ] || mkdir -p /app/storage/logs
 
         if [ "$APP_ENV" = "production" ]; then
-            frankenphp php-cli artisan migrate --force
-            frankenphp php-cli artisan cache:clear # Clear after the migration
-            frankenphp php-cli artisan ninja:design-update
-            frankenphp php-cli artisan optimize
+            php artisan migrate --force
+            php artisan cache:clear # Clear after the migration
+            php artisan ninja:design-update
+            php artisan optimize
 
             # If first IN run, it needs to be initialized
-            if [ "$(frankenphp php-cli artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')" = "1" ]; then
+            if [ "$(php artisan tinker --execute='echo Schema::hasTable("accounts") && !App\Models\Account::all()->first();')" = "1" ]; then
                 echo "Running initialization..."
 
-                frankenphp php-cli artisan db:seed --force
+                php artisan db:seed --force
 
                 if [ -n "${IN_USER_EMAIL}" ] && [ -n "${IN_PASSWORD}" ]; then
-                    frankenphp php-cli artisan ninja:create-account --email "${IN_USER_EMAIL}" --password "${IN_PASSWORD}"
+                    php artisan ninja:create-account --email "${IN_USER_EMAIL}" --password "${IN_PASSWORD}"
                 else
                     echo "Initialization failed - Set IN_USER_EMAIL and IN_PASSWORD in .env"
                     exit 1
@@ -76,10 +76,10 @@ if [ "$*" = 'frankenphp php-cli artisan octane:frankenphp' ] || [ "${1#-}" != "$
         echo "Production setup completed"
     # Run worker
     elif [ "${role}" = "worker" ]; then
-        cmd="frankenphp php-cli artisan queue:work"
+        cmd="php artisan queue:work"
     # Run scheduler
     elif [ "${role}" = "scheduler" ]; then
-        cmd="frankenphp php-cli artisan schedule:work"
+        cmd="php artisan schedule:work"
     # Invalid role
     else
         echo "Invalid role: ${role}"

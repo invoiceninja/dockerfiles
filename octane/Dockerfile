@@ -92,4 +92,4 @@ HEALTHCHECK --start-period=100s CMD curl -f http://localhost/health
 
 ENTRYPOINT ["/usr/local/bin/init.sh"]
 
-CMD ["frankenphp", "php-cli", "artisan", "octane:frankenphp"]
+CMD ["php", "artisan", "octane:frankenphp"]
