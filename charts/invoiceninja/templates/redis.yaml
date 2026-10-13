@@ -8,6 +8,17 @@ metadata:
     app.kubernetes.io/component: redis
 spec:
   replicas: 1
+  # Recreate avoids a deadlock with the default single-node ReadWriteOnce
+  # persistence values (persistence.redisData.accessModes): with the default
+  # RollingUpdate strategy, Kubernetes tries to start the new pod before
+  # terminating the old one, but the new pod can never attach the RWO
+  # volume while the old pod still holds it, so it never becomes Ready and
+  # the old pod is never scaled down either (FailedAttachVolume "Volume is
+  # already used by pod(s) ..."). app.yaml already works around this for
+  # the app Deployment (rollingUpdate.maxSurge: 0); mysql and redis need
+  # the same treatment.
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       {{- include "invoiceninja.selectorLabels" . | nindent 6 }}
