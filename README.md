@@ -80,6 +80,29 @@ docker compose up -d
 
 It is recommended to perform a backup before updating.
 
+### Docker secrets
+
+Instead of storing sensitive values in your `.env` file, you can provide them as files using [Docker secrets](https://docs.docker.com/compose/how-tos/use-secrets/). For any supported variable `VAR`, set `VAR_FILE` to the path of a file containing the value — the container entrypoint reads the file and exports the value as `VAR` into the environment.
+
+Example `docker-compose.yml`:
+
+```yaml
+services:
+  app:
+    environment:
+      APP_KEY_FILE: /run/secrets/app_key
+      DB_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - app_key
+      - db_password
+
+secrets:
+  app_key:
+    file: ./secrets/app_key      # contains the base64:... key
+  db_password:
+    file: ./secrets/db_password  # contains the database password
+```
+
 ### Support
 
 If you discover a bug, please create an issue. For general queries, visit our [Forum](https://forum.invoiceninja.com/)
