@@ -1,4 +1,42 @@
-#!/bin/sh -eu
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# Allows the value of VAR to be read from the file at VAR_FILE for Docker compose's secrets feature
+# (ie: APP_KEY_FILE=/run/secrets/app_key fills in APP_KEY).
+file_env() {
+    local var="${1:?missing variable name}"
+    local file_var="${var}_FILE"
+
+    if [[ -n "${!var:-}" && -n "${!file_var:-}" ]]; then
+        echo "ERROR: both ${var} and ${file_var} are set (but are exclusive)" >&2
+        exit 1
+    fi
+
+    if [[ -z "${!var:-}" && -n "${!file_var:-}" ]]; then
+        local file="${!file_var}"
+        [[ -f "$file" ]] || {
+            echo "ERROR: ${file_var} points to missing file: ${file}" >&2
+            exit 1
+        }
+        export "$var"="$(<"$file")" # trailing newline of the secret file is stripped
+        unset "$file_var"          # keep the _FILE path out of the app environment
+    fi
+}
+
+# Secrets that may be provided as files (add more as needed)
+for var in \
+    APP_KEY \
+    DB_USERNAME DB_PASSWORD \
+    REDIS_PASSWORD \
+    MAIL_USERNAME MAIL_PASSWORD \
+    IN_PASSWORD \
+    AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY \
+    R2_ACCESS_KEY_ID R2_SECRET_ACCESS_KEY \
+    NORDIGEN_SECRET_ID NORDIGEN_SECRET_KEY \
+    GOCARDLESS_CLIENT_SECRET \
+    ; do
+    file_env "$var"
+done
 
 # Set PDF generation browser path based on architecture
 if [ "$(dpkg --print-architecture)" = "amd64" ]; then
@@ -45,7 +83,7 @@ if [ "$*" = 'supervisord -c /etc/supervisor/supervisord.conf' ]; then
         -type d -exec chmod 755 {} \;
 
     # Clear and cache config in production
-    if [ "$APP_ENV" = "production" ]; then
+    if [ "${APP_ENV}" = "production" ]; then
         runuser -u www-data -- php artisan migrate --force
         runuser -u www-data -- php artisan cache:clear # Clear after the migration
         runuser -u www-data -- php artisan ninja:design-update
