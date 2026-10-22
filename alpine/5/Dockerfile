@@ -1,10 +1,10 @@
 ARG ALPINE_VERSION=3.24
-ARG PHP_VERSION=8.2
+ARG PHP_VERSION=8.5
 ARG BAK_STORAGE_PATH=/var/www/app/docker-backup-storage/
 ARG BAK_PUBLIC_PATH=/var/www/app/docker-backup-public/
 
 # Get Invoice Ninja and install nodejs packages
-FROM --platform=$BUILDPLATFORM node:lts-alpine${ALPINE_VERSION} as nodebuild
+FROM --platform=$BUILDPLATFORM docker.io/node:lts-alpine${ALPINE_VERSION} as nodebuild
 
 # Download Invoice Ninja
 ARG INVOICENINJA_VERSION
@@ -22,7 +22,7 @@ RUN mkdir -p /var/www/app/public/logo /var/www/app/storage
 WORKDIR /var/www/app
 
 # Prepare php image
-FROM php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} as phpbuild
+FROM docker.io/php:${PHP_VERSION}-fpm-alpine${ALPINE_VERSION} as phpbuild
 
 LABEL maintainer="David Bomba <turbo124@gmail.com>"
 
@@ -34,7 +34,7 @@ RUN mv /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 # Install PHP extensions
 # https://hub.docker.com/r/mlocati/php-extension-installer/tags
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+COPY --from=docker.io/mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
 # Install chromium
 RUN set -eux; \
