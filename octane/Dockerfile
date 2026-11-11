@@ -74,7 +74,7 @@ RUN curl -sSLf \
     -o /usr/local/bin/install-php-extensions \
     https://github.com/mlocati/install-php-extensions/releases/latest/download/install-php-extensions-gz \
     && chmod +x /usr/local/bin/install-php-extensions \
-    && install-php-extensions --saxon:edition=HE ${php_require} ${php_suggest} ${php_amd64} ${php_extra} \
+    && install-php-extensions --saxon:edition=HE ${php_require} ${php_suggest} ${php_saxon} ${php_extra} \
     && rm /usr/local/bin/install-php-extensions
 
 # Configure PHP
