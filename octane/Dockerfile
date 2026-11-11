@@ -70,7 +70,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # IPE_SAXON_EDITION=HE: install the free Home Edition (XSLT 3.0 is enough for
 # e-invoice transforms); the installer otherwise defaults to the commercial EE,
 # whose distribution layout breaks the configure step.
-RUN IPE_SAXON_EDITION=HE install-php-extensions ${php_require} ${php_suggest} ${php_saxon} ${php_extra}
+RUN curl -sSLf \
+    -o /usr/local/bin/install-php-extensions \
+    https://github.com/mlocati/install-php-extensions/releases/latest/download/install-php-extensions-gz \
+    && chmod +x /usr/local/bin/install-php-extensions \
+    && install-php-extensions --saxon:edition=HE ${php_require} ${php_suggest} ${php_amd64} ${php_extra} \
+    && rm /usr/local/bin/install-php-extensions
 
 # Configure PHP
 RUN ln -s "${PHP_INI_DIR}/php.ini-production" "${PHP_INI_DIR}/php.ini"
