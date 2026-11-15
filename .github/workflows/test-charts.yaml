@@ -19,9 +19,9 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v3
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: "3.x"
           check-latest: true
 
       - name: Set up chart-testing
@@ -99,9 +99,9 @@ jobs:
         with:
           node_image: kindest/node:${{ matrix.k8s }}
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.9"
+          python-version: "3.x"
           check-latest: true
 
       - name: Set up chart-testing
