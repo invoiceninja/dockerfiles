@@ -13,6 +13,8 @@ metadata:
   {{- end }}
 data:
   server-block.conf: |-
+    types { text/javascript mjs; }
+
     server {
         listen 8080 default_server;
         listen [::]:8080 default_server;
