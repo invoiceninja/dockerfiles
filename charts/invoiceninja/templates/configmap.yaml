@@ -57,6 +57,7 @@ data:
     gzip_min_length 1000;
     gzip_proxied any;
     gzip_types *;
+    types { text/javascript mjs; }
   laravel.conf: |
     server {
         listen {{ .Values.nginx.containerPort }} default_server;
